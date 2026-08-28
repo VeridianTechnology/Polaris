@@ -1,0 +1,93 @@
+.sound-control {
+  justify-self: start;
+}
+
+.sound-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .85rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sound-toggle__button {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(44, 41, 37, .68);
+  border-radius: 50%;
+  transition: color .3s ease, background-color .3s ease, transform .3s ease;
+}
+
+.sound-toggle__button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.sound-toggle:hover .sound-toggle__button {
+  transform: scale(1.06);
+}
+
+.sound-toggle--playing .sound-toggle__button {
+  color: #ece8dd;
+  background: #302d29;
+}
+
+.sound-bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 3.35rem;
+  height: 1.25rem;
+}
+
+.sound-bars__bar {
+  width: 2px;
+  height: 55%;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: .42;
+  transform: scaleY(.35);
+  transform-origin: center;
+  animation: sound-bar .9s ease-in-out infinite alternate;
+  animation-delay: calc(var(--bar-index) * -.105s);
+  animation-play-state: paused;
+  transition: opacity .3s ease;
+}
+
+.sound-bars__bar:nth-child(2n) {
+  height: 90%;
+}
+
+.sound-bars__bar:nth-child(3n) {
+  height: 70%;
+}
+
+.sound-toggle--playing .sound-bars__bar {
+  opacity: .9;
+  animation-play-state: running;
+}
+
+.sound-toggle:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: .45rem;
+}
+
+@keyframes sound-bar {
+  0% { transform: scaleY(.24); }
+  45% { transform: scaleY(1); }
+  100% { transform: scaleY(.45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-bars__bar {
+    animation: none;
+    transform: scaleY(.55);
+  }
+}

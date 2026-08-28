@@ -1,0 +1,57 @@
+.map-experience {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  padding: clamp(6.6rem, 11vh, 8rem) 1rem 1rem;
+  background: #050808;
+}
+
+.map-experience__frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: calc(100svh - clamp(7.6rem, 12vh, 9rem));
+  min-height: 32rem;
+  border: 1px solid rgba(216, 239, 230, .24);
+  background: #020505;
+  box-shadow: 0 1.75rem 5rem rgba(0, 0, 0, .55);
+}
+
+.map-experience iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #020505;
+}
+
+.map-experience__source {
+  position: absolute;
+  right: .75rem;
+  bottom: .75rem;
+  z-index: 2;
+  padding: .45rem .6rem;
+  border: 1px solid rgba(170, 255, 223, .24);
+  color: rgba(220, 255, 241, .72);
+  background: rgba(2, 8, 7, .78);
+  font: 600 .5rem/1 "JetBrains Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+.map-experience__source:hover {
+  color: #d8ffef;
+  border-color: rgba(170, 255, 223, .48);
+}
+
+@media (max-width: 700px) {
+  .map-experience {
+    padding: 6rem .4rem .4rem;
+  }
+
+  .map-experience__frame {
+    height: calc(100svh - 6.4rem);
+    min-height: 28rem;
+  }
+}
