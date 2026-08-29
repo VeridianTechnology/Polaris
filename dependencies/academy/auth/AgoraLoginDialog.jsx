@@ -18,6 +18,7 @@ export function AgoraAuthArtworkButton({ mode = 'login', className = '', ...prop
 function AgoraLoginDialog({ open, onClose, onLogin }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [credentialMode, setCredentialMode] = useState('password')
   const [showPassword, setShowPassword] = useState(false)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
@@ -41,9 +42,16 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
 
   if (!open) return null
 
+  const toggleCredentialMode = () => {
+    setCredentialMode((current) => current === 'pin' ? 'password' : 'pin')
+    setPassword('')
+    setShowPassword(false)
+    setNotice('')
+  }
+
   const submit = async (event) => {
     event.preventDefault()
-    if (!username.trim() || !password || busy) return
+    if (!username.trim() || !password || (credentialMode === 'pin' && password.length !== 4) || busy) return
     setBusy(true)
     setNotice('')
     try {
@@ -70,20 +78,49 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
             <input id="agora-login-username" ref={usernameRef} type="text" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" maxLength="64" placeholder="username" required />
           </div>
           <div className="agora-login-dialog__field">
-            <label htmlFor="agora-login-password">Password or PIN</label>
-            <div className="agora-login-dialog__password-field">
-              <input id="agora-login-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" maxLength="200" required />
-              <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>
+            <div className="agora-login-dialog__credential-heading">
+              <label htmlFor="agora-login-password">{credentialMode === 'pin' ? 'PIN' : 'Password'}</label>
+              <button
+                className={`agora-login-dialog__pin-toggle${credentialMode === 'pin' ? ' is-selected' : ''}`}
+                type="button"
+                onClick={toggleCredentialMode}
+                aria-label={credentialMode === 'pin' ? 'Use password instead' : 'Use four-digit PIN'}
+                aria-pressed={credentialMode === 'pin'}
+                title={credentialMode === 'pin' ? 'Use password instead' : 'Use PIN'}
+              >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-                  <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
-                  <circle cx="12" cy="12" r="2.8" />
+                  <rect x="4" y="3" width="16" height="18" rx="2.5" />
+                  <circle cx="9" cy="9" r="1" />
+                  <circle cx="15" cy="9" r="1" />
+                  <circle cx="9" cy="15" r="1" />
+                  <circle cx="15" cy="15" r="1" />
                 </svg>
               </button>
             </div>
+            <div className="agora-login-dialog__password-field">
+              <input
+                id="agora-login-password"
+                type={credentialMode === 'password' && showPassword ? 'text' : 'password'}
+                inputMode={credentialMode === 'pin' ? 'numeric' : undefined}
+                value={password}
+                onChange={(event) => setPassword(credentialMode === 'pin' ? event.target.value.replace(/\D/g, '').slice(0, 4) : event.target.value)}
+                autoComplete="current-password"
+                maxLength={credentialMode === 'pin' ? 4 : 200}
+                placeholder={credentialMode === 'pin' ? '1234' : 'password'}
+                required
+              />
+              {credentialMode === 'password' && (
+                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                    <circle cx="12" cy="12" r="2.8" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
           {notice && <p className="agora-login-dialog__notice" role="alert">{notice}</p>}
-          <button className="agora-login-dialog__submit" type="submit" disabled={busy}>{busy ? 'Logging in' : 'Log in'}</button>
-          <button className="agora-login-dialog__recovery" type="button" onClick={() => setNotice('Contact an administrator to reset your password.')}>Forgot password?</button>
+          <button className="agora-login-dialog__submit" type="submit" disabled={busy || !username.trim() || !password || (credentialMode === 'pin' && password.length !== 4)}>{busy ? 'Logging in' : 'Log in'}</button>
         </form>
       </section>
     </div>

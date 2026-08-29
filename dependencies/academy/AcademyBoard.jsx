@@ -119,6 +119,7 @@ function AcademyBoard({ navigate, authSession, userCount = 0, onLogin, onOpenAdm
     && visibleCharacterCount <= MAX_VISIBLE_CHARACTERS
     && !linkInspection.hasTooMany
     && !linkInspection.hasOversizedLink
+    && !linkInspection.hasUnsafeLink
     && supabase
     && authSession
     && !posting
@@ -243,6 +244,10 @@ function AcademyBoard({ navigate, authSession, userCount = 0, onLogin, onOpenAdm
     }
     if (linkInspection.hasOversizedLink) {
       setNotice(`Each link is limited to ${MAX_POST_LINK_LENGTH} characters.`)
+      return
+    }
+    if (linkInspection.hasUnsafeLink) {
+      setNotice('Links must be valid HTTP or HTTPS addresses.')
       return
     }
     if (!authSession?.session_token) {
@@ -451,7 +456,8 @@ function AcademyBoard({ navigate, authSession, userCount = 0, onLogin, onOpenAdm
                   <li>Avoid using slurs, not because it's a "bad word" but because journalists will be crawling through here.</li>
                   <li>Keep content relevant and focused, you can post that garbage on your Facebook or Twitter, quality over quantity here.</li>
                   <li>Global posting is limited to one post per user every 24 hours. Deleting your latest post resets the timer and lets you post again. Administrators are exempt from this cooldown.</li>
-                  <li>Each Global post may contain at most three links, and each link is limited to 200 characters.</li>
+                  <li>Each Global post may contain at most three links, each link is limited to 200 characters, and only valid HTTP or HTTPS links become clickable.</li>
+                  <li>Password accounts receive five attempts and PIN accounts receive three. The first lockout lasts 24 hours, the next failed attempt after that causes a seven-day lockout, and another failed attempt permanently locks the account.</li>
                 </ol>
               ) : (
                 <ol className="academy-info-modal__list">

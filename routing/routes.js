@@ -1,5 +1,6 @@
 export const ROUTES = {
   home: '/',
+  newUserPreview: '/new',
   academy: '/agora',
   academyAdmin: '/agora/admin',
   agoraBusiness: '/academy/business',
@@ -71,6 +72,10 @@ export function matchRoute(pathname) {
 
   if (path === ROUTES.home) {
     return { page: 'home', path: ROUTES.home }
+  }
+
+  if (path === ROUTES.newUserPreview) {
+    return { page: 'new-user-preview', path: ROUTES.newUserPreview }
   }
 
   if (path === ROUTES.academy) {

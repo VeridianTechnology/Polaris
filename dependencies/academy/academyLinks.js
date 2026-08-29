@@ -1,16 +1,36 @@
+import { sanitizeUrl } from '@braintree/sanitize-url'
+
 const URL_PATTERN = /\b(?:https?:\/\/|www\.)[^\s<]+/gi
 const TRAILING_PUNCTUATION = /[),.!?;:'\"]+$/
 
 export const MAX_POST_LINKS = 3
 export const MAX_POST_LINK_LENGTH = 200
 
+export function normalizeSafeHttpUrl(value) {
+  const candidate = String(value || '').replace(TRAILING_PUNCTUATION, '')
+  const absoluteUrl = candidate.startsWith('www.') ? `https://${candidate}` : candidate
+  const sanitized = sanitizeUrl(absoluteUrl)
+
+  if (!sanitized || sanitized === 'about:blank') return null
+
+  try {
+    const parsed = new URL(sanitized)
+    if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname) return null
+    return parsed.toString()
+  } catch {
+    return null
+  }
+}
+
 export function inspectPostLinks(value) {
-  const links = (value.match(URL_PATTERN) || []).map((match) => match.replace(TRAILING_PUNCTUATION, ''))
+  const rawLinks = (value.match(URL_PATTERN) || []).map((match) => match.replace(TRAILING_PUNCTUATION, ''))
+  const links = rawLinks.map(normalizeSafeHttpUrl).filter(Boolean)
   return {
-    count: links.length,
-    longestLength: links.reduce((longest, link) => Math.max(longest, link.length), 0),
-    hasTooMany: links.length > MAX_POST_LINKS,
-    hasOversizedLink: links.some((link) => link.length > MAX_POST_LINK_LENGTH),
+    count: rawLinks.length,
+    longestLength: rawLinks.reduce((longest, link) => Math.max(longest, link.length), 0),
+    hasTooMany: rawLinks.length > MAX_POST_LINKS,
+    hasOversizedLink: rawLinks.some((link) => link.length > MAX_POST_LINK_LENGTH),
+    hasUnsafeLink: links.length !== rawLinks.length,
   }
 }
 
@@ -29,10 +49,7 @@ export function textWithoutLinks(value) {
 
 export function extractLinks(value) {
   const matches = value.match(URL_PATTERN) || []
-  const normalized = matches.map((match) => {
-    const cleanUrl = match.replace(TRAILING_PUNCTUATION, '')
-    return cleanUrl.startsWith('www.') ? `https://${cleanUrl}` : cleanUrl
-  })
+  const normalized = matches.map(normalizeSafeHttpUrl).filter(Boolean)
 
   return [...new Set(normalized)]
 }

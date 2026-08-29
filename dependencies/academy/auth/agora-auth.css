@@ -96,6 +96,48 @@
   text-transform: uppercase;
 }
 
+.agora-login-dialog__credential-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.agora-login-dialog__pin-toggle {
+  appearance: none;
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  padding: .45rem;
+  border: 1px solid rgba(92, 104, 112, .34);
+  border-radius: 50%;
+  color: #707579;
+  background: rgba(255, 255, 255, .48);
+  cursor: pointer;
+  place-items: center;
+  transition: border-color .2s ease, box-shadow .2s ease, color .2s ease, background .2s ease;
+}
+
+.agora-login-dialog__pin-toggle:hover,
+.agora-login-dialog__pin-toggle:focus-visible,
+.agora-login-dialog__pin-toggle.is-selected {
+  border-color: #78abd2;
+  color: #3f759f;
+  background: rgba(126, 181, 223, .16);
+  box-shadow: 0 0 0 3px rgba(102, 153, 190, .14), 0 .45rem 1rem rgba(58, 92, 117, .13);
+}
+
+.agora-login-dialog__pin-toggle:focus-visible {
+  outline: 2px solid #7eb5df;
+  outline-offset: .18rem;
+}
+
+.agora-login-dialog__pin-toggle svg {
+  width: 100%;
+  stroke: currentColor;
+  stroke-width: 1.65;
+}
+
 .agora-login-dialog input {
   width: 100%;
   min-height: 3.55rem;
@@ -211,20 +253,6 @@
 .agora-login-dialog__submit:disabled {
   cursor: wait;
   opacity: .55;
-}
-
-.agora-login-dialog__recovery {
-  appearance: none;
-  justify-self: center;
-  padding: 0 0 .15rem;
-  border: 0;
-  border-bottom: 1px solid currentColor;
-  color: #414347;
-  background: transparent;
-  font: 400 .82rem/1.1 "Helvetica Neue", Helvetica, Arial, sans-serif;
-  letter-spacing: .015em;
-  text-transform: uppercase;
-  cursor: pointer;
 }
 
 .agora-admin-badge {

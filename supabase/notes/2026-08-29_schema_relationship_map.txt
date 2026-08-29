@@ -29,6 +29,9 @@ AGORA: CANONICAL MEMBER IDENTITY
   public.agora_user_credentials.profile_number
     Holds login_username, bcrypt password_hash, and credential_kind.
     credential_kind is password or pin. No plaintext secret is retained.
+    Passwords require 8-128 characters plus a symbol; PINs contain four digits.
+    failed_attempts, lockout_level, locked_until, and permanently_locked enforce
+    credential-aware 24-hour, seven-day, and permanent login lockouts.
 
   public.agora_user_invites.profile_number
     Holds only a SHA-256 invitation token digest.
@@ -42,6 +45,7 @@ AGORA: CANONICAL MEMBER IDENTITY
 
   public.agora_managed_users.profile_number
     Admin dashboard record: Twitter handle/URL and active/inactive status.
+    has_logged_in is a durable first-login marker for future 30-day cleanup.
     auth_user_id remains nullable only to preserve older managed users.
 
 
@@ -91,7 +95,13 @@ AGORA: ADMINISTRATION
 
   public.claim_agora_invite(username, token, kind, secret)
     EXECUTE: anon/authenticated. Locks and consumes one valid invite, bcrypt-hashes
-    the selected password/PIN, and creates the first Agora session atomically.
+    the selected password/PIN, marks has_logged_in, and creates the first Agora
+    session atomically.
+
+  public.login_agora_user(username, secret)
+    EXECUTE: anon/authenticated. Password accounts receive five initial attempts and
+    PIN accounts receive three. The lockout ladder is 24 hours, seven days, then
+    permanent; a successful login before permanent lock resets the ladder.
 
   public.get_agora_user_count()
     EXECUTE: anon/authenticated. Returns only COUNT(agora_public_profiles), no rows.

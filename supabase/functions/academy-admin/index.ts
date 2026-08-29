@@ -60,7 +60,7 @@ async function dashboard(admin: AdminClient) {
   const [usersResult, invitesResult, lockoutsResult, profileCountResult] = await Promise.all([
     admin
       .from('agora_managed_users')
-      .select('id, auth_user_id, profile_number, twitter_handle, twitter_url, status, created_at')
+      .select('id, auth_user_id, profile_number, twitter_handle, twitter_url, status, has_logged_in, created_at')
       .order('created_at', { ascending: false }),
     admin
       .from('agora_user_invites')

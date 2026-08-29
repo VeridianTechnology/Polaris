@@ -6,10 +6,10 @@ function normalizedHandle(value) {
   return String(value || '').trim().replace(/^@+/, '')
 }
 
-function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
+function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora, preview = false }) {
   const handle = normalizedHandle(username)
-  const [invite, setInvite] = useState(null)
-  const [status, setStatus] = useState(handle && inviteToken ? 'checking' : 'missing')
+  const [invite, setInvite] = useState(preview ? { display_name: `@${handle || 'New'}` } : null)
+  const [status, setStatus] = useState(preview ? 'ready' : (handle && inviteToken ? 'checking' : 'missing'))
   const [credentialKind, setCredentialKind] = useState('')
   const [password, setPassword] = useState('')
   const [pin, setPin] = useState('')
@@ -18,6 +18,13 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
+    if (preview) {
+      setInvite({ display_name: `@${handle || 'New'}` })
+      setStatus('ready')
+      setNotice('')
+      return undefined
+    }
+
     if (!handle || !inviteToken || !supabase) {
       setStatus(handle && inviteToken ? 'error' : 'missing')
       if (handle && inviteToken && !supabase) setNotice('The invitation service is not configured.')
@@ -49,7 +56,7 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
     })
 
     return () => { cancelled = true }
-  }, [handle, inviteToken])
+  }, [handle, inviteToken, preview])
 
   const choosePassword = (value) => {
     setCredentialKind(value ? 'password' : '')
@@ -58,7 +65,7 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
   }
 
   const choosePin = (value) => {
-    const nextPin = value.replace(/\D/g, '').slice(0, 6)
+    const nextPin = value.replace(/\D/g, '').slice(0, 4)
     setCredentialKind(nextPin ? 'pin' : '')
     setPin(nextPin)
     if (nextPin) setPassword('')
@@ -69,16 +76,21 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
     if (status !== 'ready' || busy) return
 
     const secret = credentialKind === 'password' ? password : pin
-    if (credentialKind === 'password' && (password.length < 12 || password.length > 128)) {
-      setNotice('Choose a password containing 12-128 characters.')
+    if (credentialKind === 'password' && (password.length < 8 || password.length > 128 || !/[^A-Za-z0-9\s]/.test(password))) {
+      setNotice('Choose an 8-128 character password containing at least one symbol.')
       return
     }
-    if (credentialKind === 'pin' && !/^\d{6}$/.test(pin)) {
-      setNotice('Choose a PIN containing exactly 6 digits.')
+    if (credentialKind === 'pin' && !/^\d{4}$/.test(pin)) {
+      setNotice('Choose a PIN containing exactly 4 digits.')
       return
     }
     if (!credentialKind || !secret) {
       setNotice('Select either a password or PIN.')
+      return
+    }
+
+    if (preview) {
+      setNotice('Preview only. A real personalized invitation link will create the account here.')
       return
     }
 
@@ -102,7 +114,7 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
   const displayHandle = invite?.display_name || (handle ? `@${handle}` : '')
   const canSubmit = status === 'ready'
     && !busy
-    && ((credentialKind === 'password' && password.length >= 12) || (credentialKind === 'pin' && pin.length === 6))
+    && ((credentialKind === 'password' && password.length >= 8 && /[^A-Za-z0-9\s]/.test(password)) || (credentialKind === 'pin' && pin.length === 4))
 
   return (
     <section className="invite-welcome" aria-labelledby="invite-welcome-title">
@@ -122,9 +134,9 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
                   value={password}
                   onChange={(event) => choosePassword(event.target.value)}
                   autoComplete="new-password"
-                  minLength="12"
+                  minLength="8"
                   maxLength="128"
-                  placeholder="12 characters minimum"
+                  placeholder="8+ characters · 1 symbol"
                 />
                 <button type="button" onClick={() => setShowPassword((current) => !current)}>{showPassword ? 'Hide' : 'Show'}</button>
               </span>
@@ -140,8 +152,8 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
                 value={pin}
                 onChange={(event) => choosePin(event.target.value)}
                 autoComplete="new-password"
-                maxLength="6"
-                placeholder="6 digits"
+                maxLength="4"
+                placeholder="4 digits"
               />
             </label>
 
@@ -149,7 +161,7 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora }) {
             <button className="invite-welcome__submit" type="submit" disabled={!canSubmit}>
               {busy ? 'Creating your account…' : 'Enter Polaris'}
             </button>
-            <p className="invite-welcome__privacy">Your selection is encrypted before it is stored. This one-time link cannot be used again after setup.</p>
+            <p className="invite-welcome__privacy">Polaris is an invite-only, based boys club. We're here to get rich, interact with each other, educate each other and elevate each other. Your account and privacy is always yours, we're anonymous first, built around privacy and identity. If you want to sell the account—you can. If you don't log in within 30 days of receiving an invite, your code will expire and be deleted; merely do not interact if you do not want to register.</p>
           </form>
         )}
 
