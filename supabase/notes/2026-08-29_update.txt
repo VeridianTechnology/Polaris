@@ -1,0 +1,99 @@
+POLARIS DEVELOPMENT NOTES
+Updated: August 29, 2026
+
+HOME
+- Rebranded the landing page from Agora to Polaris.
+- Added the Polaris logo and route-specific favicons.
+- Added the launch timer and improved location-permission retry behavior.
+- Changed the landing-page typography to a softer off-white treatment.
+
+NAVIGATION
+- Added the fixed Home / Academy / Agora header outside the homepage.
+- Added Business, Finance, Map, Crime, and Freedom sections under Academy.
+- Added route handling for all primary sections and Map detail views.
+- Swapped the product titles: Agora now owns Global, profiles, and administration;
+  Academy now owns Business, Finance, Politics, Crime, and Freedom. Agora uses
+  /agora routes, while the Academy library uses /academy routes.
+
+ACADEMY
+- Replaced the earlier Academy presentation with the message board.
+- Added Supabase comments, guest identity NYX, likes, and dislikes.
+- Added the Global / What Is This? / Rules artwork rail beside the board. The two
+  information controls open keyboard-accessible, dimmed-background paper modals.
+- Added the hidden Academy Admin entry point and protected administration route.
+- Added IP-based five-attempt lockouts, 30-minute sessions, and managed-user creation.
+- Added public profile and post numbers. NYX is profile 0001 and the existing first
+  Global post is retroactively post 0001.
+- Added an editable Academy profile route with an eight-icon picker, 400-character
+  bio, anonymous-posting mode, Twitter/X, Instagram, Facebook, and Snapchat links,
+  editable email, and optional public email visibility.
+- Limited Global written text to 500 characters while excluding URLs from that
+  count. YouTube and ordinary URLs now render as clickable previews under posts.
+- Limited each profile to one Global post every 24 hours. The live composer shows
+  the remaining time, and soft-deleting the latest post immediately restores the
+  posting opportunity.
+- Added the 24-hour Global posting rule to the Rules modal.
+- Added username/password login, revocable 30-day Agora sessions, login/logout
+  artwork controls, and a bottom-left logout control on Global.
+- Marked NYX/profile 0001 as an administrator and added the supplied key badge to
+  NYX posts and the profile. Administrators bypass the 24-hour Global cooldown.
+- Limited every Global post to three links, with a 200-character maximum for each
+  link, in both the browser and PostgreSQL.
+
+AGORA
+- Business includes the venture-capital directory.
+- Finance includes the pyramid research library and sentiment meters.
+- Finance report 01 now owns two nested follow-up videos instead of showing a
+  separate item 02 in the main index. Each follow-up has an embedded-video route,
+  a back link to report 01, and an independent 15-comment discussion.
+- Map includes Flash Points, Finance, and Political Parties modes, plus the Japan
+  finance detail and Australia/Libertarian Group of Australia detail.
+- Repaired all map detail routes after the title swap; the canonical route is now
+  /academy/map, with the former /academy/politics paths retained as redirects.
+- Crime includes the investigation library and ACTIVE labels.
+- Added Crime case 02, Lindsay Clancy, with its own route, linked primary post,
+  two expandable evidence images, and a comment section.
+- Freedom includes the Flock camera feature and Freedom Threat meter.
+
+DATABASE NOTES
+- The two prior incremental Academy SQL migrations are archived in this folder.
+- 2026-08-29_agora_content_schema.sql creates the September 2026 issue key,
+  separate Business / Finance / Crime entry tables, ACTIVE-or-NULL status fields,
+  ordering numbers, subtitles, and the Crime comments table.
+- 2026-08-29_crime_comment_limit.sql adds a stored comment counter and enforces
+  a maximum of 15 comments per Crime entry, including concurrent submissions.
+- 2026-08-29_media_detail_comments.sql adds Finance and Freedom entries/comments,
+  seeds the new video records, and applies the same 15-comment transaction-safe
+  counter to Crime, Finance, and Freedom. It supersedes the prior limit migration.
+- 2026-08-29_finance_follow_up_videos.sql seeds Finance report 01 follow-ups 01 and
+  02, including the tidal-power video. Run it after the media-detail migration.
+- 2026-08-29_academy_numbered_profiles.sql adds numbered Academy public profiles,
+  numbered Global posts, the 500-character URL-aware limit, the 24-hour posting
+  restriction, anonymous post snapshots, private browser ownership, public-safe
+  feed/profile views, and the NYX profile-update/post/delete database functions.
+  Run it after academy_schema.sql and academy_guest_reactions_migration.sql.
+- 2026-08-29_agora_academy_title_swap.sql preserves all existing records while
+  renaming the social-board and administration tables/views/RPCs from Academy to
+  Agora and the issue, research-entry, and media-comment tables/functions from
+  Agora to Academy. Temporary Academy admin compatibility views keep the currently
+  deployed Edge Function working until its updated source is redeployed. Run it once
+  after 2026-08-29_academy_numbered_profiles.sql.
+- 2026-08-29_agora_user_auth_admin.sql adds hashed Agora login credentials,
+  revocable member sessions, the NYX admin flag/badge data, session-authorized
+  posting/profile RPCs, the admin cooldown exemption, and server-side link limits.
+  Run it after the title-swap migration.
+- 2026-08-29_agora_private_read_security.sql changes the Global feed and profile
+  directory views to SECURITY INVOKER and removes direct anon/authenticated access
+  to those views and their source tables. Public feed reads remain available only
+  through an RPC that strips all author/profile metadata; logged-in readers receive
+  normal attribution, while profile pages always require a valid Agora session.
+  Run it after the Agora user-auth migration and deploy the matching frontend in
+  the same release.
+- 2026-08-29_academy_map_repair_and_parties.sql creates the canonical Academy Map
+  entry table, restores September 2026 hotspot data, and seeds Australia under the
+  Political Parties layer. Run it separately after the title-swap migration.
+- 2026-08-29_academy_map_united_states_finance.sql adds title/score-display fields
+  to Map entries and seeds the United States housing report under Finance with its
+  `20+` stability display. Run it after the Map repair/parties migration.
+- Images remain local static assets for now and are intentionally not part of the schema.
+- Never place Supabase secret/service-role keys in the browser bundle.

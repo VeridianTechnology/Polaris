@@ -1,0 +1,467 @@
+.academy-profile-page {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: clamp(12rem, 18vw, 17rem) minmax(0, 1fr);
+  min-height: 100svh;
+  padding-top: var(--app-header-height);
+  color: #202220;
+  background:
+    radial-gradient(circle at 54% 30%, rgba(255, 255, 255, .98), rgba(248, 246, 239, .94) 60%, rgba(236, 232, 222, .96)),
+    #f4f1e9;
+}
+
+.academy-profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--app-header-height));
+  padding: clamp(2.4rem, 5vh, 4rem) 1.4rem 3rem;
+  border-right: 1px solid rgba(78, 85, 85, .16);
+  background: rgba(255, 255, 255, .22);
+  font: 500 .7rem/1.2 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.academy-profile-sidebar p,
+.academy-profile-sidebar span,
+.academy-profile-sidebar button {
+  margin: 0;
+}
+
+.academy-profile-sidebar__section {
+  margin-bottom: 4.4rem !important;
+  font-size: .76rem;
+  letter-spacing: .12em;
+}
+
+.academy-profile-sidebar__label {
+  margin: 0 1rem 1.2rem !important;
+  color: rgba(33, 36, 35, .62);
+}
+
+.academy-profile-sidebar button,
+.academy-profile-sidebar > span {
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  border: 0;
+  color: #262927;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  text-transform: uppercase;
+}
+
+.academy-profile-sidebar button {
+  cursor: pointer;
+}
+
+.academy-profile-sidebar .is-active {
+  border-left: .26rem solid #62a7d6;
+  color: #2c759f;
+  background: rgba(112, 178, 218, .13);
+}
+
+.academy-profile-sidebar__label:last-of-type {
+  margin-top: auto !important;
+}
+
+.academy-profile-shell {
+  width: min(100%, 78rem);
+  padding: clamp(2rem, 4vw, 4rem) clamp(1.5rem, 5vw, 5rem) 5rem;
+}
+
+.academy-profile-return {
+  appearance: none;
+  margin-bottom: 2.2rem;
+  padding: .5rem 0;
+  border: 0;
+  border-bottom: 1px solid rgba(54, 60, 60, .35);
+  color: #303534;
+  background: transparent;
+  font: 600 .65rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.academy-profile-form {
+  display: grid;
+}
+
+.academy-profile-identity {
+  display: grid;
+  grid-template-columns: clamp(8rem, 14vw, 12rem) minmax(0, 1fr) clamp(5.5rem, 9vw, 8rem);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(63, 67, 64, .16);
+}
+
+.academy-profile-portrait {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.academy-profile-portrait .academy-avatar {
+  width: 100%;
+  border: .65rem solid rgba(239, 235, 225, .9);
+  box-shadow: 0 .8rem 2rem rgba(46, 47, 43, .18);
+}
+
+.academy-profile-portrait > span {
+  padding-bottom: .45rem;
+  border-bottom: 1px solid rgba(52, 56, 54, .24);
+  font: 500 .62rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.academy-profile-heading {
+  min-width: 0;
+  padding-left: clamp(1rem, 2.5vw, 2.2rem);
+  border-left: 2px solid #6bb6e4;
+}
+
+.academy-profile-heading input {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: #191b1a;
+  background: transparent;
+  font: 500 clamp(2.6rem, 5vw, 5.2rem)/1 Didot, "Bodoni 72", "Times New Roman", serif;
+  text-transform: uppercase;
+}
+
+.academy-profile-heading p {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: .8rem 0 2.2rem;
+  color: rgba(34, 36, 34, .5);
+  font: 500 .7rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .12em;
+}
+
+.academy-profile-heading div {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: rgba(34, 36, 34, .68);
+  font: 400 clamp(.72rem, 1.2vw, 1rem)/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .5em;
+  text-transform: uppercase;
+}
+
+.academy-profile-heading div span {
+  width: 1px;
+  height: 3.5rem;
+  background: #65b8e7;
+}
+
+.academy-profile-identity__seal {
+  width: 100%;
+  border: .8rem solid rgba(232, 228, 218, .75);
+  opacity: .72;
+}
+
+.academy-profile-icons {
+  margin: 2rem 0 0 clamp(8rem, 14vw, 12rem);
+  padding: 0 0 0 clamp(1.5rem, 4vw, 3.5rem);
+  border: 0;
+}
+
+.academy-profile-icons legend {
+  margin-bottom: .75rem;
+  color: rgba(35, 38, 36, .64);
+  font: 650 .62rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.academy-profile-icons > div {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(2.8rem, 4rem));
+  gap: .45rem;
+}
+
+.academy-profile-icons button {
+  appearance: none;
+  padding: .2rem;
+  border: 1px solid transparent;
+  border-radius: .3rem;
+  background: rgba(224, 220, 210, .65);
+  cursor: pointer;
+}
+
+.academy-profile-icons button.is-selected {
+  border-color: #67b4e2;
+  background: rgba(116, 186, 225, .16);
+}
+
+.academy-profile-icons img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: .2rem;
+  object-fit: cover;
+}
+
+.academy-profile-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, .75fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  margin-top: 3rem;
+}
+
+.academy-profile-panel {
+  min-width: 0;
+}
+
+.academy-profile-panel__title,
+.academy-profile-connections h2,
+.academy-profile-email > label > span {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 1rem;
+  color: rgba(31, 34, 32, .7);
+  font: 600 .65rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.academy-profile-panel textarea {
+  width: 100%;
+  min-height: 11rem;
+  padding: 1rem 0;
+  resize: vertical;
+  border: 0;
+  border-top: 1px solid rgba(55, 59, 57, .2);
+  border-bottom: 1px solid rgba(55, 59, 57, .2);
+  outline: 0;
+  color: #292c2a;
+  background: transparent;
+  font: 400 1rem/1.65 Didot, "Bodoni 72", "Times New Roman", serif;
+}
+
+.academy-profile-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.2rem;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(55, 59, 57, .2);
+}
+
+.academy-profile-toggle > span:first-child {
+  display: grid;
+  gap: .35rem;
+}
+
+.academy-profile-toggle strong,
+.academy-profile-toggle small {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.academy-profile-toggle strong {
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.academy-profile-toggle small {
+  color: rgba(31, 34, 32, .55);
+  font-size: .65rem;
+  line-height: 1.4;
+}
+
+.academy-profile-toggle input {
+  position: absolute;
+  opacity: 0;
+}
+
+.academy-profile-toggle__track {
+  position: relative;
+  display: block;
+  width: 3rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: #d1cec5;
+  cursor: pointer;
+}
+
+.academy-profile-toggle__track::after {
+  position: absolute;
+  top: .17rem;
+  left: .2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 .15rem .4rem rgba(0, 0, 0, .18);
+  content: '';
+  transition: transform .2s ease, background .2s ease;
+}
+
+.academy-profile-toggle input:checked + .academy-profile-toggle__track {
+  background: #7eb8d4;
+}
+
+.academy-profile-toggle input:checked + .academy-profile-toggle__track::after {
+  background: #3281a6;
+  transform: translateX(1.48rem);
+}
+
+.academy-profile-connections {
+  margin-top: 2rem;
+}
+
+.academy-profile-connections label {
+  display: grid;
+  grid-template-columns: 1.5rem 5.6rem minmax(0, 1fr);
+  align-items: center;
+  gap: .6rem;
+  min-height: 2.9rem;
+  border-bottom: 1px solid rgba(55, 59, 57, .16);
+  font: 500 .64rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.academy-profile-social-mark {
+  font-size: .95rem;
+  font-weight: 650;
+  text-align: center;
+}
+
+.academy-profile-connections input,
+.academy-profile-email input[type='email'] {
+  min-width: 0;
+  padding: .55rem 0;
+  border: 0;
+  outline: 0;
+  color: #313634;
+  background: transparent;
+  font: 400 .63rem/1.2 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.academy-profile-email {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.academy-profile-email > label:first-child {
+  display: grid;
+}
+
+.academy-profile-email__public {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  padding-bottom: .55rem;
+  font: 600 .6rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.academy-profile-message {
+  margin: 1.5rem 0 0;
+  color: #3b7357;
+  font: 600 .68rem/1.45 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .06em;
+}
+
+.academy-profile-message.is-error {
+  color: #923c43;
+}
+
+.academy-profile-message button {
+  appearance: none;
+  padding: 0 0 .18rem;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: #2c759f;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.academy-profile-save {
+  justify-self: end;
+  width: min(100%, 19rem);
+  margin-top: 2rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(83, 111, 126, .22);
+  color: #2c3335;
+  background: linear-gradient(100deg, #dad7ce, #9eb7c1);
+  font: 600 .67rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.academy-profile-save:disabled {
+  cursor: default;
+  opacity: .58;
+}
+
+.academy-profile-readonly {
+  justify-self: end;
+  color: rgba(40, 43, 41, .52);
+  font: 600 .62rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .academy-profile-page {
+    grid-template-columns: 1fr;
+  }
+
+  .academy-profile-sidebar {
+    display: none;
+  }
+
+  .academy-profile-shell {
+    margin: 0 auto;
+  }
+
+  .academy-profile-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .academy-profile-identity {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 1.2rem;
+  }
+
+  .academy-profile-identity__seal {
+    display: none;
+  }
+
+  .academy-profile-heading {
+    padding-left: 1rem;
+  }
+
+  .academy-profile-heading div {
+    gap: .7rem;
+    letter-spacing: .22em;
+  }
+
+  .academy-profile-icons {
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .academy-profile-icons > div {
+    grid-template-columns: repeat(4, minmax(2.8rem, 1fr));
+  }
+}

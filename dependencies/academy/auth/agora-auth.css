@@ -1,0 +1,248 @@
+.agora-auth-artwork-button {
+  appearance: none;
+  display: block;
+  width: 8.8rem;
+  height: 3.15rem;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  filter: drop-shadow(0 .55rem 1rem rgba(35, 40, 44, .14));
+  transition: filter .2s ease, opacity .2s ease, transform .2s ease;
+}
+
+.agora-auth-artwork-button--login {
+  background-image: url('/agora-login.png');
+  background-size: 137% auto;
+  background-position: center;
+}
+
+.agora-auth-artwork-button--logout {
+  background-image: url('/agora-logout.png');
+  background-size: 126.3% auto;
+  background-position: center center;
+}
+
+.agora-auth-artwork-button:hover:not(:disabled),
+.agora-auth-artwork-button:focus-visible {
+  filter: drop-shadow(0 .7rem 1.2rem rgba(35, 40, 44, .22)) brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.agora-auth-artwork-button:focus-visible {
+  outline: 2px solid #78a9ce;
+  outline-offset: .25rem;
+}
+
+.agora-auth-artwork-button:disabled {
+  cursor: wait;
+  opacity: .52;
+}
+
+.agora-login-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(18, 28, 35, .68);
+  backdrop-filter: blur(14px) saturate(.7);
+}
+
+.agora-login-dialog {
+  position: relative;
+  width: min(92vw, 31rem);
+  max-height: calc(100svh - 2rem);
+  overflow-y: auto;
+  padding: clamp(3rem, 7vw, 4.6rem) clamp(2rem, 6vw, 3.45rem) clamp(2.5rem, 6vw, 3.8rem);
+  border: 1px solid rgba(105, 111, 116, .38);
+  border-left: .38rem solid #84bce4;
+  color: #35373a;
+  background:
+    linear-gradient(118deg, transparent 11%, rgba(177, 167, 153, .12) 11.4%, transparent 12.2%, transparent 54%, rgba(174, 164, 151, .1) 54.4%, transparent 55.4%),
+    linear-gradient(42deg, transparent 26%, rgba(193, 184, 171, .11) 26.5%, transparent 27.4%, transparent 72%, rgba(191, 181, 168, .1) 72.5%, transparent 73.4%),
+    linear-gradient(145deg, rgba(255, 253, 249, .99), rgba(244, 240, 234, .99));
+  box-shadow: 0 2rem 7rem rgba(7, 13, 18, .38);
+}
+
+.agora-login-dialog h2 {
+  margin: 0 0 clamp(2rem, 5vh, 3.3rem);
+  font: 700 clamp(1.7rem, 4vw, 2.2rem)/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.agora-login-dialog form,
+.agora-login-dialog__field {
+  display: grid;
+}
+
+.agora-login-dialog form {
+  gap: clamp(1.45rem, 3.5vh, 2.1rem);
+}
+
+.agora-login-dialog__field {
+  gap: .72rem;
+}
+
+.agora-login-dialog label {
+  color: #3c3e42;
+  font: 700 clamp(.82rem, 1.8vw, 1rem)/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.agora-login-dialog input {
+  width: 100%;
+  min-height: 3.55rem;
+  padding: .82rem 1rem;
+  border: 2px solid #b6d1e8;
+  border-radius: .38rem;
+  outline: 0;
+  color: #202424;
+  background: rgba(255, 255, 255, .83);
+  font: 400 clamp(1rem, 2.5vw, 1.25rem)/1.2 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-transform: none;
+}
+
+.agora-login-dialog input::placeholder {
+  color: rgba(48, 50, 53, .58);
+}
+
+.agora-login-dialog input:focus {
+  border-color: #7eb5df;
+  box-shadow: 0 0 0 3px rgba(102, 153, 190, .14);
+}
+
+.agora-login-dialog__password-field {
+  position: relative;
+}
+
+.agora-login-dialog__password-field input {
+  padding-right: 3.6rem;
+}
+
+.agora-login-dialog__password-field button {
+  appearance: none;
+  position: absolute;
+  top: 50%;
+  right: .85rem;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: .35rem;
+  border: 0;
+  border-radius: 50%;
+  color: #7a7c7e;
+  background: transparent;
+  cursor: pointer;
+  place-items: center;
+  transform: translateY(-50%);
+}
+
+.agora-login-dialog__password-field button:hover,
+.agora-login-dialog__password-field button:focus-visible {
+  color: #4f7898;
+  background: rgba(126, 181, 223, .12);
+}
+
+.agora-login-dialog__password-field button:focus-visible {
+  outline: 2px solid #7eb5df;
+}
+
+.agora-login-dialog__password-field svg {
+  width: 100%;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.agora-login-dialog__close {
+  position: absolute;
+  top: 1.15rem;
+  right: 1.15rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  color: #303638;
+  background: transparent;
+  font-size: 1.55rem;
+  cursor: pointer;
+}
+
+.agora-login-dialog__notice {
+  margin: -.5rem 0;
+  color: #8c343c;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+.agora-login-dialog__submit {
+  appearance: none;
+  width: 100%;
+  min-height: 4.1rem;
+  padding: 1rem;
+  border: 0;
+  border-radius: .28rem;
+  color: #efe2ca;
+  background: linear-gradient(135deg, #393a3f, #292a2f);
+  box-shadow: 0 .7rem 1.5rem rgba(38, 39, 43, .17);
+  font: 700 .88rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter .2s ease, transform .2s ease;
+}
+
+.agora-login-dialog__submit:hover:not(:disabled),
+.agora-login-dialog__submit:focus-visible {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.agora-login-dialog__submit:focus-visible {
+  outline: 2px solid #7eb5df;
+  outline-offset: .25rem;
+}
+
+.agora-login-dialog__submit:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.agora-login-dialog__recovery {
+  appearance: none;
+  justify-self: center;
+  padding: 0 0 .15rem;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: #414347;
+  background: transparent;
+  font: 400 .82rem/1.1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .015em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.agora-admin-badge {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 4rem;
+  height: 1.1rem;
+  background-image: url('/agora-admin-key.png');
+  background-position: -.55rem -2rem;
+  background-repeat: no-repeat;
+  background-size: 5.08rem 5.08rem;
+  filter: drop-shadow(0 .15rem .28rem rgba(33, 46, 55, .2));
+  vertical-align: middle;
+}
+
+.agora-admin-badge--large {
+  width: 6rem;
+  height: 1.65rem;
+  background-position: -.82rem -3rem;
+  background-size: 7.62rem 7.62rem;
+}

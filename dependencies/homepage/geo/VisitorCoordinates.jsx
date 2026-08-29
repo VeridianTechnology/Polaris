@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useGeolocated } from 'react-geolocated'
+import { useEffect, useState } from 'react'
 
 const formatCoordinate = (value, positiveDirection, negativeDirection) => {
   const direction = value >= 0 ? positiveDirection : negativeDirection
@@ -7,26 +6,49 @@ const formatCoordinate = (value, positiveDirection, negativeDirection) => {
 }
 
 function VisitorCoordinates() {
-  const [hasRequested, setHasRequested] = useState(false)
-  const [isLocating, setIsLocating] = useState(false)
-  const {
-    coords,
-    isGeolocationAvailable,
-    isGeolocationEnabled,
-    positionError,
-    getPosition,
-  } = useGeolocated({
-    positionOptions: {
-      enableHighAccuracy: false,
-      maximumAge: 300_000,
-      timeout: 10_000,
-    },
-    userDecisionTimeout: 12_000,
-    suppressLocationOnMount: true,
-    watchLocationPermissionChange: true,
-    onSuccess: () => setIsLocating(false),
-    onError: () => setIsLocating(false),
-  })
+  const [coords, setCoords] = useState(null)
+  const [status, setStatus] = useState('idle')
+
+  useEffect(() => {
+    if (!navigator.permissions?.query) return undefined
+
+    let permissionStatus
+    const handlePermissionChange = () => {
+      if (permissionStatus.state === 'granted') setStatus('idle')
+      if (permissionStatus.state === 'denied') setStatus('blocked')
+    }
+
+    navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+      permissionStatus = result
+      handlePermissionChange()
+      result.addEventListener('change', handlePermissionChange)
+    }).catch(() => {})
+
+    return () => permissionStatus?.removeEventListener('change', handlePermissionChange)
+  }, [])
+
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      setStatus('unavailable')
+      return
+    }
+
+    setStatus('locating')
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords(position.coords)
+        setStatus('ready')
+      },
+      (error) => {
+        setStatus(error.code === error.PERMISSION_DENIED ? 'blocked' : 'error')
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 0,
+        timeout: 10_000,
+      },
+    )
+  }
 
   if (coords) {
     const latitude = formatCoordinate(coords.latitude, 'N', 'S')
@@ -39,27 +61,24 @@ function VisitorCoordinates() {
     )
   }
 
-  const requestLocation = () => {
-    setHasRequested(true)
-    setIsLocating(true)
-    getPosition()
+  const labels = {
+    idle: 'Share location',
+    locating: 'Locating…',
+    blocked: 'Enable location in browser',
+    error: 'Request location',
+    unavailable: 'Location unavailable',
   }
-
-  let label = 'Share location'
-
-  if (!isGeolocationAvailable) label = 'Location unavailable'
-  else if (isLocating) label = 'Locating…'
-  else if (hasRequested && (!isGeolocationEnabled || positionError)) label = 'Request location'
 
   return (
     <button
       className="coordinates coordinates--button"
       type="button"
       onClick={requestLocation}
-      disabled={!isGeolocationAvailable || isLocating}
+      disabled={status === 'unavailable' || status === 'locating'}
       aria-live="polite"
+      title={status === 'blocked' ? 'Enable location permission for this site, then try again.' : undefined}
     >
-      {label}
+      {labels[status] || labels.idle}
     </button>
   )
 }

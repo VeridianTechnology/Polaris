@@ -1,0 +1,372 @@
+.video-detail {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 88rem);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: clamp(7rem, 13vh, 9rem) 0 6rem;
+  color: #eee8de;
+  animation: video-detail-in .75s ease-out both;
+}
+
+.video-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: .35rem;
+  border-bottom: 1px solid rgba(238, 232, 222, .42);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.video-detail__header {
+  align-self: start;
+  padding: clamp(1.2rem, 2.5vw, 2rem);
+  border: 1px solid rgba(238, 232, 222, .25);
+  background: rgba(17, 21, 21, .72);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .18);
+  backdrop-filter: blur(18px);
+}
+
+.video-detail__header > p:first-child {
+  margin: 0 0 1rem;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.video-detail__header h1 {
+  font-size: clamp(2.7rem, 4.4vw, 4.8rem);
+  line-height: .92;
+  overflow-wrap: break-word;
+  hyphens: manual;
+}
+
+.video-detail__title--hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.video-detail__active {
+  display: inline-flex;
+  align-items: center;
+  gap: .8rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1.05rem 1.4rem;
+  color: #fff7ef;
+  background: #852f2d;
+  font-size: .8rem;
+  font-weight: 750;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+}
+
+.video-detail__active span {
+  width: .75rem;
+  height: .75rem;
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 50%;
+  background: #ee8d78;
+  box-shadow: 0 0 1.2rem rgba(255, 128, 102, .9);
+}
+
+.video-detail__summary {
+  margin: 1.5rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(238, 232, 222, .2);
+}
+
+.video-detail__summary p {
+  margin: 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: clamp(.92rem, 1.2vw, 1.12rem);
+  line-height: 1.55;
+}
+
+.video-detail__follow-ups {
+  display: grid;
+  gap: .75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(238, 232, 222, .2);
+}
+
+.video-detail__follow-up {
+  display: grid;
+  gap: .55rem;
+  padding: 1rem;
+  border: 1px solid rgba(238, 232, 222, .2);
+  background: rgba(4, 7, 7, .34);
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.video-detail__follow-up > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: .25rem;
+  border: 1px solid rgba(238, 232, 222, .18);
+  background: #071323;
+  object-fit: cover;
+}
+
+.video-detail__follow-up:hover,
+.video-detail__follow-up:focus-visible {
+  border-color: rgba(238, 232, 222, .62);
+  background: rgba(4, 7, 7, .58);
+  transform: translateY(-2px);
+}
+
+.video-detail__follow-up:focus-visible {
+  outline: 1px solid #eee8de;
+  outline-offset: 3px;
+}
+
+.video-detail__follow-up > span,
+.video-detail__follow-up > small {
+  font-size: .48rem;
+  font-weight: 750;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+.video-detail__follow-up > strong {
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.video-detail__follow-up > p {
+  margin: 0;
+  color: rgba(238, 232, 222, .76);
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.video-detail__follow-up > small {
+  margin-top: .25rem;
+  color: rgba(238, 232, 222, .66);
+}
+
+.video-detail__layout {
+  display: grid;
+  grid-template-columns: minmax(15rem, .62fr) minmax(0, 1.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.video-detail__main {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.video-detail__media,
+.video-discussion {
+  border: 1px solid rgba(238, 232, 222, .25);
+  background: rgba(17, 21, 21, .78);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .22);
+  backdrop-filter: blur(18px);
+}
+
+.video-detail__media {
+  margin: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.video-detail__media > p,
+.video-discussion header p {
+  margin: 0 0 1rem;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.video-detail__frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #050606;
+}
+
+.video-detail__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-detail__media > a {
+  display: block;
+  width: max-content;
+  margin: 1rem 0 0 auto;
+  padding-bottom: .25rem;
+  border-bottom: 1px solid currentColor;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.video-discussion {
+  padding: clamp(1.3rem, 3vw, 2.5rem);
+}
+
+.video-discussion > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.video-discussion header p {
+  margin-bottom: .35rem;
+}
+
+.video-discussion h2 {
+  margin: 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+  font-weight: 400;
+}
+
+.video-discussion > header > strong {
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.video-discussion form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .7rem 1rem;
+}
+
+.video-discussion label {
+  grid-column: 1 / -1;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.video-discussion textarea {
+  width: 100%;
+  min-height: 5.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(238, 232, 222, .3);
+  border-radius: 0;
+  color: #f4efe5;
+  background: rgba(7, 9, 8, .48);
+  font: 1rem/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  resize: vertical;
+}
+
+.video-discussion textarea::placeholder {
+  color: rgba(238, 232, 222, .48);
+}
+
+.video-discussion textarea:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.video-discussion form button {
+  min-width: 9rem;
+  padding: 0 1.25rem;
+  border: 1px solid #f0eae0;
+  color: #27231f;
+  background: #f0eae0;
+  font-size: .54rem;
+  font-weight: 750;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.video-discussion form button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
+.video-discussion__notice,
+.video-discussion__empty {
+  margin: 1rem 0 0;
+  color: rgba(238, 232, 222, .64);
+  font-size: .7rem;
+}
+
+.video-discussion__feed {
+  display: grid;
+  margin-top: 1.5rem;
+}
+
+.video-discussion__feed article {
+  padding: 1.2rem 0;
+  border-top: 1px solid rgba(238, 232, 222, .18);
+}
+
+.video-discussion__feed article > div {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+}
+
+.video-discussion__feed article strong {
+  font-size: .68rem;
+  letter-spacing: .12em;
+}
+
+.video-discussion__feed time {
+  color: rgba(238, 232, 222, .48);
+  font-size: .55rem;
+}
+
+.video-discussion__feed article > p {
+  margin: .55rem 0 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+@keyframes video-detail-in {
+  from { opacity: 0; transform: translateY(1.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 620px) {
+  .video-detail {
+    width: calc(100% - 2rem);
+    padding-top: 7rem;
+  }
+
+  .video-detail__layout,
+  .video-discussion form {
+    grid-template-columns: 1fr;
+  }
+
+  .video-discussion label {
+    grid-column: auto;
+  }
+
+  .video-discussion form button {
+    min-height: 3.25rem;
+  }
+}

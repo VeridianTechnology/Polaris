@@ -1,0 +1,4 @@
+project_id = "polaris"
+
+[functions.academy-admin]
+verify_jwt = false

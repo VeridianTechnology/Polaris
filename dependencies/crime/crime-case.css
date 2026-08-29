@@ -1,0 +1,500 @@
+.crime-case {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 88rem);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: clamp(7rem, 13vh, 9rem) 0 6rem;
+  color: #ede8de;
+  animation: crime-library-in .75s ease-out both;
+}
+
+.crime-case__back {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: .35rem;
+  border-bottom: 1px solid rgba(237, 232, 222, .42);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.crime-case__header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: .8rem 2rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(237, 232, 222, .22);
+}
+
+.crime-case__header > p:first-child {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.crime-case__header h1 {
+  font-size: clamp(3.8rem, 8vw, 8rem);
+  line-height: .86;
+}
+
+.crime-case__active {
+  display: inline-flex;
+  align-items: center;
+  gap: .8rem;
+  min-width: 12rem;
+  padding: 1.05rem 1.4rem;
+  color: #fff7ef;
+  background: #852f2d;
+  font-size: .8rem;
+  font-weight: 750;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+}
+
+.crime-case__active span {
+  width: .75rem;
+  height: .75rem;
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 50%;
+  background: #ee8d78;
+  box-shadow: 0 0 1.2rem rgba(255, 128, 102, .9);
+}
+
+.crime-case__summary {
+  grid-column: 1 / -1;
+  max-width: 59rem;
+  margin: 1.2rem 0 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  line-height: 1.55;
+}
+
+.crime-case__evidence-layout {
+  display: grid;
+  grid-template-columns: minmax(8rem, .55fr) minmax(20rem, 1.7fr) minmax(13rem, .8fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 2.5rem 0 3.5rem;
+}
+
+.crime-case__docket,
+.crime-case__primary,
+.crime-case__threads,
+.crime-case__gallery,
+.crime-discussion {
+  border: 1px solid rgba(237, 232, 222, .25);
+  background: rgba(22, 25, 23, .76);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .2);
+  backdrop-filter: blur(18px);
+}
+
+.crime-case__docket {
+  padding: 1.4rem;
+}
+
+.crime-case__docket > p,
+.crime-case__primary > p,
+.crime-case__threads > p,
+.crime-case__gallery > div > p,
+.crime-discussion > header p {
+  margin: 0;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.crime-case__docket > strong {
+  display: block;
+  margin: .4rem 0 2rem;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 4rem;
+  font-weight: 400;
+}
+
+.crime-case__docket dl,
+.crime-case__docket dd {
+  margin: 0;
+}
+
+.crime-case__docket dl {
+  display: grid;
+  gap: 1rem;
+}
+
+.crime-case__docket dl div {
+  padding-top: .8rem;
+  border-top: 1px solid rgba(237, 232, 222, .18);
+}
+
+.crime-case__docket dt {
+  margin-bottom: .25rem;
+  color: rgba(237, 232, 222, .58);
+  font-size: .48rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.crime-case__docket dd {
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: .9rem;
+}
+
+.crime-case__primary {
+  padding: 1.2rem;
+}
+
+.crime-case__primary > p {
+  margin-bottom: 1rem;
+}
+
+.crime-case__primary > a:first-of-type {
+  display: block;
+  max-width: 38rem;
+  margin: 0 auto;
+  background: #000;
+}
+
+.crime-case__primary img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.crime-case__source {
+  display: block;
+  width: max-content;
+  margin: 1rem 0 0 auto;
+  padding-bottom: .25rem;
+  border-bottom: 1px solid currentColor;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.crime-case__supporting {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.crime-case__threads,
+.crime-case__gallery {
+  display: grid;
+  gap: 1rem;
+  padding: 1.2rem;
+}
+
+.crime-case__threads h2,
+.crime-case__gallery h2,
+.crime-discussion h2 {
+  margin: .35rem 0 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+  font-weight: 400;
+}
+
+.crime-case__threads > a {
+  display: grid;
+  gap: .9rem;
+  padding: 1rem;
+  border: 1px solid rgba(237, 232, 222, .22);
+  color: inherit;
+  background: rgba(7, 9, 8, .32);
+  text-decoration: none;
+  transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+
+.crime-case__threads > a strong {
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.crime-case__threads > a span {
+  font-size: .48rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.crime-case__threads > a:hover,
+.crime-case__threads > a:focus-visible {
+  border-color: rgba(237, 232, 222, .52);
+  background: rgba(237, 232, 222, .09);
+  transform: translateY(-2px);
+}
+
+.crime-case__gallery button {
+  appearance: none;
+  display: grid;
+  gap: .55rem;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: zoom-in;
+}
+
+.crime-case__gallery button img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px solid rgba(237, 232, 222, .22);
+  object-fit: cover;
+  transition: filter .25s ease, transform .25s ease;
+}
+
+.crime-case__gallery button:hover img {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+.crime-case__gallery button span {
+  font-size: .48rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.crime-discussion {
+  padding: clamp(1.3rem, 3vw, 2.5rem);
+}
+
+.crime-discussion > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.crime-discussion__counter {
+  color: #f0eae0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+
+.crime-discussion form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .7rem 1rem;
+}
+
+.crime-discussion label {
+  grid-column: 1 / -1;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.crime-discussion textarea {
+  width: 100%;
+  min-height: 5.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(237, 232, 222, .3);
+  border-radius: 0;
+  color: #f4efe5;
+  background: rgba(7, 9, 8, .48);
+  font: 1rem/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  resize: vertical;
+}
+
+.crime-discussion textarea::placeholder {
+  color: rgba(237, 232, 222, .48);
+}
+
+.crime-discussion textarea:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.crime-discussion form button {
+  align-self: stretch;
+  min-width: 9rem;
+  padding: 0 1.25rem;
+  border: 1px solid #f0eae0;
+  color: #27231f;
+  background: #f0eae0;
+  font-size: .54rem;
+  font-weight: 750;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.crime-discussion form button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
+.crime-discussion__notice,
+.crime-discussion__empty {
+  margin: 1rem 0 0;
+  color: rgba(237, 232, 222, .64);
+  font-size: .7rem;
+}
+
+.crime-discussion__feed {
+  display: grid;
+  margin-top: 1.5rem;
+}
+
+.crime-discussion__feed article {
+  padding: 1.2rem 0;
+  border-top: 1px solid rgba(237, 232, 222, .18);
+}
+
+.crime-discussion__feed article > div {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+}
+
+.crime-discussion__feed article strong {
+  font-size: .68rem;
+  letter-spacing: .12em;
+}
+
+.crime-discussion__feed time {
+  color: rgba(237, 232, 222, .48);
+  font-size: .55rem;
+}
+
+.crime-discussion__feed article > p {
+  margin: .55rem 0 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.crime-lightbox {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 3.5rem 1rem 1rem;
+  background: rgba(4, 5, 5, .92);
+  cursor: zoom-out;
+  backdrop-filter: blur(16px);
+}
+
+.crime-lightbox__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(10, 11, 11, .78);
+  box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .3);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.crime-lightbox__close span {
+  font-size: 1.35rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.crime-lightbox__close:hover,
+.crime-lightbox__close:focus-visible {
+  color: #25211e;
+  background: #f2ede3;
+}
+
+.crime-lightbox figure {
+  display: grid;
+  gap: .65rem;
+  max-width: min(92vw, 72rem);
+  max-height: calc(100svh - 5rem);
+  margin: 0;
+  cursor: default;
+}
+
+.crime-lightbox img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100svh - 7rem);
+  margin: auto;
+  object-fit: contain;
+}
+
+.crime-lightbox figcaption {
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .crime-case__evidence-layout {
+    grid-template-columns: minmax(7rem, .45fr) 1.55fr;
+  }
+
+  .crime-case__supporting {
+    grid-column: 1 / -1;
+  }
+
+  .crime-case__gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .crime-case__gallery > div {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .crime-case {
+    width: calc(100% - 2rem);
+    padding-top: 7rem;
+  }
+
+  .crime-case__header,
+  .crime-case__evidence-layout,
+  .crime-case__gallery,
+  .crime-discussion form {
+    grid-template-columns: 1fr;
+  }
+
+  .crime-case__active {
+    width: 100%;
+  }
+
+  .crime-case__gallery,
+  .crime-case__gallery > div,
+  .crime-discussion label {
+    grid-column: auto;
+  }
+
+  .crime-discussion form button {
+    min-height: 3.25rem;
+  }
+}

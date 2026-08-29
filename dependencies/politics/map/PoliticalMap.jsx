@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '../../academy/supabaseClient'
 import './political-map.css'
 
 const MAPS = {
@@ -41,12 +43,27 @@ const MAPS = {
     alt: 'Detailed relief map of Alberta and western Canada',
     label: 'Alberta',
   },
+  japan: {
+    image: '/politics-japan.jpg',
+    alt: 'Detailed relief map of Japan and the surrounding seas',
+    label: 'Japan',
+  },
+  australia: {
+    image: '/politics-australia.jpg',
+    alt: 'Detailed relief map of Australia and the surrounding seas',
+    label: 'Australia',
+  },
+  unitedStates: {
+    image: '/politics-united-states.jpg',
+    alt: 'Detailed relief map of the United States',
+    label: 'United States',
+  },
 }
 
-function CloseIcon() {
+function BackIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-      <path d="m5 5 10 10M15 5 5 15" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      <path d="M16 10H4m5-5-5 5 5 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -107,6 +124,36 @@ const RELATIONS = {
   },
 }
 
+const FINANCIAL_REPORTS = {
+  japan: {
+    country: 'Japan',
+    score: '-30',
+    scoreLabel: 'Financial Stability Score',
+    video: 'https://www.youtube.com/watch?v=NSx2d9tTd8A',
+    analysis:
+      'Japan is running into debt problems, needing to sell of US treasuries for dollars to guard the yen, ultimately needing a bailout from the United States.',
+  },
+  unitedStates: {
+    country: 'United States',
+    title: 'Boomers are losing home value',
+    score: '20+',
+    scoreLabel: 'Stability',
+    video: 'https://www.youtube.com/watch?v=09FevuUtoOc',
+    analysis:
+      'Finally, the housing slump begins. This is actually great, a full on crash would be a disaster but if year over year, the next three to five years, home prices go down 50%, it would be amazing for the middle class, youngsters and the economy. The "number must go up" is doing incredible damage to the working class, boomers basically did it to themselves by milking and robbing the younger generations so hard, there\'s no one to buy up their inflated home property values. Good. Fuck them.',
+  },
+}
+
+const POLITICAL_PARTIES = {
+  australia: {
+    country: 'Australia',
+    name: 'Libertarian Group of Australia',
+    url: 'https://www.facebook.com/AusConLib',
+    analysis:
+      "Extreme boomer humor meme page but has 58k followers and at this point, if there's anything worth supporting in Australia, this would be it. A sad and miserable start, but a start nonetheless.",
+  },
+}
+
 function RelationsPanel({ relation }) {
   return (
     <aside
@@ -141,13 +188,145 @@ function RelationsPanel({ relation }) {
   )
 }
 
-function PoliticalMap({ view, onViewChange }) {
-  const activeMap = MAPS[view]
-  const activeRelation = RELATIONS[view]
+function FinancialPanel({ report }) {
+  return (
+    <aside className="relations-panel financial-panel" aria-label={`${report.country} financial stability`}>
+      <div className="financial-panel__topline">
+        <span>{report.country}</span>
+        <small>By NYX</small>
+      </div>
+      {report.title && <h2>{report.title}</h2>}
+      <div className="financial-panel__score">
+        <span>{report.scoreLabel || 'Financial Stability Score'}</span>
+        <strong>{report.score}</strong>
+      </div>
+      <a href={report.video} target="_blank" rel="noreferrer">
+        <PlayIcon />
+        <span>Watch analysis</span>
+      </a>
+      <p className="relations-panel__analysis">{report.analysis}</p>
+    </aside>
+  )
+}
+
+function PoliticalPartyPanel({ party }) {
+  return (
+    <aside className="relations-panel political-party-panel" aria-label={`${party.country} political party`}>
+      <p className="political-party-panel__country">{party.country}</p>
+      <h2>{party.name}</h2>
+      <a href={party.url} target="_blank" rel="noreferrer">
+        <span>Open Facebook page ↗</span>
+      </a>
+      <p className="relations-panel__analysis">{party.analysis}</p>
+    </aside>
+  )
+}
+
+function PoliticalMap({ view, onViewChange, onBack }) {
+  const [databaseEntries, setDatabaseEntries] = useState({})
+  const entryKey = view === 'middleEast' ? 'middle-east' : view
+  const databaseEntry = databaseEntries[entryKey]
+  const activeMap = {
+    ...MAPS[view],
+    image: databaseEntry?.image_path || MAPS[view].image,
+    label: databaseEntry?.map_label || MAPS[view].label,
+  }
+  const activeRelation = RELATIONS[view] && {
+    ...RELATIONS[view],
+    primary: databaseEntry?.primary_label || RELATIONS[view].primary,
+    counterpart: databaseEntry?.counterpart_label || RELATIONS[view].counterpart,
+    score: databaseEntry?.score == null ? RELATIONS[view].score : String(databaseEntry.score),
+    status: databaseEntry?.status ?? RELATIONS[view].status,
+    video: databaseEntry?.source_url || RELATIONS[view].video,
+    analysis: databaseEntry?.subtitle || RELATIONS[view].analysis,
+  }
+  const activeFinancialReport = FINANCIAL_REPORTS[view] && {
+    ...FINANCIAL_REPORTS[view],
+    country: databaseEntry?.primary_label || FINANCIAL_REPORTS[view].country,
+    title: databaseEntry?.title || FINANCIAL_REPORTS[view].title,
+    score: databaseEntry?.score_display
+      || (databaseEntry?.score == null ? FINANCIAL_REPORTS[view].score : String(databaseEntry.score)),
+    scoreLabel: databaseEntry?.status || FINANCIAL_REPORTS[view].scoreLabel,
+    video: databaseEntry?.source_url || FINANCIAL_REPORTS[view].video,
+    analysis: databaseEntry?.subtitle || FINANCIAL_REPORTS[view].analysis,
+  }
+  const activePoliticalParty = POLITICAL_PARTIES[view] && {
+    ...POLITICAL_PARTIES[view],
+    name: databaseEntry?.primary_label || POLITICAL_PARTIES[view].name,
+    url: databaseEntry?.source_url || POLITICAL_PARTIES[view].url,
+    analysis: databaseEntry?.subtitle || POLITICAL_PARTIES[view].analysis,
+  }
+  const [activeLayer, setActiveLayer] = useState(
+    view === 'japan' || view === 'unitedStates'
+      ? 'finance'
+      : view === 'australia'
+        ? 'politicalParties'
+        : 'flashPoints',
+  )
+
+  useEffect(() => {
+    if (view === 'japan' || view === 'unitedStates') setActiveLayer('finance')
+    else if (view === 'australia') setActiveLayer('politicalParties')
+    else if (view !== 'world') setActiveLayer('flashPoints')
+  }, [view])
+
+  useEffect(() => {
+    if (!supabase) return undefined
+    let cancelled = false
+    supabase
+      .from('academy_map_entries')
+      .select('*')
+      .eq('issue_key', 'september-2026')
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (cancelled || !data) return
+        setDatabaseEntries(Object.fromEntries(data.map((entry) => [entry.entry_key, entry])))
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  const changeLayer = (layer) => {
+    setActiveLayer(layer)
+    if (view !== 'world') onViewChange('world')
+  }
 
   return (
     <section className={`political-map political-map--${view}`} aria-label="Political map explorer">
-      <div className="political-map__frame">
+      <div className="political-map__stage">
+        <div className="political-map__layer-tabs" role="tablist" aria-label="Political map layers">
+          <button
+            className={`political-map__layer-tab${activeLayer === 'flashPoints' ? ' political-map__layer-tab--active' : ''}`}
+            type="button"
+            role="tab"
+            aria-selected={activeLayer === 'flashPoints'}
+            aria-controls="political-map-layer"
+            onClick={() => changeLayer('flashPoints')}
+          >
+            Flash Points
+          </button>
+          <button
+            className={`political-map__layer-tab${activeLayer === 'finance' ? ' political-map__layer-tab--active' : ''}`}
+            type="button"
+            role="tab"
+            aria-selected={activeLayer === 'finance'}
+            aria-controls="political-map-layer"
+            onClick={() => changeLayer('finance')}
+          >
+            Finance
+          </button>
+          <button
+            className={`political-map__layer-tab${activeLayer === 'politicalParties' ? ' political-map__layer-tab--active' : ''}`}
+            type="button"
+            role="tab"
+            aria-selected={activeLayer === 'politicalParties'}
+            aria-controls="political-map-layer"
+            onClick={() => changeLayer('politicalParties')}
+          >
+            Political Parties
+          </button>
+        </div>
+
+        <div className="political-map__frame" id="political-map-layer">
         <img
           className="political-map__image"
           src={activeMap.image}
@@ -157,7 +336,7 @@ function PoliticalMap({ view, onViewChange }) {
 
         <div className="political-map__edge" aria-hidden="true" />
 
-        {view === 'world' && (
+        {activeLayer === 'flashPoints' && view === 'world' && (
           <>
             <button
               className="map-hotspot map-hotspot--middle-east"
@@ -192,6 +371,14 @@ function PoliticalMap({ view, onViewChange }) {
               <span>Ukraine</span>
             </button>
             <button
+              className="map-hotspot map-hotspot--world-turkey"
+              type="button"
+              onClick={() => onViewChange('turkey')}
+              aria-label="Open the detailed map of Turkey"
+            >
+              <span>Turkey</span>
+            </button>
+            <button
               className="map-hotspot map-hotspot--taiwan"
               type="button"
               onClick={() => onViewChange('taiwan')}
@@ -202,7 +389,7 @@ function PoliticalMap({ view, onViewChange }) {
           </>
         )}
 
-        {view === 'middleEast' && (
+        {activeLayer === 'flashPoints' && view === 'middleEast' && (
           <>
             <button
               className="map-hotspot map-hotspot--turkey"
@@ -223,22 +410,58 @@ function PoliticalMap({ view, onViewChange }) {
           </>
         )}
 
+        {activeLayer === 'finance' && view === 'world' && (
+          <>
+            <button
+              className="map-hotspot map-hotspot--united-states"
+              type="button"
+              onClick={() => onViewChange('unitedStates')}
+              aria-label="Open the United States financial stability report"
+            >
+              <span>United States</span>
+            </button>
+            <button
+              className="map-hotspot map-hotspot--japan"
+              type="button"
+              onClick={() => onViewChange('japan')}
+              aria-label="Open Japan's financial stability report"
+            >
+              <span>Japan</span>
+            </button>
+          </>
+        )}
+
+        {activeLayer === 'politicalParties' && view === 'world' && (
+          <button
+            className="map-hotspot map-hotspot--australia"
+            type="button"
+            onClick={() => onViewChange('australia')}
+            aria-label="Open the Libertarian Group of Australia"
+          >
+            <span>Australia</span>
+          </button>
+        )}
+
         {view !== 'world' && (
           <button
-            className="political-map__close"
+            className="political-map__back"
             type="button"
-            onClick={() => onViewChange('world')}
-            aria-label="Close detailed map and return to the world map"
+            onClick={onBack}
+            aria-label="Return to the previous map view"
           >
-            <CloseIcon />
+            <BackIcon />
+            <span>Back</span>
           </button>
         )}
 
         {activeRelation && <RelationsPanel relation={activeRelation} />}
+        {activeFinancialReport && <FinancialPanel report={activeFinancialReport} />}
+        {activePoliticalParty && <PoliticalPartyPanel party={activePoliticalParty} />}
 
         <div className="political-map__caption">
           <span>Political atlas</span>
           <strong>{activeMap.label}</strong>
+        </div>
         </div>
       </div>
     </section>
