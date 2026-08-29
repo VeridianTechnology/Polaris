@@ -90,6 +90,14 @@
   outline-offset: .35rem;
 }
 
+.academy-info-rail__users {
+  margin: 1.3rem 0 0;
+  color: rgba(35, 77, 112, .62);
+  font: 650 .62rem/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
 .academy-composer {
   display: grid;
   grid-template-columns: clamp(3.2rem, 4.8vw, 4.6rem) minmax(0, 1fr) clamp(6rem, 8vw, 7.6rem);

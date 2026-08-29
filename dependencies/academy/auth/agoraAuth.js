@@ -79,6 +79,25 @@ export function useAgoraAuth() {
     return nextSession
   }, [])
 
+  const claimInvite = useCallback(async ({ username, inviteToken, credentialKind, secret }) => {
+    if (!supabase) throw new Error('Supabase is not configured for invitations.')
+    const { data, error } = await supabase.rpc('claim_agora_invite', {
+      p_username: username.trim().replace(/^@+/, ''),
+      p_invite_token: inviteToken,
+      p_credential_kind: credentialKind,
+      p_secret: secret,
+    })
+    if (error) throw error
+
+    const row = Array.isArray(data) ? data[0] : data
+    if (!row?.session_token) throw new Error('The invitation did not return a valid session.')
+    const nextSession = normalizeSession(row)
+    storeSession(nextSession)
+    setSession(nextSession)
+    setStatus('authenticated')
+    return nextSession
+  }, [])
+
   const logout = useCallback(async () => {
     const sessionToken = session?.session_token
     storeSession(null)
@@ -89,6 +108,5 @@ export function useAgoraAuth() {
     }
   }, [session])
 
-  return { session, status, login, logout }
+  return { session, status, login, claimInvite, logout }
 }
-

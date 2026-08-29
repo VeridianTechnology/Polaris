@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import VisitorCoordinates from '../dependencies/homepage/geo/VisitorCoordinates.jsx'
 import SoundBars from '../dependencies/homepage/soundbars/SoundBars.jsx'
 import LaunchTimer from '../dependencies/homepage/LaunchTimer.jsx'
+import InviteWelcome from '../dependencies/homepage/InviteWelcome.jsx'
 import VentureCapitalGrid from '../dependencies/business/venture-capital/VentureCapitalGrid.jsx'
 import FinanceLibrary from '../dependencies/finance/FinanceLibrary.jsx'
 import { financeFollowUps } from '../dependencies/finance/financeFeatures.js'
@@ -15,9 +16,31 @@ import AcademyAdmin from '../dependencies/academy/admin/AcademyAdmin.jsx'
 import AcademyProfile from '../dependencies/academy/profile/AcademyProfile.jsx'
 import AgoraLoginDialog, { AgoraAuthArtworkButton } from '../dependencies/academy/auth/AgoraLoginDialog.jsx'
 import { useAgoraAuth } from '../dependencies/academy/auth/agoraAuth.js'
+import { supabase } from '../dependencies/academy/supabaseClient.js'
 import RouteLink from '../routing/RouteLink.jsx'
 import useAppRouter from '../routing/useAppRouter.js'
 import { parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
+
+const WELCOME_CACHE_KEY = 'polaris-welcome-complete-v1'
+
+function readWelcomeCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(WELCOME_CACHE_KEY) || 'null')
+    if (cached?.completed) return cached
+    const storedAgoraSession = JSON.parse(localStorage.getItem('polaris-agora-user-session') || 'null')
+    return storedAgoraSession?.session_token ? { completed: true, username: storedAgoraSession.username } : null
+  } catch {
+    return null
+  }
+}
+
+function readInviteEntry() {
+  const parameters = new URLSearchParams(window.location.search)
+  return {
+    username: parameters.get('welcome') || '',
+    inviteToken: parameters.get('invite') || '',
+  }
+}
 
 function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout }) {
   if (route.page === 'home') return null
@@ -116,7 +139,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
   )
 }
 
-function HomePage({ navigate }) {
+function HomePage({ navigate, userCount }) {
   return (
     <>
       <section className="hero__content" id="top">
@@ -124,6 +147,7 @@ function HomePage({ navigate }) {
         <p className="eyebrow">Welcome to</p>
         <h1>Polaris</h1>
         <p className="tagline">You're new digital home</p>
+        <p className="home-user-count">{userCount.toLocaleString()} user{userCount === 1 ? '' : 's'}</p>
       </section>
 
       <LaunchTimer />
@@ -142,9 +166,13 @@ function HomePage({ navigate }) {
 
 function App() {
   const { route, navigate } = useAppRouter()
-  const { session: authSession, status: authStatus, login, logout } = useAgoraAuth()
+  const { session: authSession, status: authStatus, login, claimInvite, logout } = useAgoraAuth()
   const [loginOpen, setLoginOpen] = useState(false)
+  const [welcomeCache, setWelcomeCache] = useState(readWelcomeCache)
+  const [inviteEntry] = useState(readInviteEntry)
+  const [userCount, setUserCount] = useState(0)
   const isHome = route.page === 'home'
+  const showInviteWelcome = isHome && !welcomeCache?.completed
   const heroMode = route.page === 'agora' ? route.section : route.page
   const politicalView = route.politicalView || 'world'
   const enteredBackground = route.section === 'finance'
@@ -161,6 +189,23 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [route.path])
+
+  useEffect(() => {
+    if (!authSession || welcomeCache?.completed) return
+    const completed = { completed: true, username: authSession.username, profileNumber: authSession.profile_number }
+    localStorage.setItem(WELCOME_CACHE_KEY, JSON.stringify(completed))
+    setWelcomeCache(completed)
+  }, [authSession, welcomeCache?.completed])
+
+  useEffect(() => {
+    if (!supabase) return undefined
+    let cancelled = false
+    supabase.rpc('get_agora_user_count').then(({ data, error }) => {
+      if (cancelled || error) return
+      setUserCount(Number(data || 0))
+    })
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     const isAgora = route.page === 'academy' || route.page === 'academy-profile' || route.page === 'admin'
@@ -206,22 +251,34 @@ function App() {
 
   const changePoliticalView = (view) => navigate(politicsPath(view))
   const leavePoliticalView = () => navigate(politicsPath(parentPoliticalView(politicalView)))
+  const finishInviteClaim = async (claim) => {
+    const nextSession = await claimInvite(claim)
+    const completed = {
+      completed: true,
+      username: nextSession.username,
+      profileNumber: nextSession.profile_number,
+      completedAt: new Date().toISOString(),
+    }
+    localStorage.setItem(WELCOME_CACHE_KEY, JSON.stringify(completed))
+    window.history.replaceState({}, '', ROUTES.home)
+    setWelcomeCache(completed)
+  }
 
   return (
     <main className={`hero${isHome ? '' : ` hero--entered hero--${heroMode}`}`}>
       {route.page !== 'academy' && route.page !== 'academy-profile' && route.page !== 'admin' && (
         <>
           <img
-            className="hero__image hero__image--welcome"
-            src="/agora-hero.png"
-            alt={isHome ? 'A luminous white tree rising between monumental columns' : ''}
+            className={`hero__image hero__image--welcome${showInviteWelcome ? ' hero__image--invitation' : ''}`}
+            src={showInviteWelcome ? '/welcome-01.jpg' : '/agora-hero.png'}
+            alt={isHome ? (showInviteWelcome ? 'A white marble bust in warm morning light' : 'A luminous white tree rising between monumental columns') : ''}
           />
           <img
             className="hero__image hero__image--city"
             src={enteredBackground}
             alt={isHome ? '' : enteredBackgroundAlt}
           />
-          <div className="hero__wash" />
+          {!showInviteWelcome && <div className="hero__wash" />}
         </>
       )}
 
@@ -234,13 +291,22 @@ function App() {
         onLogout={logout}
       />
 
-      {route.page === 'home' && (
-        <HomePage navigate={navigate} />
+      {route.page === 'home' && showInviteWelcome && (
+        <InviteWelcome
+          username={inviteEntry.username}
+          inviteToken={inviteEntry.inviteToken}
+          onClaim={finishInviteClaim}
+          onEnterAgora={() => navigate(ROUTES.academy)}
+        />
+      )}
+      {route.page === 'home' && !showInviteWelcome && (
+        <HomePage navigate={navigate} userCount={userCount} />
       )}
       {route.page === 'academy' && (
         <AcademyBoard
           navigate={navigate}
           authSession={authSession}
+          userCount={userCount}
           onLogin={() => setLoginOpen(true)}
           onOpenAdmin={() => navigate(ROUTES.academyAdmin)}
         />

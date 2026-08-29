@@ -57,24 +57,56 @@ function createSessionToken() {
 }
 
 async function dashboard(admin: AdminClient) {
-  const [usersResult, lockoutsResult] = await Promise.all([
+  const [usersResult, invitesResult, lockoutsResult, profileCountResult] = await Promise.all([
     admin
       .from('agora_managed_users')
-      .select('id, auth_user_id, twitter_handle, twitter_url, status, created_at')
+      .select('id, auth_user_id, profile_number, twitter_handle, twitter_url, status, created_at')
       .order('created_at', { ascending: false }),
+    admin
+      .from('agora_user_invites')
+      .select('profile_number, expires_at, first_opened_at, claimed_at, revoked_at'),
     admin
       .from('agora_admin_ip_access')
       .select('ip_address, locked_at, last_attempt_at')
       .eq('is_enabled', false)
       .order('locked_at', { ascending: false }),
+    admin
+      .from('agora_public_profiles')
+      .select('profile_number', { count: 'exact', head: true }),
   ])
 
   if (usersResult.error) throw usersResult.error
+  if (invitesResult.error) throw invitesResult.error
   if (lockoutsResult.error) throw lockoutsResult.error
+  if (profileCountResult.error) throw profileCountResult.error
+
+  const invitesByProfile = new Map(
+    (invitesResult.data || []).map((invite: Record<string, unknown>) => [Number(invite.profile_number), invite]),
+  )
+  const now = Date.now()
+  const users = (usersResult.data || []).map((user: Record<string, unknown>) => {
+    const invite = invitesByProfile.get(Number(user.profile_number)) as Record<string, unknown> | undefined
+    let invitationStatus = 'legacy'
+
+    if (invite?.revoked_at) invitationStatus = 'revoked'
+    else if (invite?.claimed_at) invitationStatus = 'claimed'
+    else if (invite?.expires_at && new Date(String(invite.expires_at)).getTime() <= now) invitationStatus = 'expired'
+    else if (invite?.first_opened_at) invitationStatus = 'opened'
+    else if (invite) invitationStatus = 'pending'
+
+    return {
+      ...user,
+      invitation_status: invitationStatus,
+      invitation_expires_at: invite?.expires_at || null,
+      invitation_opened_at: invite?.first_opened_at || null,
+      invitation_claimed_at: invite?.claimed_at || null,
+    }
+  })
 
   return {
-    users: usersResult.data || [],
+    users,
     lockedIps: lockoutsResult.data || [],
+    userCount: profileCountResult.count || 0,
   }
 }
 
@@ -145,46 +177,33 @@ async function createUsers(body: Record<string, unknown>, admin: AdminClient) {
   for (const requested of requestedUsers) {
     const source = requested as Record<string, unknown>
     const handle = String(source.handle || '').trim().replace(/^@+/, '')
-    const password = String(source.password || '')
 
-    if (!/^[A-Za-z0-9_]{1,32}$/.test(handle)) {
+    if (!/^[A-Za-z0-9_]{2,32}$/.test(handle)) {
       results.push({ handle, created: false, error: 'Invalid Twitter handle.' })
       continue
     }
-    if (password.length < 12 || password.length > 128) {
-      results.push({ handle, created: false, error: 'Password must contain 12–128 characters.' })
+
+    const invitationResult = await admin.rpc('admin_create_agora_invite', { p_handle: handle })
+    const invitation = Array.isArray(invitationResult.data)
+      ? invitationResult.data[0]
+      : invitationResult.data
+
+    if (invitationResult.error || !invitation?.invite_token) {
+      results.push({
+        handle,
+        created: false,
+        error: invitationResult.error?.message || 'Invitation was not created.',
+      })
       continue
     }
 
-    const syntheticEmail = `${handle.toLowerCase()}.${crypto.randomUUID().slice(0, 8)}@agora.invalid`
-    const authResult = await admin.auth.admin.createUser({
-      email: syntheticEmail,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        display_name: `@${handle}`,
-        twitter_handle: handle,
-      },
+    results.push({
+      handle: invitation.twitter_handle,
+      profileNumber: invitation.profile_number,
+      inviteToken: invitation.invite_token,
+      expiresAt: invitation.expires_at,
+      created: true,
     })
-
-    if (authResult.error || !authResult.data.user) {
-      results.push({ handle, created: false, error: authResult.error?.message || 'Auth user was not created.' })
-      continue
-    }
-
-    const managedResult = await admin.from('agora_managed_users').insert({
-      auth_user_id: authResult.data.user.id,
-      twitter_handle: handle,
-      twitter_url: `https://x.com/${handle}`,
-    })
-
-    if (managedResult.error) {
-      await admin.auth.admin.deleteUser(authResult.data.user.id)
-      results.push({ handle, created: false, error: managedResult.error.message })
-      continue
-    }
-
-    results.push({ handle, created: true })
   }
 
   return {
@@ -200,11 +219,39 @@ async function setUserStatus(body: Record<string, unknown>, admin: AdminClient) 
     throw new ApiError('Invalid user status request.')
   }
 
+  const userResult = await admin
+    .from('agora_managed_users')
+    .select('profile_number')
+    .eq('id', userId)
+    .maybeSingle()
+  if (userResult.error || !userResult.data) {
+    throw userResult.error || new ApiError('Managed user was not found.', 404)
+  }
+
   const { error } = await admin
     .from('agora_managed_users')
     .update({ status })
     .eq('id', userId)
   if (error) throw error
+
+  const profileNumber = userResult.data.profile_number
+  if (status === 'inactive' && profileNumber) {
+    const revokedAt = new Date().toISOString()
+    const [sessionsResult, invitesResult] = await Promise.all([
+      admin
+        .from('agora_user_sessions')
+        .update({ revoked_at: revokedAt })
+        .eq('profile_number', profileNumber)
+        .is('revoked_at', null),
+      admin
+        .from('agora_user_invites')
+        .update({ revoked_at: revokedAt })
+        .eq('profile_number', profileNumber)
+        .is('claimed_at', null),
+    ])
+    if (sessionsResult.error) throw sessionsResult.error
+    if (invitesResult.error) throw invitesResult.error
+  }
 }
 
 async function unlockIp(body: Record<string, unknown>, admin: AdminClient) {

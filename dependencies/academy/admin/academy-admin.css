@@ -89,7 +89,7 @@
 
 .academy-admin-new-row {
   display: grid;
-  grid-template-columns: minmax(9rem, 1fr) minmax(13rem, 1.25fr) minmax(15rem, 1.4fr) auto auto;
+  grid-template-columns: minmax(9rem, 1fr) minmax(13rem, 1.25fr) auto;
   align-items: end;
   gap: .85rem;
   padding: 1rem 0 1.25rem;
@@ -137,30 +137,6 @@
 .academy-admin-new-row input[readonly] {
   color: rgba(43, 45, 45, .55);
   background: rgba(245, 243, 237, .58);
-}
-
-.academy-admin-password-field {
-  position: relative;
-  display: block;
-}
-
-.academy-admin-password-field input {
-  padding-right: 3.6rem;
-}
-
-.academy-admin-password-field button {
-  position: absolute;
-  top: 50%;
-  right: .65rem;
-  padding: 0;
-  border: 0;
-  color: #3476a8;
-  background: transparent;
-  font-size: .65rem;
-  font-weight: 650;
-  text-transform: uppercase;
-  transform: translateY(-50%);
-  cursor: pointer;
 }
 
 .academy-admin-outline-button,
@@ -227,6 +203,58 @@
   line-height: 1.45;
 }
 
+.academy-admin-invites {
+  display: grid;
+  gap: .75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(70, 68, 62, .2);
+}
+
+.academy-admin-invites h2,
+.academy-admin-invites > p {
+  margin: 0;
+}
+
+.academy-admin-invites h2 {
+  font-size: .82rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.academy-admin-invites > p {
+  color: rgba(37, 39, 39, .65);
+  font-size: .72rem;
+  line-height: 1.5;
+}
+
+.academy-admin-invites > div {
+  display: grid;
+  grid-template-columns: minmax(9rem, auto) minmax(14rem, 1fr) auto;
+  align-items: center;
+  gap: .8rem;
+}
+
+.academy-admin-invites strong {
+  font-size: .7rem;
+  letter-spacing: .04em;
+}
+
+.academy-admin-invites input {
+  min-width: 0;
+  height: 2.65rem;
+  padding: 0 .7rem;
+  border: 1px solid rgba(87, 83, 75, .3);
+  border-radius: .25rem;
+  color: rgba(43, 45, 45, .72);
+  background: rgba(255, 255, 255, .7);
+  font-size: .7rem;
+}
+
+.academy-admin-invites .academy-admin-outline-button {
+  height: 2.65rem;
+}
+
 .academy-admin-existing,
 .academy-admin-lockouts {
   margin-top: 2.2rem;
@@ -271,8 +299,10 @@
 }
 
 .academy-admin-profile {
-  display: block;
+  display: inline-block;
   width: 2.4rem;
+  margin-right: .5rem;
+  vertical-align: middle;
   aspect-ratio: 1;
   border: 1px solid rgba(60, 60, 57, .18);
   border-radius: 50%;
@@ -296,6 +326,24 @@
 }
 
 .academy-admin-status--inactive {
+  color: #8c4b52;
+  background: #f5e5e5;
+}
+
+.academy-admin-status--pending,
+.academy-admin-status--opened {
+  color: #746029;
+  background: #f3ecd1;
+}
+
+.academy-admin-status--claimed,
+.academy-admin-status--legacy {
+  color: #3275a3;
+  background: #e2eff8;
+}
+
+.academy-admin-status--expired,
+.academy-admin-status--revoked {
   color: #8c4b52;
   background: #f5e5e5;
 }
@@ -407,6 +455,7 @@
 
   .academy-admin-new-row,
   .academy-admin-create__actions,
+  .academy-admin-invites > div,
   .academy-admin-lockouts > div,
   .academy-admin-login {
     grid-template-columns: 1fr;

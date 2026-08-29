@@ -93,7 +93,7 @@ function LinkPreview({ url }) {
   )
 }
 
-function AcademyBoard({ navigate, authSession, onLogin, onOpenAdmin }) {
+function AcademyBoard({ navigate, authSession, userCount = 0, onLogin, onOpenAdmin }) {
   const [comments, setComments] = useState([])
   const [draft, setDraft] = useState('')
   const [feedStatus, setFeedStatus] = useState(isSupabaseConfigured ? 'loading' : 'unconfigured')
@@ -345,6 +345,7 @@ function AcademyBoard({ navigate, authSession, onLogin, onOpenAdmin }) {
             setActiveInfo('rules')
           }}><span>Rules</span></button>
         </div>
+        <p className="academy-info-rail__users">{userCount.toLocaleString()} user{userCount === 1 ? '' : 's'}</p>
       </aside>
 
       <div className="academy-board__shell">

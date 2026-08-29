@@ -3,51 +3,23 @@ import { callAdminApi, readAdminSession, saveAdminSession } from './adminApi'
 import './academy-admin.css'
 
 const MAX_NEW_USERS = 15
-const PASSWORD_LENGTH = 18
-const CHARACTER_GROUPS = [
-  'ABCDEFGHJKLMNPQRSTUVWXYZ',
-  'abcdefghijkmnopqrstuvwxyz',
-  '23456789',
-  '!@#$%&*+-=?',
-]
-
-function randomIndex(length) {
-  const maximum = Math.floor(0x100000000 / length) * length
-  const value = new Uint32Array(1)
-
-  do crypto.getRandomValues(value)
-  while (value[0] >= maximum)
-
-  return value[0] % length
-}
-
-function generatePassword() {
-  const allCharacters = CHARACTER_GROUPS.join('')
-  const characters = CHARACTER_GROUPS.map((group) => group[randomIndex(group.length)])
-
-  while (characters.length < PASSWORD_LENGTH) {
-    characters.push(allCharacters[randomIndex(allCharacters.length)])
-  }
-
-  for (let index = characters.length - 1; index > 0; index -= 1) {
-    const swapIndex = randomIndex(index + 1)
-    ;[characters[index], characters[swapIndex]] = [characters[swapIndex], characters[index]]
-  }
-
-  return characters.join('')
-}
 
 function createEmptyUser() {
   return {
     id: crypto.randomUUID(),
     handle: '',
-    password: '',
-    showPassword: false,
   }
 }
 
 function normalizeHandle(value) {
   return value.trim().replace(/^@+/, '')
+}
+
+function createInviteUrl(handle, inviteToken) {
+  const url = new URL('/', window.location.origin)
+  url.searchParams.set('welcome', `@${handle}`)
+  url.searchParams.set('invite', inviteToken)
+  return url.toString()
 }
 
 function LoginGate({ onLogin, busy, notice }) {
@@ -126,34 +98,6 @@ function NewUserRow({ user, index, onChange, onRemove }) {
           tabIndex="-1"
         />
       </label>
-      <label>
-        <span>Message-board password</span>
-        <span className="academy-admin-password-field">
-          <input
-            type={user.showPassword ? 'text' : 'password'}
-            value={user.password}
-            onChange={(event) => onChange({ password: event.target.value })}
-            placeholder="Generate or enter a password"
-            minLength="12"
-            autoComplete="new-password"
-            required
-          />
-          <button
-            type="button"
-            onClick={() => onChange({ showPassword: !user.showPassword })}
-            aria-label={user.showPassword ? 'Hide password' : 'Show password'}
-          >
-            {user.showPassword ? 'Hide' : 'Show'}
-          </button>
-        </span>
-      </label>
-      <button
-        className="academy-admin-outline-button"
-        type="button"
-        onClick={() => onChange({ password: generatePassword(), showPassword: true })}
-      >
-        Generate password
-      </button>
       {index > 0 && (
         <button
           className="academy-admin-remove-button"
@@ -172,7 +116,10 @@ function AcademyAdmin({ onReturn }) {
   const [session, setSession] = useState(readAdminSession)
   const [users, setUsers] = useState([])
   const [lockedIps, setLockedIps] = useState([])
+  const [userCount, setUserCount] = useState(0)
   const [newUsers, setNewUsers] = useState([createEmptyUser()])
+  const [createdInvites, setCreatedInvites] = useState([])
+  const [copiedInvite, setCopiedInvite] = useState('')
   const [busy, setBusy] = useState(false)
   const [ready, setReady] = useState(false)
   const [notice, setNotice] = useState('')
@@ -180,6 +127,7 @@ function AcademyAdmin({ onReturn }) {
   const useDashboard = (data) => {
     setUsers(data.users || [])
     setLockedIps(data.lockedIps || [])
+    setUserCount(Number(data.userCount || 0))
     setReady(true)
   }
 
@@ -242,15 +190,20 @@ function AcademyAdmin({ onReturn }) {
     try {
       const batch = newUsers.map((user) => ({
         handle: normalizeHandle(user.handle),
-        password: user.password,
       }))
       const data = await callAdminApi('create-users', { users: batch }, session)
       const failed = (data.results || []).filter((result) => !result.created)
+      const invited = (data.results || []).filter((result) => result.created).map((result) => ({
+        ...result,
+        url: createInviteUrl(result.handle, result.inviteToken),
+      }))
+
+      setCreatedInvites(invited)
 
       if (failed.length) {
-        setNotice(`${data.createdCount} created. ${failed.map((result) => `${result.handle}: ${result.error}`).join(' ')}`)
+        setNotice(`${data.createdCount} invited. ${failed.map((result) => `${result.handle}: ${result.error}`).join(' ')}`)
       } else {
-        setNotice(`${data.createdCount} user${data.createdCount === 1 ? '' : 's'} created.`)
+        setNotice(`${data.createdCount} invitation${data.createdCount === 1 ? '' : 's'} created. Copy the one-time links below.`)
         setNewUsers([createEmptyUser()])
       }
 
@@ -298,7 +251,18 @@ function AcademyAdmin({ onReturn }) {
     setSession('')
     setUsers([])
     setLockedIps([])
+    setCreatedInvites([])
     setNotice('')
+  }
+
+  const copyInvite = async (invite) => {
+    try {
+      await navigator.clipboard.writeText(invite.url)
+      setCopiedInvite(invite.handle)
+      window.setTimeout(() => setCopiedInvite(''), 1800)
+    } catch {
+      setNotice('The browser could not copy that link. Select and copy it manually.')
+    }
   }
 
   if (!ready) {
@@ -321,7 +285,7 @@ function AcademyAdmin({ onReturn }) {
           <div>
             <p className="academy-admin-kicker">Agora</p>
             <h1>User Administration</h1>
-            <p>Create and manage message-board accounts.</p>
+            <p>Create invitations and manage message-board accounts. {userCount} total user{userCount === 1 ? '' : 's'}.</p>
           </div>
           <div className="academy-admin-heading__actions">
             <button type="button" onClick={onReturn}>Return to board</button>
@@ -349,12 +313,28 @@ function AcademyAdmin({ onReturn }) {
             >
               + Add another user ({newUsers.length}/{MAX_NEW_USERS})
             </button>
-            <p>Passwords are encrypted by Supabase Auth and cannot be viewed after creation.</p>
+            <p>Each user selects a password or PIN from their one-time link. Administrators never receive the secret.</p>
             <button className="academy-admin-primary-button" type="submit" disabled={busy}>
-              {busy ? 'Working…' : 'Create users'}
+              {busy ? 'Working…' : 'Create invitations'}
             </button>
           </div>
           {notice && <p className="academy-admin-notice" role="status">{notice}</p>}
+
+          {createdInvites.length > 0 && (
+            <section className="academy-admin-invites" aria-label="New one-time invitation links">
+              <h2>One-time invitation links</h2>
+              <p>Send each link only to its named user. Creating another link for the same unclaimed user invalidates the old one.</p>
+              {createdInvites.map((invite) => (
+                <div key={`${invite.profileNumber}-${invite.inviteToken}`}>
+                  <strong>#{String(invite.profileNumber).padStart(4, '0')} · @{invite.handle}</strong>
+                  <input value={invite.url} readOnly aria-label={`Invitation URL for @${invite.handle}`} onFocus={(event) => event.currentTarget.select()} />
+                  <button className="academy-admin-outline-button" type="button" onClick={() => copyInvite(invite)}>
+                    {copiedInvite === invite.handle ? 'Copied' : 'Copy link'}
+                  </button>
+                </div>
+              ))}
+            </section>
+          )}
         </form>
 
         <section className="academy-admin-card academy-admin-existing">
@@ -367,6 +347,7 @@ function AcademyAdmin({ onReturn }) {
                   <th>Twitter @</th>
                   <th>Twitter URL</th>
                   <th>Created</th>
+                  <th>Invitation</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -374,10 +355,11 @@ function AcademyAdmin({ onReturn }) {
               <tbody>
                 {users.map((user) => (
                   <tr key={user.id}>
-                    <td><span className="academy-admin-profile" aria-hidden="true" /></td>
+                    <td><span className="academy-admin-profile" aria-hidden="true" />{user.profile_number ? `#${String(user.profile_number).padStart(4, '0')}` : 'Legacy'}</td>
                     <td>@{user.twitter_handle}</td>
                     <td><a href={user.twitter_url} target="_blank" rel="noreferrer">{user.twitter_url}</a></td>
                     <td>{new Date(user.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}</td>
+                    <td><span className={`academy-admin-status academy-admin-status--${user.invitation_status}`}>{user.invitation_status}</span></td>
                     <td><span className={`academy-admin-status academy-admin-status--${user.status}`}>{user.status}</span></td>
                     <td>
                       <button className="academy-admin-row-action" type="button" onClick={() => toggleStatus(user)} disabled={busy}>
@@ -387,7 +369,7 @@ function AcademyAdmin({ onReturn }) {
                   </tr>
                 ))}
                 {!users.length && (
-                  <tr><td colSpan="6" className="academy-admin-empty">No managed users yet.</td></tr>
+                  <tr><td colSpan="7" className="academy-admin-empty">No managed users yet.</td></tr>
                 )}
               </tbody>
             </table>

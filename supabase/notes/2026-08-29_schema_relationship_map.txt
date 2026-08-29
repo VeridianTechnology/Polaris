@@ -1,0 +1,154 @@
+POLARIS / SUPABASE RELATIONSHIP MAP
+Review date: 2026-08-29
+
+Legend
+  1 -> many     one parent row can own many child rows
+  1 -> 0..1     one parent row can own at most one child row
+  [legacy]      retained for rows created through the older Supabase Auth path
+  [private]     RLS enabled and direct anon/authenticated table grants revoked
+  [public read] readable by anon/authenticated through a deliberately narrow surface
+
+
+AGORA: CANONICAL MEMBER IDENTITY
+
+  auth.users.id
+    1 -> 0..1 public.profiles.id                                      [private, legacy]
+    1 -> 0..1 public.agora_public_profiles.auth_user_id                [legacy]
+    1 -> 0..1 public.agora_managed_users.auth_user_id                  [legacy]
+
+  public.agora_public_profiles.profile_number                         [private]
+    Primary Agora identity and automatic user number.
+    The generated identity sequence assigns the next number (+1).
+
+    1 -> 0..1 public.agora_user_credentials.profile_number             [private]
+    1 -> many public.agora_user_sessions.profile_number                [private]
+    1 -> 0..1 public.agora_user_invites.profile_number                 [private]
+    1 -> 0..1 public.agora_managed_users.profile_number                [private]
+    1 -> many public.agora_comments.profile_number                     [private]
+
+  public.agora_user_credentials.profile_number
+    Holds login_username, bcrypt password_hash, and credential_kind.
+    credential_kind is password or pin. No plaintext secret is retained.
+
+  public.agora_user_invites.profile_number
+    Holds only a SHA-256 invitation token digest.
+    first_opened_at records a valid first visit.
+    claimed_at is set in the same transaction that creates the credential.
+    revoked_at and expires_at invalidate a link.
+
+  public.agora_user_sessions.profile_number
+    Holds only a SHA-256 application-session token digest.
+    Validity requires revoked_at IS NULL and expires_at > now().
+
+  public.agora_managed_users.profile_number
+    Admin dashboard record: Twitter handle/URL and active/inactive status.
+    auth_user_id remains nullable only to preserve older managed users.
+
+
+AGORA: POSTS AND REACTIONS
+
+  public.agora_comments.id                                             [private]
+    1 -> many public.agora_comments.parent_id                          self-reference
+    1 -> many public.agora_comment_reactions.comment_id                cascade delete
+
+  public.agora_public_profiles.profile_number
+    1 -> many public.agora_comments.profile_number
+
+  public.agora_comment_reactions
+    Composite identity: (comment_id, voter_id).
+    voter_id is the browser/member reaction identifier retained by the current schema.
+
+  public.agora_comment_feed                                            [private view]
+    security_invoker = true; no direct anon/authenticated grants.
+    public.get_agora_comment_feed(session_token) is the only browser feed read.
+    Missing session: post bodies remain readable, all author metadata becomes ANON.
+    Valid session: normal non-anonymous author metadata is returned.
+
+  public.agora_profile_directory                                       [private view]
+    security_invoker = true; no direct anon/authenticated grants.
+    public.get_agora_profile(profile_number, session_token) requires a valid session.
+
+
+AGORA: ADMINISTRATION
+
+  public.agora_admin_ip_access.ip_address                              [private]
+    Tracks the five-attempt/one-minute admin-login lockout state.
+
+  public.agora_admin_sessions.token_hash                               [private]
+    Short-lived administrator session, bound to ip_address.
+
+  public.agora_managed_users                                           [private]
+    Canonically relates to agora_public_profiles.profile_number.
+    New users are not created in auth.users and administrators never select secrets.
+
+  public.admin_create_agora_invite(handle)
+    EXECUTE: service_role only.
+    Creates/reuses the profile, increments the profile identity counter for a new
+    profile, creates the managed-user row, and returns a one-time raw invite token.
+
+  public.inspect_agora_invite(username, token)
+    EXECUTE: anon/authenticated. Returns a row only when both handle and token match.
+
+  public.claim_agora_invite(username, token, kind, secret)
+    EXECUTE: anon/authenticated. Locks and consumes one valid invite, bcrypt-hashes
+    the selected password/PIN, and creates the first Agora session atomically.
+
+  public.get_agora_user_count()
+    EXECUTE: anon/authenticated. Returns only COUNT(agora_public_profiles), no rows.
+
+
+ACADEMY: ISSUE AND RESEARCH CONTENT
+
+  public.academy_issues.issue_key                                      [public read]
+    1 -> many public.academy_business_entries.issue_key
+    1 -> many public.academy_finance_entries.issue_key
+    1 -> many public.academy_crime_entries.issue_key
+    1 -> many public.academy_freedom_entries.issue_key
+    1 -> many public.academy_map_entries.issue_key
+
+  public.academy_finance_entries (issue_key, item_number)
+    1 -> many public.academy_finance_comments
+
+  public.academy_crime_entries (issue_key, item_number)
+    1 -> many public.academy_crime_comments
+
+  public.academy_freedom_entries (issue_key, item_number)
+    1 -> many public.academy_freedom_comments
+
+  public.academy_map_entries (issue_key, entry_key)
+    parent_entry_key is a logical same-issue hierarchy used by the interactive map.
+    layer is flash-points, finance, or political-parties.
+
+
+CURRENT BROWSER DATA PATHS
+
+  Public visitor
+    -> get_agora_user_count()
+    -> get_agora_comment_feed(NULL) -> bodies with ANON author projection
+    -> inspect_agora_invite(handle, token) only for a personalized invite link
+    -> claim_agora_invite(...) once
+
+  Logged-in Agora member
+    -> get_agora_user_session(token)
+    -> get_agora_comment_feed(token)
+    -> get_agora_profile(profile_number, token)
+    -> create/delete/react/update RPCs authorized by the application session
+
+  Admin browser
+    -> academy-admin Edge Function
+    -> service_role database client (server only)
+    -> admin_create_agora_invite(handle)
+
+
+SECURITY REVIEW NOTES
+
+  - The browser receives the Supabase publishable key only. The service-role key stays
+    inside the Edge Function and must never be included in Vite environment variables.
+  - Direct grants on Agora identity, credential, invite, session, profile, and post
+    base tables are revoked from anon/authenticated. Browser access uses narrow RPCs.
+  - Every SECURITY DEFINER function in the invitation migration pins search_path to
+    an empty value and schema-qualifies every relation/function reference.
+  - The personalized @handle is an identifier, not authorization. The random token is
+    the invitation authority. The database claim lock prevents two successful claims.
+  - Browser localStorage only decides whether to replay the welcome presentation. It
+    is not trusted for account ownership; invitation and session ownership stay in DB.

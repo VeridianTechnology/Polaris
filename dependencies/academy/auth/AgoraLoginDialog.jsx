@@ -70,7 +70,7 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
             <input id="agora-login-username" ref={usernameRef} type="text" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" maxLength="64" placeholder="username" required />
           </div>
           <div className="agora-login-dialog__field">
-            <label htmlFor="agora-login-password">Password</label>
+            <label htmlFor="agora-login-password">Password or PIN</label>
             <div className="agora-login-dialog__password-field">
               <input id="agora-login-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" maxLength="200" required />
               <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>
