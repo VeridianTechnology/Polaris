@@ -23,6 +23,10 @@ function createInviteUrl(handle) {
   return url.toString()
 }
 
+function createInviteMessage(handle) {
+  return `Hey, welcome to Polaris. Set up your account here: ${createInviteUrl(handle)}`
+}
+
 function LoginGate({ onLogin, busy, notice }) {
   const [pin, setPin] = useState('')
   const [password, setPassword] = useState('')
@@ -224,17 +228,21 @@ function AcademyAdmin({ onReturn }) {
       }))
       const data = await callAdminApi('create-users', { users: batch }, session)
       const failed = (data.results || []).filter((result) => !result.created)
-      const invited = (data.results || []).filter((result) => result.created).map((result) => ({
-        ...result,
-        url: createInviteUrl(result.handle),
-      }))
+      const invited = (data.results || []).filter((result) => result.created).map((result) => {
+        const url = createInviteUrl(result.handle)
+        return {
+          ...result,
+          url,
+          message: createInviteMessage(result.handle),
+        }
+      })
 
       setCreatedInvites(invited)
 
       if (failed.length) {
         setNotice(`${data.createdCount} invited. ${failed.map((result) => `${result.handle}: ${result.error}`).join(' ')}`)
       } else {
-        setNotice(`${data.createdCount} invitation${data.createdCount === 1 ? '' : 's'} created. Copy the one-time links below.`)
+        setNotice(`${data.createdCount} invitation${data.createdCount === 1 ? '' : 's'} created. Copy the ready-to-send message${data.createdCount === 1 ? '' : 's'} below.`)
         setNewUsers([createEmptyUser()])
       }
 
@@ -317,9 +325,12 @@ function AcademyAdmin({ onReturn }) {
   }
 
   const copyInvite = async (invite) => {
+    const handle = invite.handle || invite.twitter_handle
+    const message = invite.message || createInviteMessage(handle)
+
     try {
-      await navigator.clipboard.writeText(invite.url)
-      setCopiedInvite(invite.handle)
+      await navigator.clipboard.writeText(message)
+      setCopiedInvite(handle)
       window.setTimeout(() => setCopiedInvite(''), 1800)
     } catch {
       setNotice('The browser could not copy that link. Select and copy it manually.')
@@ -388,14 +399,14 @@ function AcademyAdmin({ onReturn }) {
           </div>
           {createdInvites.length > 0 && (
             <section className="academy-admin-invites" aria-label="New one-time invitation links">
-              <h2>One-time invitation links</h2>
-              <p>Send each link only to its named user. Creating another link for the same unclaimed user invalidates the old one.</p>
+              <h2>Ready-to-send invitations</h2>
+              <p>Each message includes the user’s named Polaris link. Creating another invitation for the same unclaimed user invalidates the old one.</p>
               {createdInvites.map((invite) => (
                 <div key={`${invite.profileNumber}-${invite.inviteToken}`}>
                   <strong>#{String(invite.profileNumber).padStart(4, '0')} · @{invite.handle}</strong>
-                  <input value={invite.url} readOnly aria-label={`Invitation URL for @${invite.handle}`} onFocus={(event) => event.currentTarget.select()} />
+                  <textarea value={invite.message} readOnly rows="2" aria-label={`Invitation message for @${invite.handle}`} onFocus={(event) => event.currentTarget.select()} />
                   <button className="academy-admin-outline-button" type="button" onClick={() => copyInvite(invite)}>
-                    {copiedInvite === invite.handle ? 'Copied' : 'Copy link'}
+                    {copiedInvite === invite.handle ? 'Copied' : 'Copy message'}
                   </button>
                 </div>
               ))}
@@ -439,9 +450,16 @@ function AcademyAdmin({ onReturn }) {
                     <td><span className={`academy-admin-status academy-admin-status--${user.invitation_status}`}>{user.invitation_status}</span></td>
                     <td><span className={`academy-admin-status academy-admin-status--${user.status}`}>{user.status}</span></td>
                     <td>
-                      <button className="academy-admin-row-action" type="button" onClick={() => toggleStatus(user)} disabled={busy}>
-                        {user.status === 'active' ? 'Disable' : 'Enable'}
-                      </button>
+                      <div className="academy-admin-row-actions">
+                        {['pending', 'opened'].includes(user.invitation_status) && (
+                          <button className="academy-admin-row-action" type="button" onClick={() => copyInvite(user)}>
+                            {copiedInvite === user.twitter_handle ? 'Copied' : 'Copy invite'}
+                          </button>
+                        )}
+                        <button className="academy-admin-row-action" type="button" onClick={() => toggleStatus(user)} disabled={busy}>
+                          {user.status === 'active' ? 'Disable' : 'Enable'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
