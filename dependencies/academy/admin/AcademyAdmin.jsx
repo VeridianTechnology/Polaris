@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { callAdminApi, readAdminSession, saveAdminSession } from './adminApi'
 import './academy-admin.css'
 
 const MAX_NEW_USERS = 15
+const USER_PAGE_SIZE = 25
 
 function createEmptyUser() {
   return {
@@ -114,9 +115,16 @@ function NewUserRow({ user, index, onChange, onRemove }) {
 
 function AcademyAdmin({ onReturn }) {
   const [session, setSession] = useState(readAdminSession)
+  const [activeTab, setActiveTab] = useState('create')
   const [users, setUsers] = useState([])
+  const [userSearchInput, setUserSearchInput] = useState('')
+  const [userSearch, setUserSearch] = useState('')
+  const [userPage, setUserPage] = useState(1)
+  const [userTotal, setUserTotal] = useState(0)
+  const [usersLoading, setUsersLoading] = useState(false)
   const [lockedIps, setLockedIps] = useState([])
   const [userCount, setUserCount] = useState(0)
+  const [managedUserCount, setManagedUserCount] = useState(0)
   const [newUsers, setNewUsers] = useState([createEmptyUser()])
   const [createdInvites, setCreatedInvites] = useState([])
   const [copiedInvite, setCopiedInvite] = useState('')
@@ -125,11 +133,29 @@ function AcademyAdmin({ onReturn }) {
   const [notice, setNotice] = useState('')
 
   const useDashboard = (data) => {
-    setUsers(data.users || [])
     setLockedIps(data.lockedIps || [])
     setUserCount(Number(data.userCount || 0))
+    setManagedUserCount(Number(data.managedUserCount || 0))
     setReady(true)
   }
+
+  const loadUsers = useCallback(async (page, search) => {
+    if (!session) return
+    setUsersLoading(true)
+    try {
+      const data = await callAdminApi('list-users', {
+        page,
+        pageSize: USER_PAGE_SIZE,
+        search,
+      }, session)
+      setUsers(data.users || [])
+      setUserTotal(Number(data.totalCount || 0))
+    } catch (error) {
+      setNotice(error.message)
+    } finally {
+      setUsersLoading(false)
+    }
+  }, [session])
 
   useEffect(() => {
     if (!session) {
@@ -152,6 +178,11 @@ function AcademyAdmin({ onReturn }) {
       cancelled = true
     }
   }, [session])
+
+  useEffect(() => {
+    if (activeTab !== 'users' || !session) return
+    loadUsers(userPage, userSearch)
+  }, [activeTab, loadUsers, session, userPage, userSearch])
 
   const login = async (pin, password) => {
     setBusy(true)
@@ -224,7 +255,7 @@ function AcademyAdmin({ onReturn }) {
         userId: user.id,
         status: user.status === 'active' ? 'inactive' : 'active',
       }, session)
-      await refreshDashboard()
+      await loadUsers(userPage, userSearch)
     } catch (error) {
       setNotice(error.message)
     } finally {
@@ -250,9 +281,39 @@ function AcademyAdmin({ onReturn }) {
     saveAdminSession('')
     setSession('')
     setUsers([])
+    setUserSearchInput('')
+    setUserSearch('')
+    setUserPage(1)
+    setUserTotal(0)
     setLockedIps([])
     setCreatedInvites([])
     setNotice('')
+  }
+
+  const selectTab = (tab) => {
+    setActiveTab(tab)
+    setNotice('')
+  }
+
+  const searchUsers = (event) => {
+    event.preventDefault()
+    const nextSearch = userSearchInput.trim()
+    if (userPage === 1 && userSearch === nextSearch) {
+      loadUsers(1, nextSearch)
+      return
+    }
+    setUserPage(1)
+    setUserSearch(nextSearch)
+  }
+
+  const clearUserSearch = () => {
+    setUserSearchInput('')
+    if (userPage === 1 && !userSearch) {
+      loadUsers(1, '')
+      return
+    }
+    setUserPage(1)
+    setUserSearch('')
   }
 
   const copyInvite = async (invite) => {
@@ -293,7 +354,14 @@ function AcademyAdmin({ onReturn }) {
           </div>
         </header>
 
-        <form className="academy-admin-card academy-admin-create" onSubmit={createUsers}>
+        <nav className="academy-admin-tabs" aria-label="Administration sections" role="tablist">
+          <button className={activeTab === 'create' ? 'is-active' : ''} type="button" role="tab" aria-selected={activeTab === 'create'} onClick={() => selectTab('create')}>Create invitations</button>
+          <button className={activeTab === 'users' ? 'is-active' : ''} type="button" role="tab" aria-selected={activeTab === 'users'} onClick={() => selectTab('users')}>Existing users <span>{managedUserCount}</span></button>
+        </nav>
+
+        {notice && <p className="academy-admin-notice academy-admin-notice--global" role="status">{notice}</p>}
+
+        {activeTab === 'create' && <form className="academy-admin-card academy-admin-create" onSubmit={createUsers}>
           {newUsers.map((user, index) => (
             <NewUserRow
               key={user.id}
@@ -318,8 +386,6 @@ function AcademyAdmin({ onReturn }) {
               {busy ? 'Working…' : 'Create invitations'}
             </button>
           </div>
-          {notice && <p className="academy-admin-notice" role="status">{notice}</p>}
-
           {createdInvites.length > 0 && (
             <section className="academy-admin-invites" aria-label="New one-time invitation links">
               <h2>One-time invitation links</h2>
@@ -335,10 +401,21 @@ function AcademyAdmin({ onReturn }) {
               ))}
             </section>
           )}
-        </form>
+        </form>}
 
-        <section className="academy-admin-card academy-admin-existing">
-          <h2>Existing users</h2>
+        {activeTab === 'users' && <section className="academy-admin-card academy-admin-existing">
+          <header className="academy-admin-existing__heading">
+            <div>
+              <h2>Existing users</h2>
+              <p>{userTotal.toLocaleString()} matching user{userTotal === 1 ? '' : 's'} · 25 per page</p>
+            </div>
+            <form className="academy-admin-search" role="search" onSubmit={searchUsers}>
+              <label className="visually-hidden" htmlFor="academy-admin-user-search">Search existing users</label>
+              <input id="academy-admin-user-search" type="search" value={userSearchInput} onChange={(event) => setUserSearchInput(event.target.value)} placeholder="Profile, @handle, URL or status" maxLength="100" />
+              {userSearch && <button type="button" onClick={clearUserSearch}>Clear</button>}
+              <button type="submit" disabled={usersLoading}>{usersLoading ? 'Searching…' : 'Search'}</button>
+            </form>
+          </header>
           <div className="academy-admin-table-wrap">
             <table>
               <thead>
@@ -369,14 +446,22 @@ function AcademyAdmin({ onReturn }) {
                   </tr>
                 ))}
                 {!users.length && (
-                  <tr><td colSpan="7" className="academy-admin-empty">No managed users yet.</td></tr>
+                  <tr><td colSpan="7" className="academy-admin-empty">{usersLoading ? 'Loading users…' : 'No matching users.'}</td></tr>
                 )}
               </tbody>
             </table>
           </div>
-        </section>
+          <footer className="academy-admin-pagination">
+            <p>{userTotal ? `Showing ${(userPage - 1) * USER_PAGE_SIZE + 1}–${Math.min(userPage * USER_PAGE_SIZE, userTotal)} of ${userTotal}` : 'No results'}</p>
+            <div>
+              <button type="button" disabled={usersLoading || userPage <= 1} onClick={() => setUserPage((current) => Math.max(1, current - 1))}>Previous</button>
+              <span>Page {userPage} of {Math.max(1, Math.ceil(userTotal / USER_PAGE_SIZE))}</span>
+              <button type="button" disabled={usersLoading || userPage >= Math.ceil(userTotal / USER_PAGE_SIZE)} onClick={() => setUserPage((current) => current + 1)}>Next</button>
+            </div>
+          </footer>
+        </section>}
 
-        {lockedIps.length > 0 && (
+        {activeTab === 'users' && lockedIps.length > 0 && (
           <section className="academy-admin-card academy-admin-lockouts">
             <h2>Locked IP addresses</h2>
             {lockedIps.map((entry) => (

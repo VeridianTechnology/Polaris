@@ -57,14 +57,7 @@ function createSessionToken() {
 }
 
 async function dashboard(admin: AdminClient) {
-  const [usersResult, invitesResult, lockoutsResult, profileCountResult] = await Promise.all([
-    admin
-      .from('agora_managed_users')
-      .select('id, auth_user_id, profile_number, twitter_handle, twitter_url, status, has_logged_in, created_at')
-      .order('created_at', { ascending: false }),
-    admin
-      .from('agora_user_invites')
-      .select('profile_number, expires_at, first_opened_at, claimed_at, revoked_at'),
+  const [lockoutsResult, profileCountResult, managedCountResult] = await Promise.all([
     admin
       .from('agora_admin_ip_access')
       .select('ip_address, locked_at, last_attempt_at')
@@ -73,41 +66,43 @@ async function dashboard(admin: AdminClient) {
     admin
       .from('agora_public_profiles')
       .select('profile_number', { count: 'exact', head: true }),
+    admin
+      .from('agora_managed_users')
+      .select('id', { count: 'exact', head: true }),
   ])
 
-  if (usersResult.error) throw usersResult.error
-  if (invitesResult.error) throw invitesResult.error
   if (lockoutsResult.error) throw lockoutsResult.error
   if (profileCountResult.error) throw profileCountResult.error
-
-  const invitesByProfile = new Map(
-    (invitesResult.data || []).map((invite: Record<string, unknown>) => [Number(invite.profile_number), invite]),
-  )
-  const now = Date.now()
-  const users = (usersResult.data || []).map((user: Record<string, unknown>) => {
-    const invite = invitesByProfile.get(Number(user.profile_number)) as Record<string, unknown> | undefined
-    let invitationStatus = 'legacy'
-
-    if (invite?.revoked_at) invitationStatus = 'revoked'
-    else if (invite?.claimed_at) invitationStatus = 'claimed'
-    else if (invite?.expires_at && new Date(String(invite.expires_at)).getTime() <= now) invitationStatus = 'expired'
-    else if (invite?.first_opened_at) invitationStatus = 'opened'
-    else if (invite) invitationStatus = 'pending'
-
-    return {
-      ...user,
-      invitation_status: invitationStatus,
-      invitation_expires_at: invite?.expires_at || null,
-      invitation_opened_at: invite?.first_opened_at || null,
-      invitation_claimed_at: invite?.claimed_at || null,
-    }
-  })
+  if (managedCountResult.error) throw managedCountResult.error
 
   return {
-    users,
     lockedIps: lockoutsResult.data || [],
     userCount: profileCountResult.count || 0,
+    managedUserCount: managedCountResult.count || 0,
   }
+}
+
+async function listUsers(body: Record<string, unknown>, admin: AdminClient) {
+  const requestedPage = Number(body.page || 1)
+  const requestedPageSize = Number(body.pageSize || 25)
+  const page = Number.isFinite(requestedPage) ? Math.max(1, Math.trunc(requestedPage)) : 1
+  const pageSize = Number.isFinite(requestedPageSize)
+    ? Math.min(100, Math.max(10, Math.trunc(requestedPageSize)))
+    : 25
+  const search = String(body.search || '').trim().slice(0, 100)
+
+  const { data, error } = await admin.rpc('admin_search_agora_users', {
+    p_search: search,
+    p_page: page,
+    p_page_size: pageSize,
+  })
+  if (error) throw error
+
+  const rows = (data || []) as Array<Record<string, unknown>>
+  const totalCount = Number(rows[0]?.total_count || 0)
+  const users = rows.map(({ total_count: _totalCount, ...user }) => user)
+
+  return { users, totalCount, page, pageSize, search }
 }
 
 async function requireSession(request: Request, admin: AdminClient, ipAddress: string) {
@@ -291,6 +286,7 @@ export default {
       await requireSession(request, admin, ipAddress)
 
       if (action === 'dashboard') return json({ ok: true, ...(await dashboard(admin)) })
+      if (action === 'list-users') return json({ ok: true, ...(await listUsers(body, admin)) })
       if (action === 'create-users') return json({ ok: true, ...(await createUsers(body, admin)) })
       if (action === 'set-user-status') {
         await setUserStatus(body, admin)
