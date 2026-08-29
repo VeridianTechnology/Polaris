@@ -51,7 +51,7 @@ function normalizeOptionalUrl(value) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
 }
 
-function AcademyProfile({ profileNumber, authSession, onLogin, onReturn }) {
+function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenAdmin }) {
   const [profile, setProfile] = useState(() => ({ ...EMPTY_PROFILE, profile_number: profileNumber }))
   const [status, setStatus] = useState(isSupabaseConfigured ? 'loading' : 'unconfigured')
   const [notice, setNotice] = useState('')
@@ -61,6 +61,11 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn }) {
     [profile.profile_number, profileNumber],
   )
   const isEditable = Boolean(profile.is_owner && authSession?.profile_number === profileNumber)
+  const canOpenAdmin = Boolean(
+    authSession?.is_admin
+    && authSession?.username?.toLowerCase() === 'nyx'
+    && authSession?.profile_number === profileNumber
+  )
 
   useEffect(() => {
     if (!supabase) return undefined
@@ -156,7 +161,15 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn }) {
       </aside>
 
       <div className="academy-profile-shell">
-        <button className="academy-profile-return" type="button" onClick={onReturn}>← Return to Global</button>
+        <div className="academy-profile-actions">
+          <button className="academy-profile-return" type="button" onClick={onReturn}>← Return to Global</button>
+          {canOpenAdmin && (
+            <button className="academy-profile-admin" type="button" onClick={onOpenAdmin}>
+              <AgoraAdminBadge large />
+              <span>Open administration</span>
+            </button>
+          )}
+        </div>
 
         {status === 'loading' && <p className="academy-profile-message">Loading profile…</p>}
         {status === 'unconfigured' && <p className="academy-profile-message">Add the Supabase project URL and publishable key to load profiles.</p>}

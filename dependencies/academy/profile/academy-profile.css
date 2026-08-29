@@ -73,9 +73,16 @@
   padding: clamp(2rem, 4vw, 4rem) clamp(1.5rem, 5vw, 5rem) 5rem;
 }
 
+.academy-profile-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.2rem;
+}
+
 .academy-profile-return {
   appearance: none;
-  margin-bottom: 2.2rem;
   padding: .5rem 0;
   border: 0;
   border-bottom: 1px solid rgba(54, 60, 60, .35);
@@ -85,6 +92,38 @@
   letter-spacing: .14em;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.academy-profile-admin {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .55rem .85rem .55rem .35rem;
+  border: 1px solid rgba(73, 81, 86, .32);
+  border-radius: .5rem;
+  color: #303534;
+  background: rgba(255, 255, 255, .55);
+  box-shadow: 0 .5rem 1.4rem rgba(35, 41, 46, .1);
+  font: 650 .62rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.academy-profile-admin .agora-admin-badge {
+  pointer-events: none;
+}
+
+.academy-profile-admin:hover,
+.academy-profile-admin:focus-visible {
+  border-color: rgba(84, 142, 181, .7);
+  background: rgba(255, 255, 255, .85);
+}
+
+.academy-profile-admin:focus-visible {
+  outline: 2px solid #5b91be;
+  outline-offset: 3px;
 }
 
 .academy-profile-form {
@@ -438,6 +477,11 @@
 }
 
 @media (max-width: 620px) {
+  .academy-profile-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .academy-profile-identity {
     grid-template-columns: 6rem minmax(0, 1fr);
     gap: 1.2rem;

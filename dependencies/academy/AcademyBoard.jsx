@@ -93,7 +93,7 @@ function LinkPreview({ url }) {
   )
 }
 
-function AcademyBoard({ navigate, authSession, userCount = 0, onLogin, onOpenAdmin }) {
+function AcademyBoard({ navigate, authSession, userCount = 0, onLogin }) {
   const [comments, setComments] = useState([])
   const [draft, setDraft] = useState('')
   const [feedStatus, setFeedStatus] = useState(isSupabaseConfigured ? 'loading' : 'unconfigured')
@@ -437,10 +437,6 @@ function AcademyBoard({ navigate, authSession, userCount = 0, onLogin, onOpenAdm
           })}
         </div>
       </div>
-
-      {authSession?.is_admin && <div className="academy-admin-entry">
-        <button type="button" onClick={onOpenAdmin} aria-label="Open Agora administration"><span className="academy-admin-entry__key" aria-hidden="true" /><span>Admin</span></button>
-      </div>}
 
       {activeInfo && (
         <div className="academy-info-modal" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setActiveInfo(null) }}>

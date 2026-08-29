@@ -21,7 +21,10 @@ import RouteLink from '../routing/RouteLink.jsx'
 import useAppRouter from '../routing/useAppRouter.js'
 import { parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
 
-function readInviteEntry() {
+function readInviteEntry(route) {
+  if (route.page === 'invite') {
+    return { username: route.inviteHandle || '', inviteToken: '' }
+  }
   const parameters = new URLSearchParams(window.location.search)
   return {
     username: parameters.get('welcome') || '',
@@ -30,7 +33,7 @@ function readInviteEntry() {
 }
 
 function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout }) {
-  if (route.page === 'home' || route.page === 'new-user-preview') return null
+  if (route.page === 'home' || route.page === 'new-user-preview' || route.page === 'invite') return null
 
   const isAcademy = route.page === 'agora'
   const isAgora = route.page === 'academy' || route.page === 'academy-profile' || route.page === 'admin'
@@ -155,13 +158,14 @@ function App() {
   const { route, navigate } = useAppRouter()
   const { session: authSession, status: authStatus, login, claimInvite, logout } = useAgoraAuth()
   const [loginOpen, setLoginOpen] = useState(false)
-  const inviteEntry = readInviteEntry()
+  const inviteEntry = readInviteEntry(route)
   const [userCount, setUserCount] = useState(0)
   const isHome = route.page === 'home'
   const isNewUserPreview = route.page === 'new-user-preview'
-  const isLanding = isHome || isNewUserPreview
-  const hasPersonalInvite = Boolean(inviteEntry.username && inviteEntry.inviteToken)
-  const showInviteWelcome = isNewUserPreview || (isHome && hasPersonalInvite)
+  const isInvite = route.page === 'invite'
+  const isLanding = isHome || isNewUserPreview || isInvite
+  const hasPersonalInvite = Boolean(inviteEntry.username && (inviteEntry.inviteToken || isInvite))
+  const showInviteWelcome = isNewUserPreview || ((isHome || isInvite) && hasPersonalInvite)
   const heroMode = route.page === 'agora' ? route.section : route.page
   const politicalView = route.politicalView || 'world'
   const enteredBackground = route.section === 'finance'
@@ -219,6 +223,8 @@ function App() {
         ? detailPageTitle || `Academy ${route.section === 'politics' ? 'Map' : `${route.section.charAt(0).toUpperCase()}${route.section.slice(1)}`} — Polaris`
         : isNewUserPreview
           ? 'New User Preview — Polaris'
+          : isInvite
+            ? `Welcome @${route.inviteHandle} — Polaris`
           : 'Polaris — Your New Digital Home'
     let favicon = document.querySelector('link[rel="icon"]')
 
@@ -231,7 +237,7 @@ function App() {
     favicon.type = 'image/png'
     favicon.href = iconPath
     document.title = pageTitle
-  }, [route.page, route.section, route.crimeCase, route.financeCase, route.freedomCase, route.profileNumber, isNewUserPreview])
+  }, [route.page, route.section, route.crimeCase, route.financeCase, route.freedomCase, route.profileNumber, route.inviteHandle, isNewUserPreview, isInvite])
 
   const changePoliticalView = (view) => navigate(politicsPath(view))
   const leavePoliticalView = () => navigate(politicsPath(parentPoliticalView(politicalView)))
@@ -267,7 +273,7 @@ function App() {
         onLogout={logout}
       />
 
-      {route.page === 'home' && showInviteWelcome && (
+      {(route.page === 'home' || route.page === 'invite') && showInviteWelcome && (
         <InviteWelcome
           username={inviteEntry.username}
           inviteToken={inviteEntry.inviteToken}
@@ -293,7 +299,6 @@ function App() {
           authSession={authSession}
           userCount={userCount}
           onLogin={() => setLoginOpen(true)}
-          onOpenAdmin={() => navigate(ROUTES.academyAdmin)}
         />
       )}
       {route.page === 'academy-profile' && (
@@ -302,6 +307,7 @@ function App() {
           authSession={authSession}
           onLogin={() => setLoginOpen(true)}
           onReturn={() => navigate(ROUTES.academy)}
+          onOpenAdmin={() => navigate(ROUTES.academyAdmin)}
         />
       )}
       {route.page === 'admin' && (

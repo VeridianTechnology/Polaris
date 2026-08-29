@@ -15,10 +15,10 @@ function normalizeHandle(value) {
   return value.trim().replace(/^@+/, '')
 }
 
-function createInviteUrl(handle, inviteToken) {
-  const url = new URL('/', window.location.origin)
-  url.searchParams.set('welcome', `@${handle}`)
-  url.searchParams.set('invite', inviteToken)
+const INVITE_SITE_ORIGIN = (import.meta.env.VITE_PUBLIC_SITE_URL?.trim() || 'https://soft-fenglisu-ae6931.netlify.app').replace(/\/+$/, '')
+
+function createInviteUrl(handle) {
+  const url = new URL(`/${encodeURIComponent(handle)}`, `${INVITE_SITE_ORIGIN}/`)
   return url.toString()
 }
 
@@ -195,7 +195,7 @@ function AcademyAdmin({ onReturn }) {
       const failed = (data.results || []).filter((result) => !result.created)
       const invited = (data.results || []).filter((result) => result.created).map((result) => ({
         ...result,
-        url: createInviteUrl(result.handle, result.inviteToken),
+        url: createInviteUrl(result.handle),
       }))
 
       setCreatedInvites(invited)

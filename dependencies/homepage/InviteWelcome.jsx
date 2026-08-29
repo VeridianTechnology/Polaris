@@ -9,7 +9,7 @@ function normalizedHandle(value) {
 function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora, preview = false }) {
   const handle = normalizedHandle(username)
   const [invite, setInvite] = useState(preview ? { display_name: `@${handle || 'New'}` } : null)
-  const [status, setStatus] = useState(preview ? 'ready' : (handle && inviteToken ? 'checking' : 'missing'))
+  const [status, setStatus] = useState(preview ? 'ready' : (handle ? 'checking' : 'missing'))
   const [credentialKind, setCredentialKind] = useState('')
   const [password, setPassword] = useState('')
   const [pin, setPin] = useState('')
@@ -25,9 +25,9 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora, preview =
       return undefined
     }
 
-    if (!handle || !inviteToken || !supabase) {
-      setStatus(handle && inviteToken ? 'error' : 'missing')
-      if (handle && inviteToken && !supabase) setNotice('The invitation service is not configured.')
+    if (!handle || !supabase) {
+      setStatus(handle ? 'error' : 'missing')
+      if (handle && !supabase) setNotice('The invitation service is not configured.')
       return undefined
     }
 
@@ -35,10 +35,13 @@ function InviteWelcome({ username, inviteToken, onClaim, onEnterAgora, preview =
     setStatus('checking')
     setNotice('')
 
-    supabase.rpc('inspect_agora_invite', {
+    const rpcName = inviteToken ? 'inspect_agora_invite' : 'inspect_agora_handle_invite'
+    const rpcArguments = {
       p_username: handle,
-      p_invite_token: inviteToken,
-    }).then(({ data, error }) => {
+      ...(inviteToken ? { p_invite_token: inviteToken } : {}),
+    }
+
+    supabase.rpc(rpcName, rpcArguments).then(({ data, error }) => {
       if (cancelled) return
       const row = Array.isArray(data) ? data[0] : data
 

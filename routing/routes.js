@@ -21,6 +21,11 @@ export function academyProfilePath(profileNumber) {
   return `${ROUTES.academy}/profile/${Number.isFinite(normalizedNumber) ? normalizedNumber : 1}`
 }
 
+export function invitePath(handle) {
+  const normalizedHandle = String(handle || '').trim().replace(/^@+/, '')
+  return `/${encodeURIComponent(normalizedHandle)}`
+}
+
 const POLITICAL_VIEW_SLUGS = {
   world: '',
   middleEast: 'middle-east',
@@ -185,6 +190,15 @@ export function matchRoute(pathname) {
       section: 'politics',
       politicalView,
       path: politicsPath(politicalView),
+    }
+  }
+
+  const inviteMatch = path.match(/^\/([A-Za-z0-9_]{2,32})$/)
+  if (inviteMatch) {
+    return {
+      page: 'invite',
+      inviteHandle: inviteMatch[1],
+      path: invitePath(inviteMatch[1]),
     }
   }
 

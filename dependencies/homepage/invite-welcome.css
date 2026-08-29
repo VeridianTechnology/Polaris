@@ -16,13 +16,13 @@
 }
 
 .invite-welcome__copy {
-  width: min(100%, 39rem);
+  width: min(100%, 52rem);
   justify-self: center;
   padding: clamp(1.5rem, 3vw, 3rem);
 }
 
 .invite-welcome__copy > p:first-child {
-  margin: 0 0 1rem;
+  margin: 0 0 clamp(1.8rem, 3vh, 2.75rem);
   color: #668daf;
   font-size: clamp(1.65rem, 3vw, 3.5rem);
   font-weight: 650;
@@ -35,7 +35,7 @@
   margin: 0;
   color: #292c2e;
   font-family: Didot, "Bodoni 72", "Times New Roman", serif;
-  font-size: clamp(4rem, 8vw, 8.5rem);
+  font-size: clamp(3.5rem, 5.25vw, 6rem);
   font-weight: 400;
   letter-spacing: -.06em;
   line-height: .86;
@@ -215,7 +215,7 @@
   }
 
   .invite-welcome h1 {
-    font-size: clamp(3.1rem, 16vw, 5.2rem);
+    font-size: clamp(2.8rem, 13vw, 4.5rem);
   }
 
   .invite-welcome__form {
