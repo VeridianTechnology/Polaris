@@ -1,11 +1,15 @@
 POLARIS DEVELOPMENT NOTES
-Updated: August 29, 2026
+Updated: August 30, 2026
 
 HOME
 - Rebranded the landing page from Agora to Polaris.
 - Added the Polaris logo and route-specific favicons.
 - Added the launch timer and improved location-permission retry behavior.
 - Changed the landing-page typography to a softer off-white treatment.
+- Retired the personalized invitation landing page and kept the standard Polaris
+  launch homepage as the single public entry point.
+- Removed invitations-sent and registered-user counters from the homepage, Academy,
+  and public SQL surface.
 
 NAVIGATION
 - Added the fixed Home / Academy / Agora header outside the homepage.
@@ -20,8 +24,9 @@ ACADEMY
 - Added Supabase comments, guest identity NYX, likes, and dislikes.
 - Added the Global / What Is This? / Rules artwork rail beside the board. The two
   information controls open keyboard-accessible, dimmed-background paper modals.
-- Added the hidden Academy Admin entry point and protected administration route.
-- Added IP-based five-attempt lockouts, 30-minute sessions, and managed-user creation.
+- Reworked the protected Academy Admin route into a story-approval queue. NYX uses
+  the same normal Agora account session for moderation; there is no separate admin
+  PIN/password screen.
 - Added public profile and post numbers. NYX is profile 0001 and the existing first
   Global post is retroactively post 0001.
 - Added an editable Academy profile route with an eight-icon picker, 400-character
@@ -39,6 +44,12 @@ ACADEMY
   NYX posts and the profile. Administrators bypass the 24-hour Global cooldown.
 - Limited every Global post to three links, with a 200-character maximum for each
   link, in both the browser and PostgreSQL.
+- Opened account creation to everyone. A sequential member number is assigned when
+  a person creates a password or six-digit PIN; legacy invitation rows remain only
+  as historical data and are no longer reachable from the browser.
+- Added member story submissions to Finance, Crime, and Freedom. Each proposal uses
+  a source URL, image URL with live preview, title, subtext, and the authenticated
+  username. Approved submissions join each library's existing cards.
 
 AGORA
 - Business includes the venture-capital directory.
@@ -95,5 +106,20 @@ DATABASE NOTES
 - 2026-08-29_academy_map_united_states_finance.sql adds title/score-display fields
   to Map entries and seeds the United States housing report under Finance with its
   `20+` stability display. Run it after the Map repair/parties migration.
-- Images remain local static assets for now and are intentionally not part of the schema.
+- migrations/20260830042945_academy_map_australia_finance.sql adds Australia to the Finance
+  layer with the Prime Minister's housing post, NYX analysis, and `+5 Awareness`.
+  Run it after the United States Finance Map migration.
+- migrations/20260830042946_academy_map_united_kingdom_finance.sql adds the United Kingdom to
+  Finance with the bond-instability video, NYX analysis, and `-50 Stability`.
+  Run it after the Australia Finance Map migration.
+- migrations/20260830042943_agora_registered_membership_stats.sql adds registration-ordered
+  member numbers, backfills credentialed accounts, assigns future numbers through
+  a credential-insert trigger, and exposes separate public invite/user counts.
+  Run it after the invitation, credential-lockout, and admin-search migrations.
+- migrations/20260830232051_open_registration_and_story_submissions.sql opens account creation,
+  retires browser invitation claims and public membership-count RPCs, and adds a
+  moderated Finance / Crime / Freedom story queue. It preserves legacy invite data.
+  Run it after the registered-membership migration.
+- Existing editorial images remain local static assets. Member submissions currently
+  use moderated HTTPS image URLs; Supabase Storage upload permissions are not enabled.
 - Never place Supabase secret/service-role keys in the browser bundle.

@@ -15,9 +15,11 @@ export function AgoraAuthArtworkButton({ mode = 'login', className = '', ...prop
   )
 }
 
-function AgoraLoginDialog({ open, onClose, onLogin }) {
+function AgoraLoginDialog({ open, onClose, onLogin, onRegister }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmation, setConfirmation] = useState('')
+  const [mode, setMode] = useState('login')
   const [credentialMode, setCredentialMode] = useState('password')
   const [showPassword, setShowPassword] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -45,21 +47,42 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
   const toggleCredentialMode = () => {
     setCredentialMode((current) => current === 'pin' ? 'password' : 'pin')
     setPassword('')
+    setConfirmation('')
     setShowPassword(false)
     setNotice('')
   }
 
+  const toggleMode = () => {
+    setMode((current) => current === 'login' ? 'register' : 'login')
+    setPassword('')
+    setConfirmation('')
+    setShowPassword(false)
+    setNotice('')
+  }
+
+  const normalizedUsername = username.trim().replace(/^@+/, '')
+  const validUsername = /^[A-Za-z0-9_]{3,32}$/.test(normalizedUsername)
+  const validSecret = credentialMode === 'pin'
+    ? (mode === 'register' ? /^\d{6}$/.test(password) : /^\d{4}(?:\d{2})?$/.test(password))
+    : mode === 'login' ? Boolean(password) : password.length >= 12
+  const canSubmit = validUsername
+    && validSecret
+    && (mode === 'login' || confirmation === password)
+    && !busy
+
   const submit = async (event) => {
     event.preventDefault()
-    if (!username.trim() || !password || (credentialMode === 'pin' && password.length !== 4) || busy) return
+    if (!canSubmit) return
     setBusy(true)
     setNotice('')
     try {
-      await onLogin(username, password)
+      if (mode === 'register') await onRegister(username, credentialMode, password)
+      else await onLogin(username, password)
       setPassword('')
+      setConfirmation('')
       onClose()
     } catch (error) {
-      setNotice(error?.message || 'Login failed.')
+      setNotice(error?.message || (mode === 'register' ? 'Registration failed.' : 'Login failed.'))
     } finally {
       setBusy(false)
     }
@@ -70,8 +93,9 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
       if (event.target === event.currentTarget && !busy) onClose()
     }}>
       <section className="agora-login-dialog" role="dialog" aria-modal="true" aria-labelledby="agora-login-title">
-        <button className="agora-login-dialog__close" type="button" onClick={onClose} disabled={busy} aria-label="Close login">×</button>
-        <h2 id="agora-login-title">Log in</h2>
+        <button className="agora-login-dialog__close" type="button" onClick={onClose} disabled={busy} aria-label="Close account dialog">×</button>
+        <p className="agora-login-dialog__eyebrow">Open membership</p>
+        <h2 id="agora-login-title">{mode === 'register' ? 'Create account' : 'Log in'}</h2>
         <form onSubmit={submit}>
           <div className="agora-login-dialog__field">
             <label htmlFor="agora-login-username">Username</label>
@@ -79,12 +103,12 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
           </div>
           <div className="agora-login-dialog__field">
             <div className="agora-login-dialog__credential-heading">
-              <label htmlFor="agora-login-password">{credentialMode === 'pin' ? 'PIN' : 'Password'}</label>
+              <label htmlFor="agora-login-password">{credentialMode === 'pin' ? (mode === 'register' ? 'Six-digit PIN' : 'PIN') : 'Password'}</label>
               <button
                 className={`agora-login-dialog__pin-toggle${credentialMode === 'pin' ? ' is-selected' : ''}`}
                 type="button"
                 onClick={toggleCredentialMode}
-                aria-label={credentialMode === 'pin' ? 'Use password instead' : 'Use four-digit PIN'}
+                aria-label={credentialMode === 'pin' ? 'Use password instead' : mode === 'register' ? 'Use six-digit PIN' : 'Use PIN'}
                 aria-pressed={credentialMode === 'pin'}
                 title={credentialMode === 'pin' ? 'Use password instead' : 'Use PIN'}
               >
@@ -103,10 +127,11 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
                 type={credentialMode === 'password' && showPassword ? 'text' : 'password'}
                 inputMode={credentialMode === 'pin' ? 'numeric' : undefined}
                 value={password}
-                onChange={(event) => setPassword(credentialMode === 'pin' ? event.target.value.replace(/\D/g, '').slice(0, 4) : event.target.value)}
-                autoComplete="current-password"
-                maxLength={credentialMode === 'pin' ? 4 : 200}
-                placeholder={credentialMode === 'pin' ? '1234' : 'password'}
+                onChange={(event) => setPassword(credentialMode === 'pin' ? event.target.value.replace(/\D/g, '').slice(0, 6) : event.target.value)}
+                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+                maxLength={credentialMode === 'pin' ? 6 : 128}
+                minLength={credentialMode === 'password' && mode === 'register' ? 12 : undefined}
+                placeholder={credentialMode === 'pin' ? (mode === 'register' ? '123456' : 'PIN') : mode === 'register' ? '12 characters minimum' : 'password'}
                 required
               />
               {credentialMode === 'password' && (
@@ -119,8 +144,28 @@ function AgoraLoginDialog({ open, onClose, onLogin }) {
               )}
             </div>
           </div>
+          {mode === 'register' && (
+            <div className="agora-login-dialog__field">
+              <label htmlFor="agora-login-confirmation">Confirm {credentialMode === 'pin' ? 'PIN' : 'password'}</label>
+              <input
+                id="agora-login-confirmation"
+                type={credentialMode === 'password' && showPassword ? 'text' : 'password'}
+                inputMode={credentialMode === 'pin' ? 'numeric' : undefined}
+                value={confirmation}
+                onChange={(event) => setConfirmation(credentialMode === 'pin' ? event.target.value.replace(/\D/g, '').slice(0, 6) : event.target.value)}
+                autoComplete="new-password"
+                maxLength={credentialMode === 'pin' ? 6 : 128}
+                required
+              />
+            </div>
+          )}
           {notice && <p className="agora-login-dialog__notice" role="alert">{notice}</p>}
-          <button className="agora-login-dialog__submit" type="submit" disabled={busy || !username.trim() || !password || (credentialMode === 'pin' && password.length !== 4)}>{busy ? 'Logging in' : 'Log in'}</button>
+          <button className="agora-login-dialog__submit" type="submit" disabled={!canSubmit}>
+            {busy ? (mode === 'register' ? 'Creating account' : 'Logging in') : mode === 'register' ? 'Create account' : 'Log in'}
+          </button>
+          <button className="agora-login-dialog__mode-switch" type="button" onClick={toggleMode} disabled={busy}>
+            {mode === 'register' ? 'Already have an account? Log in' : 'New to Polaris? Create an account'}
+          </button>
         </form>
       </section>
     </div>

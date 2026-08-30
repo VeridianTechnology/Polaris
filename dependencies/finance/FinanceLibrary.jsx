@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { financeFeatures } from './financeFeatures.js'
+import StorySubmission, { useApprovedStories } from '../shared/StorySubmission.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
 import './finance-library.css'
 
@@ -31,6 +32,10 @@ function FinanceCard({ feature, navigate }) {
           className={`finance-card__image${feature.imageFit === 'contain' ? ' finance-card__image--contain' : ''}`}
           src={feature.image}
           alt=""
+          onError={(event) => {
+            event.currentTarget.onerror = null
+            event.currentTarget.src = '/academy-logo.png'
+          }}
         />
         <span className="finance-card__play" aria-hidden="true">
           <PlayIcon />
@@ -43,8 +48,9 @@ function FinanceCard({ feature, navigate }) {
         <p>{feature.analysis}</p>
         <span className="finance-card__action">
           <PlayIcon />
-          <span>{feature.path ? 'Open report' : 'Watch video'}</span>
+          <span>{feature.path ? 'Open report' : feature.submitted ? 'Open source' : 'Watch video'}</span>
         </span>
+        {feature.author && <small className="finance-card__author">Submitted by {feature.author}</small>}
       </div>
     </>
   )
@@ -99,9 +105,18 @@ function FinanceMeter({ label, value }) {
   )
 }
 
-function FinanceLibrary({ navigate }) {
+function FinanceLibrary({ navigate, authSession, onLogin }) {
   const [isIntroOpen, setIsIntroOpen] = useState(true)
   const introTimer = useRef(null)
+  const approvedStories = useApprovedStories('finance')
+  const features = [
+    ...financeFeatures,
+    ...approvedStories.map((story, index) => ({
+      ...story,
+      key: story.id,
+      id: String(financeFeatures.length + index + 1).padStart(2, '0'),
+    })),
+  ]
 
   useEffect(() => {
     introTimer.current = setTimeout(() => setIsIntroOpen(false), 15_000)
@@ -146,9 +161,11 @@ function FinanceLibrary({ navigate }) {
         </header>
       </div>
 
+      <StorySubmission category="finance" authSession={authSession} onLogin={onLogin} />
+
       <div className="finance-grid" aria-label="Finance videos">
-        {financeFeatures.map((feature) => (
-          <FinanceCard feature={feature} navigate={navigate} key={feature.id} />
+        {features.map((feature) => (
+          <FinanceCard feature={feature} navigate={navigate} key={feature.key || feature.id} />
         ))}
       </div>
     </section>

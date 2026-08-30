@@ -93,7 +93,7 @@ function LinkPreview({ url }) {
   )
 }
 
-function AcademyBoard({ navigate, authSession, userCount = 0, onLogin }) {
+function AcademyBoard({ navigate, authSession, onLogin }) {
   const [comments, setComments] = useState([])
   const [draft, setDraft] = useState('')
   const [feedStatus, setFeedStatus] = useState(isSupabaseConfigured ? 'loading' : 'unconfigured')
@@ -350,7 +350,6 @@ function AcademyBoard({ navigate, authSession, userCount = 0, onLogin }) {
             setActiveInfo('rules')
           }}><span>Rules</span></button>
         </div>
-        <p className="academy-info-rail__users">{userCount.toLocaleString()} user{userCount === 1 ? '' : 's'}</p>
       </aside>
 
       <div className="academy-board__shell">
@@ -457,14 +456,14 @@ function AcademyBoard({ navigate, authSession, userCount = 0, onLogin }) {
                 </ol>
               ) : (
                 <ol className="academy-info-modal__list">
-                  <li>This is an invite only social media platform that will have AI linked to it, that AI will be called "Polaris".</li>
+                  <li>This is an open-membership social platform that will have AI linked to it; that AI will be called "Polaris".</li>
                   <li>It's meant to gameify and reward you for posting here, you'll get points - for commenting, for likes and those points will become crypto down the line.</li>
                   <li>
                     <p>This is not just 4chan or 8chan or twitter or other garbage media, our goal is to get rich and have influence here. For example</p>
                     <div className="academy-info-modal__highlight">Our goal is to launch a meme coin once we have a dedicated 250 to 300 people, everyone is to buy $50, no more - else they will be excluded on an address basis in the system. People are not to sell till it hits at least 100 mil mcap, ideally a billion. If supply is squeezed and there'll be utility - and as the best dev ever, I'll ensure that there is, it should be an easy way to get rich.<span>- this is just one idea</span></div>
                   </li>
                   <li>Besides that, we're here to offer cool videos, links and advice you won't find anywhere else on the internet, we'll also have private member only channels.</li>
-                  <li>You can rank up, to councilman and other ranks and eventually invite a limited number of others.</li>
+                  <li>You can rank up to councilman and other community roles over time.</li>
                   <li>This is a white board but not a white only board, there can be people of all creeds, backgrounds and nationalities, just it is strictly regulated in a way which no western nation is - sadly.</li>
                   <li>This board will be political, health conscious - no yoga and hippie shit and focus on uplifting with positivity, spirituality and by using our money as a collective.</li>
                   <li>There is not a single - pro-white organization, pro-white nation anywhere and when they are, they're super fed. This aims to be a loose collective as that.</li>

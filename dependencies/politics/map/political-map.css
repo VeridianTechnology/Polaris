@@ -243,6 +243,19 @@
   transform: translate(-50%, -50%);
 }
 
+.map-hotspot--united-kingdom {
+  top: 19%;
+  left: 43%;
+  width: 7%;
+  height: 15%;
+}
+
+.map-hotspot--united-kingdom span {
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .map-hotspot--australia {
   top: 57%;
   left: 71%;
@@ -413,7 +426,7 @@
   text-transform: uppercase;
 }
 
-.relations-panel a {
+.relations-panel > a {
   display: inline-flex;
   align-items: center;
   gap: .55rem;
@@ -425,7 +438,7 @@
   text-transform: uppercase;
 }
 
-.relations-panel a svg {
+.relations-panel > a svg {
   width: 1.1rem;
   height: 1.1rem;
 }
@@ -500,6 +513,46 @@
   line-height: 1;
 }
 
+.political-map .financial-panel--tweet {
+  position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  justify-self: end;
+  width: min(38rem, 100%);
+}
+
+.financial-panel__tweet {
+  display: grid;
+  justify-items: center;
+  min-height: 4rem;
+  overflow: hidden;
+  border-radius: .7rem;
+  background: #fff;
+}
+
+.financial-panel__tweet .twitter-tweet {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.financial-panel__tweet > iframe {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.financial-panel__tweet a {
+  display: block;
+  padding: 1rem;
+  color: #172b3a;
+  font-size: .65rem;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .political-party-panel__country {
   width: max-content;
   margin: 0 0 1rem;
@@ -527,7 +580,12 @@
 .political-map--ukraine .political-map__caption,
 .political-map--alberta .political-map__caption,
 .political-map--japan .political-map__caption,
-.political-map--unitedStates .political-map__caption {
+.political-map--unitedStates .political-map__caption,
+.political-map--unitedKingdom .political-map__caption {
+  display: none;
+}
+
+.political-map--australiaFinance .political-map__caption {
   display: none;
 }
 
@@ -540,7 +598,17 @@
 .political-map--ukraine .political-map__frame,
 .political-map--alberta .political-map__frame,
 .political-map--japan .political-map__frame,
-.political-map--unitedStates .political-map__frame {
+.political-map--unitedStates .political-map__frame,
+.political-map--unitedKingdom .political-map__frame {
+  overflow: visible;
+}
+
+.political-map--unitedKingdom .political-map__image {
+  object-fit: contain;
+  background: #e4e9ed;
+}
+
+.political-map--australiaFinance .political-map__frame {
   overflow: visible;
 }
 
@@ -603,8 +671,14 @@
   .political-map--ukraine,
   .political-map--alberta,
   .political-map--japan,
-  .political-map--unitedStates {
+  .political-map--unitedStates,
+  .political-map--unitedKingdom {
     padding-bottom: 24rem;
+  }
+
+  .political-map .financial-panel--tweet {
+    width: 100%;
+    margin-top: .1rem;
   }
 
   .political-map--australia {
@@ -616,7 +690,9 @@
   .political-map--ukraine .political-map__frame,
   .political-map--alberta .political-map__frame,
   .political-map--japan .political-map__frame,
-  .political-map--unitedStates .political-map__frame {
+  .political-map--unitedStates .political-map__frame,
+  .political-map--unitedKingdom .political-map__frame,
+  .political-map--australiaFinance .political-map__frame {
     overflow: visible;
   }
 

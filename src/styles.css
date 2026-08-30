@@ -324,15 +324,6 @@ h1 {
   animation: title-in 1s .7s ease-out both;
 }
 
-.home-user-count {
-  margin: 3.2rem 0 0;
-  font-size: clamp(.56rem, .72vw, .68rem);
-  font-weight: 650;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  animation: title-in 1s .82s ease-out both;
-}
-
 .launch-timer {
   position: absolute;
   z-index: 2;

@@ -76,6 +76,14 @@
   text-transform: uppercase;
 }
 
+.agora-login-dialog__eyebrow {
+  margin: 0 0 .8rem;
+  color: #5685a8;
+  font: 700 .65rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
 .agora-login-dialog form,
 .agora-login-dialog__field {
   display: grid;
@@ -253,6 +261,28 @@
 .agora-login-dialog__submit:disabled {
   cursor: wait;
   opacity: .55;
+}
+
+.agora-login-dialog__mode-switch {
+  appearance: none;
+  justify-self: center;
+  padding: .35rem;
+  border: 0;
+  color: #4f7898;
+  background: transparent;
+  cursor: pointer;
+  font: 700 .68rem/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .04em;
+}
+
+.agora-login-dialog__mode-switch:hover,
+.agora-login-dialog__mode-switch:focus-visible {
+  text-decoration: underline;
+}
+
+.agora-login-dialog__mode-switch:focus-visible {
+  outline: 2px solid #7eb5df;
+  outline-offset: .2rem;
 }
 
 .agora-admin-badge {

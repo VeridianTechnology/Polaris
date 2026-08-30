@@ -1,4 +1,4 @@
--- Enable one-time invitation onboarding from a top-level Twitter-handle path,
+-- Previously applied through MCP. Enable one-time invitation onboarding from a top-level Twitter-handle path,
 -- for example https://soft-fenglisu-ae6931.netlify.app/TotenEdelweiss.
 --
 -- A handle-only URL is intentionally easier to guess than the original opaque

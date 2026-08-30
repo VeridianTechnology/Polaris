@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import VisitorCoordinates from '../dependencies/homepage/geo/VisitorCoordinates.jsx'
 import SoundBars from '../dependencies/homepage/soundbars/SoundBars.jsx'
 import LaunchTimer from '../dependencies/homepage/LaunchTimer.jsx'
-import InviteWelcome from '../dependencies/homepage/InviteWelcome.jsx'
 import VentureCapitalGrid from '../dependencies/business/venture-capital/VentureCapitalGrid.jsx'
 import FinanceLibrary from '../dependencies/finance/FinanceLibrary.jsx'
 import { financeFollowUps } from '../dependencies/finance/financeFeatures.js'
@@ -16,24 +15,12 @@ import AcademyAdmin from '../dependencies/academy/admin/AcademyAdmin.jsx'
 import AcademyProfile from '../dependencies/academy/profile/AcademyProfile.jsx'
 import AgoraLoginDialog, { AgoraAuthArtworkButton } from '../dependencies/academy/auth/AgoraLoginDialog.jsx'
 import { useAgoraAuth } from '../dependencies/academy/auth/agoraAuth.js'
-import { supabase } from '../dependencies/academy/supabaseClient.js'
 import RouteLink from '../routing/RouteLink.jsx'
 import useAppRouter from '../routing/useAppRouter.js'
 import { parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
 
-function readInviteEntry(route) {
-  if (route.page === 'invite') {
-    return { username: route.inviteHandle || '', inviteToken: '' }
-  }
-  const parameters = new URLSearchParams(window.location.search)
-  return {
-    username: parameters.get('welcome') || '',
-    inviteToken: parameters.get('invite') || '',
-  }
-}
-
 function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout }) {
-  if (route.page === 'home' || route.page === 'new-user-preview' || route.page === 'invite') return null
+  if (route.page === 'home') return null
 
   const isAcademy = route.page === 'agora'
   const isAgora = route.page === 'academy' || route.page === 'academy-profile' || route.page === 'admin'
@@ -129,7 +116,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
   )
 }
 
-function HomePage({ navigate, userCount }) {
+function HomePage({ navigate }) {
   return (
     <>
       <section className="hero__content" id="top">
@@ -137,11 +124,9 @@ function HomePage({ navigate, userCount }) {
         <p className="eyebrow">Welcome to</p>
         <h1>Polaris</h1>
         <p className="tagline">You're new digital home</p>
-        <p className="home-user-count">{userCount.toLocaleString()} user{userCount === 1 ? '' : 's'}</p>
       </section>
 
       <LaunchTimer />
-
       <footer className="hero__footer" id="gather">
         <SoundBars />
         <RouteLink className="discover-link" to={ROUTES.agoraBusiness} navigate={navigate}>
@@ -156,16 +141,10 @@ function HomePage({ navigate, userCount }) {
 
 function App() {
   const { route, navigate } = useAppRouter()
-  const { session: authSession, status: authStatus, login, claimInvite, logout } = useAgoraAuth()
+  const { session: authSession, status: authStatus, login, register, logout } = useAgoraAuth()
   const [loginOpen, setLoginOpen] = useState(false)
-  const inviteEntry = readInviteEntry(route)
-  const [userCount, setUserCount] = useState(0)
   const isHome = route.page === 'home'
-  const isNewUserPreview = route.page === 'new-user-preview'
-  const isInvite = route.page === 'invite'
-  const isLanding = isHome || isNewUserPreview || isInvite
-  const hasPersonalInvite = Boolean(inviteEntry.username && (inviteEntry.inviteToken || isInvite))
-  const showInviteWelcome = isNewUserPreview || ((isHome || isInvite) && hasPersonalInvite)
+  const isLanding = isHome
   const heroMode = route.page === 'agora' ? route.section : route.page
   const politicalView = route.politicalView || 'world'
   const enteredBackground = route.section === 'finance'
@@ -182,16 +161,6 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [route.path])
-
-  useEffect(() => {
-    if (!supabase) return undefined
-    let cancelled = false
-    supabase.rpc('get_agora_user_count').then(({ data, error }) => {
-      if (cancelled || error) return
-      setUserCount(Number(data || 0))
-    })
-    return () => { cancelled = true }
-  }, [])
 
   useEffect(() => {
     const isAgora = route.page === 'academy' || route.page === 'academy-profile' || route.page === 'admin'
@@ -215,17 +184,13 @@ function App() {
             : null
     const pageTitle = isAgora
       ? route.page === 'admin'
-        ? 'Agora Administration — Polaris'
+        ? 'Story Approvals — Polaris'
         : route.page === 'academy-profile'
           ? `Profile ${String(route.profileNumber).padStart(4, '0')} — Agora — Polaris`
           : 'Agora — Polaris'
       : route.page === 'agora'
         ? detailPageTitle || `Academy ${route.section === 'politics' ? 'Map' : `${route.section.charAt(0).toUpperCase()}${route.section.slice(1)}`} — Polaris`
-        : isNewUserPreview
-          ? 'New User Preview — Polaris'
-          : isInvite
-            ? `Welcome @${route.inviteHandle} — Polaris`
-          : 'Polaris — Your New Digital Home'
+        : 'Polaris — Your New Digital Home'
     let favicon = document.querySelector('link[rel="icon"]')
 
     if (!favicon) {
@@ -237,30 +202,25 @@ function App() {
     favicon.type = 'image/png'
     favicon.href = iconPath
     document.title = pageTitle
-  }, [route.page, route.section, route.crimeCase, route.financeCase, route.freedomCase, route.profileNumber, route.inviteHandle, isNewUserPreview, isInvite])
+  }, [route.page, route.section, route.crimeCase, route.financeCase, route.freedomCase, route.profileNumber])
 
   const changePoliticalView = (view) => navigate(politicsPath(view))
   const leavePoliticalView = () => navigate(politicsPath(parentPoliticalView(politicalView)))
-  const finishInviteClaim = async (claim) => {
-    await claimInvite(claim)
-    navigate(ROUTES.home, { replace: true })
-  }
-
   return (
     <main className={`hero${isLanding ? '' : ` hero--entered hero--${heroMode}`}`}>
       {route.page !== 'academy' && route.page !== 'academy-profile' && route.page !== 'admin' && (
         <>
           <img
-            className={`hero__image hero__image--welcome${showInviteWelcome ? ' hero__image--invitation' : ''}`}
-            src={showInviteWelcome ? '/welcome-01.jpg' : '/agora-hero.png'}
-            alt={isLanding ? (showInviteWelcome ? 'A white marble bust in warm morning light' : 'A luminous white tree rising between monumental columns') : ''}
+            className="hero__image hero__image--welcome"
+            src="/agora-hero.png"
+            alt={isLanding ? 'A luminous white tree rising between monumental columns' : ''}
           />
           <img
             className="hero__image hero__image--city"
             src={enteredBackground}
             alt={isLanding ? '' : enteredBackgroundAlt}
           />
-          {!showInviteWelcome && <div className="hero__wash" />}
+          <div className="hero__wash" />
         </>
       )}
 
@@ -273,31 +233,13 @@ function App() {
         onLogout={logout}
       />
 
-      {(route.page === 'home' || route.page === 'invite') && showInviteWelcome && (
-        <InviteWelcome
-          username={inviteEntry.username}
-          inviteToken={inviteEntry.inviteToken}
-          onClaim={finishInviteClaim}
-          onEnterAgora={() => navigate(ROUTES.academy)}
-        />
-      )}
-      {isNewUserPreview && (
-        <InviteWelcome
-          username={inviteEntry.username || '@New'}
-          inviteToken=""
-          preview
-          onClaim={finishInviteClaim}
-          onEnterAgora={() => navigate(ROUTES.academy)}
-        />
-      )}
-      {route.page === 'home' && !showInviteWelcome && (
-        <HomePage navigate={navigate} userCount={userCount} />
+      {route.page === 'home' && (
+        <HomePage navigate={navigate} />
       )}
       {route.page === 'academy' && (
         <AcademyBoard
           navigate={navigate}
           authSession={authSession}
-          userCount={userCount}
           onLogin={() => setLoginOpen(true)}
         />
       )}
@@ -311,7 +253,12 @@ function App() {
         />
       )}
       {route.page === 'admin' && (
-        <AcademyAdmin onReturn={() => navigate(ROUTES.academy)} />
+        <AcademyAdmin
+          authSession={authSession}
+          authStatus={authStatus}
+          onLogin={() => setLoginOpen(true)}
+          onReturn={() => navigate(ROUTES.academy)}
+        />
       )}
       {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid />}
       {route.page === 'agora' && route.section === 'finance' && (
@@ -362,7 +309,7 @@ function App() {
             commentItemColumn="finance_item_number"
             commentStorageKey="polaris-finance-tidal-power-comments"
           />
-        ) : <FinanceLibrary navigate={navigate} />
+        ) : <FinanceLibrary navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
       )}
       {route.page === 'agora' && route.section === 'crime' && (
         route.crimeCase === 'lindsay-clancy'
@@ -385,7 +332,7 @@ function App() {
                 commentStorageKey="polaris-crime-hindu-cult-comments"
               />
             )
-            : <CrimeLibrary navigate={navigate} />
+            : <CrimeLibrary navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
       )}
       {route.page === 'agora' && route.section === 'freedom' && (
         route.freedomCase === 'flock-cameras' ? (
@@ -404,7 +351,7 @@ function App() {
             commentItemColumn="freedom_item_number"
             commentStorageKey="polaris-freedom-flock-cameras-comments"
           />
-        ) : <FreedomLibrary navigate={navigate} />
+        ) : <FreedomLibrary navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
       )}
       {route.page === 'agora' && route.section === 'politics' && (
         <PoliticalMap
@@ -414,7 +361,7 @@ function App() {
         />
       )}
 
-      <AgoraLoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} onLogin={login} />
+      <AgoraLoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} onLogin={login} onRegister={register} />
     </main>
   )
 }

@@ -1,6 +1,5 @@
 export const ROUTES = {
   home: '/',
-  newUserPreview: '/new',
   academy: '/agora',
   academyAdmin: '/agora/admin',
   agoraBusiness: '/academy/business',
@@ -21,11 +20,6 @@ export function academyProfilePath(profileNumber) {
   return `${ROUTES.academy}/profile/${Number.isFinite(normalizedNumber) ? normalizedNumber : 1}`
 }
 
-export function invitePath(handle) {
-  const normalizedHandle = String(handle || '').trim().replace(/^@+/, '')
-  return `/${encodeURIComponent(normalizedHandle)}`
-}
-
 const POLITICAL_VIEW_SLUGS = {
   world: '',
   middleEast: 'middle-east',
@@ -37,6 +31,8 @@ const POLITICAL_VIEW_SLUGS = {
   alberta: 'alberta',
   japan: 'japan',
   unitedStates: 'united-states',
+  unitedKingdom: 'united-kingdom',
+  australiaFinance: 'australia-finance',
   australia: 'australia',
 }
 
@@ -54,6 +50,8 @@ const POLITICAL_VIEW_PARENTS = {
   alberta: 'world',
   japan: 'world',
   unitedStates: 'world',
+  unitedKingdom: 'world',
+  australiaFinance: 'world',
   australia: 'world',
 }
 
@@ -77,10 +75,6 @@ export function matchRoute(pathname) {
 
   if (path === ROUTES.home) {
     return { page: 'home', path: ROUTES.home }
-  }
-
-  if (path === ROUTES.newUserPreview) {
-    return { page: 'new-user-preview', path: ROUTES.newUserPreview }
   }
 
   if (path === ROUTES.academy) {
@@ -190,15 +184,6 @@ export function matchRoute(pathname) {
       section: 'politics',
       politicalView,
       path: politicsPath(politicalView),
-    }
-  }
-
-  const inviteMatch = path.match(/^\/([A-Za-z0-9_]{2,32})$/)
-  if (inviteMatch) {
-    return {
-      page: 'invite',
-      inviteHandle: inviteMatch[1],
-      path: invitePath(inviteMatch[1]),
     }
   }
 

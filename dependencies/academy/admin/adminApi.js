@@ -1,22 +1,11 @@
 import { supabase } from '../supabaseClient'
 
-const SESSION_KEY = 'polaris-academy-admin-session'
-
-export function readAdminSession() {
-  return sessionStorage.getItem(SESSION_KEY) || ''
-}
-
-export function saveAdminSession(token) {
-  if (token) sessionStorage.setItem(SESSION_KEY, token)
-  else sessionStorage.removeItem(SESSION_KEY)
-}
-
-export async function callAdminApi(action, payload = {}, sessionToken = readAdminSession()) {
+export async function callAdminApi(action, payload = {}, sessionToken = '') {
   if (!supabase) throw new Error('Supabase is not configured.')
 
   const { data, error } = await supabase.functions.invoke('academy-admin', {
     body: { action, ...payload },
-    headers: sessionToken ? { 'x-admin-session': sessionToken } : undefined,
+    headers: sessionToken ? { 'x-agora-session': sessionToken } : undefined,
   })
 
   if (error) {

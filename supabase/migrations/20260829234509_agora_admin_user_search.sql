@@ -1,4 +1,4 @@
--- Server-side search and pagination for the Agora administration user list.
+-- Previously applied through MCP. Server-side search and pagination for the Agora administration user list.
 -- Only the service-role Edge Function may execute this function.
 
 create or replace function public.admin_search_agora_users(

@@ -1,5 +1,5 @@
 POLARIS / SUPABASE RELATIONSHIP MAP
-Review date: 2026-08-29
+Review date: 2026-08-30
 
 Legend
   1 -> many     one parent row can own many child rows
@@ -29,11 +29,14 @@ AGORA: CANONICAL MEMBER IDENTITY
   public.agora_user_credentials.profile_number
     Holds login_username, bcrypt password_hash, and credential_kind.
     credential_kind is password or pin. No plaintext secret is retained.
-    Passwords require 8-128 characters plus a symbol; PINs contain four digits.
+    New passwords require 12-128 characters and new PINs contain six digits.
+    Login remains compatible with previously issued four-digit PIN credentials.
     failed_attempts, lockout_level, locked_until, and permanently_locked enforce
     credential-aware 24-hour, seven-day, and permanent login lockouts.
 
   public.agora_user_invites.profile_number
+    Legacy invitation history retained for audit continuity. Browser EXECUTE grants
+    for invitation inspection and claims are revoked by the open-registration migration.
     Holds only a SHA-256 invitation token digest.
     first_opened_at records a valid first visit.
     claimed_at is set in the same transaction that creates the credential.
@@ -75,36 +78,30 @@ AGORA: POSTS AND REACTIONS
 
 AGORA: ADMINISTRATION
 
-  public.agora_admin_ip_access.ip_address                              [private]
-    Tracks the five-attempt/one-minute admin-login lockout state.
-
-  public.agora_admin_sessions.token_hash                               [private]
-    Short-lived administrator session, bound to ip_address.
+  public.agora_admin_ip_access and public.agora_admin_sessions          [private, legacy]
+    Retained to avoid destructive loss of historical rows. The application no longer
+    exposes or uses the separate administrator PIN/password login.
 
   public.agora_managed_users                                           [private]
     Canonically relates to agora_public_profiles.profile_number.
     New users are not created in auth.users and administrators never select secrets.
 
-  public.admin_create_agora_invite(handle)
-    EXECUTE: service_role only.
-    Creates/reuses the profile, increments the profile identity counter for a new
-    profile, creates the managed-user row, and returns a one-time raw invite token.
-
-  public.inspect_agora_invite(username, token)
-    EXECUTE: anon/authenticated. Returns a row only when both handle and token match.
-
-  public.claim_agora_invite(username, token, kind, secret)
-    EXECUTE: anon/authenticated. Locks and consumes one valid invite, bcrypt-hashes
-    the selected password/PIN, marks has_logged_in, and creates the first Agora
-    session atomically.
+  public.register_agora_user(username, credential_kind, secret)
+    EXECUTE: anon/authenticated. Creates an open-membership profile and credential,
+    bcrypt-hashes the password/PIN, assigns the next stable member number through
+    the credential trigger, and returns the first Agora session atomically.
 
   public.login_agora_user(username, secret)
     EXECUTE: anon/authenticated. Password accounts receive five initial attempts and
     PIN accounts receive three. The lockout ladder is 24 hours, seven days, then
     permanent; a successful login before permanent lock resets the ladder.
 
-  public.get_agora_user_count()
-    EXECUTE: anon/authenticated. Returns only COUNT(agora_public_profiles), no rows.
+  public.agora_public_profiles.member_number
+    Nullable until registration. A credential-insert trigger assigns a stable,
+    registration-ordered number when a person creates a password or PIN.
+
+  The public membership-count RPCs were removed. Membership totals are no longer
+  rendered on the homepage or Academy board.
 
 
 ACADEMY: ISSUE AND RESEARCH CONTENT
@@ -129,25 +126,33 @@ ACADEMY: ISSUE AND RESEARCH CONTENT
     parent_entry_key is a logical same-issue hierarchy used by the interactive map.
     layer is flash-points, finance, or political-parties.
 
+  public.academy_story_submissions.id                                 [private]
+    Moderation queue for member-proposed Finance, Crime, and Freedom cards.
+    submitter_profile_number -> public.agora_public_profiles.profile_number
+    reviewed_by_profile_number -> public.agora_public_profiles.profile_number
+    status is pending, approved, or rejected. Public visitors can read only the
+    approved safe projection through get_approved_academy_stories(category).
+
 
 CURRENT BROWSER DATA PATHS
 
   Public visitor
-    -> get_agora_user_count()
     -> get_agora_comment_feed(NULL) -> bodies with ANON author projection
-    -> inspect_agora_invite(handle, token) only for a personalized invite link
-    -> claim_agora_invite(...) once
+    -> register_agora_user(...) to create a normal account
+    -> get_approved_academy_stories(category)
 
   Logged-in Agora member
     -> get_agora_user_session(token)
     -> get_agora_comment_feed(token)
     -> get_agora_profile(profile_number, token)
     -> create/delete/react/update RPCs authorized by the application session
+    -> submit_academy_story(token, category, URL, image URL, title, subtitle)
 
   Admin browser
+    -> normal Agora login for a profile whose is_admin flag is true
     -> academy-admin Edge Function
     -> service_role database client (server only)
-    -> admin_create_agora_invite(handle)
+    -> list and approve/reject academy_story_submissions
 
 
 SECURITY REVIEW NOTES
@@ -156,9 +161,9 @@ SECURITY REVIEW NOTES
     inside the Edge Function and must never be included in Vite environment variables.
   - Direct grants on Agora identity, credential, invite, session, profile, and post
     base tables are revoked from anon/authenticated. Browser access uses narrow RPCs.
-  - Every SECURITY DEFINER function in the invitation migration pins search_path to
+  - Every SECURITY DEFINER registration/submission function pins search_path to
     an empty value and schema-qualifies every relation/function reference.
-  - The personalized @handle is an identifier, not authorization. The random token is
-    the invitation authority. The database claim lock prevents two successful claims.
-  - Browser localStorage only decides whether to replay the welcome presentation. It
-    is not trusted for account ownership; invitation and session ownership stay in DB.
+  - The username is an identifier, not authorization. Password/PIN verification and
+    application-session ownership remain in the database.
+  - Story image uploads are not enabled. The current queue accepts HTTPS image URLs,
+    previews them in the browser, and stores the URL for moderated publication.

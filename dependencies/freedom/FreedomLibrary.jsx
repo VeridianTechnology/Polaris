@@ -1,4 +1,5 @@
 import { freedomFeatures } from './freedomFeatures.js'
+import StorySubmission, { useApprovedStories } from '../shared/StorySubmission.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
 import './freedom-library.css'
 
@@ -20,7 +21,15 @@ function FreedomCard({ feature, navigate }) {
       </div>
 
       <div className="freedom-card__image-wrap">
-        <img className="freedom-card__image" src={feature.image} alt="" />
+        <img
+          className="freedom-card__image"
+          src={feature.image}
+          alt=""
+          onError={(event) => {
+            event.currentTarget.onerror = null
+            event.currentTarget.src = '/academy-logo.png'
+          }}
+        />
         <span className="freedom-card__play" aria-hidden="true">
           <PlayIcon />
         </span>
@@ -28,11 +37,13 @@ function FreedomCard({ feature, navigate }) {
 
       <div className="freedom-card__body">
         <span className="freedom-card__number" aria-hidden="true">{feature.id}</span>
+        <h2>{feature.title}</h2>
         <p>{feature.analysis}</p>
         <span className="freedom-card__action">
           <PlayIcon />
-          <span>{feature.path ? 'Open report' : 'Watch video'}</span>
+          <span>{feature.path ? 'Open report' : feature.submitted ? 'Open source' : 'Watch video'}</span>
         </span>
+        {feature.author && <small className="freedom-card__author">Submitted by {feature.author}</small>}
       </div>
     </>
   )
@@ -63,7 +74,17 @@ function FreedomCard({ feature, navigate }) {
   )
 }
 
-function FreedomLibrary({ navigate }) {
+function FreedomLibrary({ navigate, authSession, onLogin }) {
+  const approvedStories = useApprovedStories('freedom')
+  const features = [
+    ...freedomFeatures,
+    ...approvedStories.map((story, index) => ({
+      ...story,
+      key: story.id,
+      id: String(freedomFeatures.length + index + 1).padStart(2, '0'),
+    })),
+  ]
+
   return (
     <section className="freedom-library" aria-labelledby="freedom-library-title">
       <header className="freedom-library__intro">
@@ -90,9 +111,11 @@ function FreedomLibrary({ navigate }) {
         </aside>
       </header>
 
+      <StorySubmission category="freedom" authSession={authSession} onLogin={onLogin} />
+
       <div className="freedom-grid" aria-label="Freedom and civil-liberties videos">
-        {freedomFeatures.map((feature) => (
-          <FreedomCard feature={feature} navigate={navigate} key={feature.id} />
+        {features.map((feature) => (
+          <FreedomCard feature={feature} navigate={navigate} key={feature.key || feature.id} />
         ))}
       </div>
     </section>

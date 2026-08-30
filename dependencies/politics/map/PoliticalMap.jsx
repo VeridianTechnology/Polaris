@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../../academy/supabaseClient'
 import './political-map.css'
 
@@ -53,11 +53,28 @@ const MAPS = {
     alt: 'Detailed relief map of Australia and the surrounding seas',
     label: 'Australia',
   },
+  australiaFinance: {
+    image: '/politics-australia.jpg',
+    alt: 'Detailed relief map of Australia and the surrounding seas',
+    label: 'Australia',
+  },
+  unitedKingdom: {
+    image: '/politics-united-kingdom.jpg',
+    alt: 'Detailed relief map of the United Kingdom',
+    label: 'United Kingdom',
+  },
   unitedStates: {
     image: '/politics-united-states.jpg',
     alt: 'Detailed relief map of the United States',
     label: 'United States',
   },
+}
+
+const MAP_ENTRY_KEYS = {
+  middleEast: 'middle-east',
+  unitedStates: 'united-states',
+  australiaFinance: 'australia-finance',
+  unitedKingdom: 'united-kingdom',
 }
 
 function BackIcon() {
@@ -74,6 +91,39 @@ function PlayIcon() {
       <circle cx="10" cy="10" r="8.25" stroke="currentColor" strokeWidth="1.25" />
       <path d="m8.4 6.8 5 3.2-5 3.2V6.8Z" fill="currentColor" />
     </svg>
+  )
+}
+
+function TweetEmbed({ url, author }) {
+  const containerRef = useRef(null)
+
+  useEffect(() => {
+    const renderTweet = () => window.twttr?.widgets?.load(containerRef.current)
+    let script = document.querySelector('script[data-polaris-x-widgets]')
+
+    if (window.twttr?.widgets) {
+      renderTweet()
+      return undefined
+    }
+
+    if (!script) {
+      script = document.createElement('script')
+      script.src = 'https://platform.twitter.com/widgets.js'
+      script.async = true
+      script.dataset.polarisXWidgets = 'true'
+      document.head.append(script)
+    }
+
+    script.addEventListener('load', renderTweet)
+    return () => script.removeEventListener('load', renderTweet)
+  }, [url])
+
+  return (
+    <div className="financial-panel__tweet" ref={containerRef}>
+      <blockquote className="twitter-tweet" data-dnt="true" data-theme="light">
+        <a href={url} target="_blank" rel="noreferrer">View {author || 'this post'} on X ↗</a>
+      </blockquote>
+    </div>
   )
 }
 
@@ -142,6 +192,25 @@ const FINANCIAL_REPORTS = {
     analysis:
       'Finally, the housing slump begins. This is actually great, a full on crash would be a disaster but if year over year, the next three to five years, home prices go down 50%, it would be amazing for the middle class, youngsters and the economy. The "number must go up" is doing incredible damage to the working class, boomers basically did it to themselves by milking and robbing the younger generations so hard, there\'s no one to buy up their inflated home property values. Good. Fuck them.',
   },
+  australiaFinance: {
+    country: 'Australia',
+    title: 'First home buyer tax breaks',
+    score: '+5',
+    scoreLabel: 'Awareness',
+    tweet: 'https://x.com/AlboMP/status/2093876832164782506',
+    tweetAuthor: 'Anthony Albanese (@AlboMP)',
+    analysis:
+      'The Prime Minister of Australia has made a public commitment to cheaper housing through tax breaks for first time home buyers. I think this all cap, but at least the awareness has spread.',
+  },
+  unitedKingdom: {
+    country: 'United Kingdom',
+    title: 'Bond Instability',
+    score: '-50',
+    scoreLabel: 'Stability',
+    video: 'https://www.youtube.com/watch?v=vamgbxM-fec',
+    analysis:
+      "The bond situation in England is falling apart further with the dismantling of the welfare state as England or rather the UK refuses to tax it's ultra-rich. People can't afford heating and then they're told to work harder, England might be the first Western country to fall into civil war at this point.",
+  },
 }
 
 const POLITICAL_PARTIES = {
@@ -190,7 +259,7 @@ function RelationsPanel({ relation }) {
 
 function FinancialPanel({ report }) {
   return (
-    <aside className="relations-panel financial-panel" aria-label={`${report.country} financial stability`}>
+    <aside className={`relations-panel financial-panel${report.tweet ? ' financial-panel--tweet' : ''}`} aria-label={`${report.country} financial report`}>
       <div className="financial-panel__topline">
         <span>{report.country}</span>
         <small>By NYX</small>
@@ -200,10 +269,13 @@ function FinancialPanel({ report }) {
         <span>{report.scoreLabel || 'Financial Stability Score'}</span>
         <strong>{report.score}</strong>
       </div>
-      <a href={report.video} target="_blank" rel="noreferrer">
-        <PlayIcon />
-        <span>Watch analysis</span>
-      </a>
+      {report.tweet && <TweetEmbed url={report.tweet} author={report.tweetAuthor} />}
+      {report.video && (
+        <a href={report.video} target="_blank" rel="noreferrer">
+          <PlayIcon />
+          <span>Watch analysis</span>
+        </a>
+      )}
       <p className="relations-panel__analysis">{report.analysis}</p>
     </aside>
   )
@@ -224,7 +296,7 @@ function PoliticalPartyPanel({ party }) {
 
 function PoliticalMap({ view, onViewChange, onBack }) {
   const [databaseEntries, setDatabaseEntries] = useState({})
-  const entryKey = view === 'middleEast' ? 'middle-east' : view
+  const entryKey = MAP_ENTRY_KEYS[view] || view
   const databaseEntry = databaseEntries[entryKey]
   const activeMap = {
     ...MAPS[view],
@@ -247,7 +319,12 @@ function PoliticalMap({ view, onViewChange, onBack }) {
     score: databaseEntry?.score_display
       || (databaseEntry?.score == null ? FINANCIAL_REPORTS[view].score : String(databaseEntry.score)),
     scoreLabel: databaseEntry?.status || FINANCIAL_REPORTS[view].scoreLabel,
-    video: databaseEntry?.source_url || FINANCIAL_REPORTS[view].video,
+    video: FINANCIAL_REPORTS[view].tweet
+      ? FINANCIAL_REPORTS[view].video
+      : databaseEntry?.source_url || FINANCIAL_REPORTS[view].video,
+    tweet: FINANCIAL_REPORTS[view].tweet
+      ? databaseEntry?.source_url || FINANCIAL_REPORTS[view].tweet
+      : null,
     analysis: databaseEntry?.subtitle || FINANCIAL_REPORTS[view].analysis,
   }
   const activePoliticalParty = POLITICAL_PARTIES[view] && {
@@ -257,7 +334,7 @@ function PoliticalMap({ view, onViewChange, onBack }) {
     analysis: databaseEntry?.subtitle || POLITICAL_PARTIES[view].analysis,
   }
   const [activeLayer, setActiveLayer] = useState(
-    view === 'japan' || view === 'unitedStates'
+    view === 'japan' || view === 'unitedStates' || view === 'australiaFinance' || view === 'unitedKingdom'
       ? 'finance'
       : view === 'australia'
         ? 'politicalParties'
@@ -265,7 +342,7 @@ function PoliticalMap({ view, onViewChange, onBack }) {
   )
 
   useEffect(() => {
-    if (view === 'japan' || view === 'unitedStates') setActiveLayer('finance')
+    if (view === 'japan' || view === 'unitedStates' || view === 'australiaFinance' || view === 'unitedKingdom') setActiveLayer('finance')
     else if (view === 'australia') setActiveLayer('politicalParties')
     else if (view !== 'world') setActiveLayer('flashPoints')
   }, [view])
@@ -421,12 +498,28 @@ function PoliticalMap({ view, onViewChange, onBack }) {
               <span>United States</span>
             </button>
             <button
+              className="map-hotspot map-hotspot--united-kingdom"
+              type="button"
+              onClick={() => onViewChange('unitedKingdom')}
+              aria-label="Open the United Kingdom bond stability report"
+            >
+              <span>United Kingdom</span>
+            </button>
+            <button
               className="map-hotspot map-hotspot--japan"
               type="button"
               onClick={() => onViewChange('japan')}
               aria-label="Open Japan's financial stability report"
             >
               <span>Japan</span>
+            </button>
+            <button
+              className="map-hotspot map-hotspot--australia"
+              type="button"
+              onClick={() => onViewChange('australiaFinance')}
+              aria-label="Open Australia's housing awareness report"
+            >
+              <span>Australia</span>
             </button>
           </>
         )}
@@ -455,7 +548,7 @@ function PoliticalMap({ view, onViewChange, onBack }) {
         )}
 
         {activeRelation && <RelationsPanel relation={activeRelation} />}
-        {activeFinancialReport && <FinancialPanel report={activeFinancialReport} />}
+        {activeFinancialReport && !activeFinancialReport.tweet && <FinancialPanel report={activeFinancialReport} />}
         {activePoliticalParty && <PoliticalPartyPanel party={activePoliticalParty} />}
 
         <div className="political-map__caption">
@@ -463,6 +556,7 @@ function PoliticalMap({ view, onViewChange, onBack }) {
           <strong>{activeMap.label}</strong>
         </div>
         </div>
+        {activeFinancialReport?.tweet && <FinancialPanel report={activeFinancialReport} />}
       </div>
     </section>
   )

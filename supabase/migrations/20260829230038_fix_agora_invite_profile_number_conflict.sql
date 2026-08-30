@@ -1,4 +1,4 @@
--- Fix admin_create_agora_invite failing at runtime because the PL/pgSQL output
+-- Previously applied through MCP. Fix admin_create_agora_invite failing at runtime because the PL/pgSQL output
 -- parameter `profile_number` conflicts with the identically named upsert column.
 -- Targeting the existing unique constraint removes the ambiguous identifier.
 

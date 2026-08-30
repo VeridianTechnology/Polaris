@@ -9,6 +9,7 @@ const MAX_BIO_CHARACTERS = 400
 
 const EMPTY_PROFILE = {
   profile_number: 1,
+  member_number: null,
   username: 'nyx',
   display_name: 'NYX',
   avatar_index: 0,
@@ -36,6 +37,9 @@ function normalizeProfile(row, fallbackNumber) {
     ...EMPTY_PROFILE,
     ...row,
     profile_number: row?.profile_number ?? fallbackNumber,
+    member_number: row && Object.hasOwn(row, 'member_number')
+      ? row.member_number
+      : row?.profile_number ?? null,
     twitter_url: row?.twitter_url || '',
     instagram_url: row?.instagram_url || '',
     facebook_url: row?.facebook_url || '',
@@ -57,8 +61,8 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
   const [notice, setNotice] = useState('')
   const [saving, setSaving] = useState(false)
   const formattedNumber = useMemo(
-    () => String(profile.profile_number || profileNumber).padStart(4, '0'),
-    [profile.profile_number, profileNumber],
+    () => profile.member_number ? String(profile.member_number).padStart(4, '0') : '—',
+    [profile.member_number],
   )
   const isEditable = Boolean(profile.is_owner && authSession?.profile_number === profileNumber)
   const canOpenAdmin = Boolean(
@@ -188,7 +192,7 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
                   <input value={profile.display_name} onChange={(event) => updateField('display_name', event.target.value.slice(0, 80))} maxLength="80" readOnly={!isEditable} />
                 </label>
                 <p>@{profile.username}{profile.is_admin && <AgoraAdminBadge large />}</p>
-                <div><span aria-hidden="true" /> Profile No. {formattedNumber}</div>
+                <div><span aria-hidden="true" /> Member No. {formattedNumber}</div>
               </div>
               <AcademyAvatar index={profile.avatar_index} className="academy-profile-identity__seal" alt="" />
             </header>
