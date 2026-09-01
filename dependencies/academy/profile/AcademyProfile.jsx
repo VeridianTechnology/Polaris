@@ -55,21 +55,29 @@ function normalizeOptionalUrl(value) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
 }
 
-function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenAdmin }) {
+function AcademyProfile({ profileUsername, profileNumber, authSession, onLogin, onReturn, onOpenAdmin, onCanonicalize }) {
   const [profile, setProfile] = useState(() => ({ ...EMPTY_PROFILE, profile_number: profileNumber }))
   const [status, setStatus] = useState(isSupabaseConfigured ? 'loading' : 'unconfigured')
   const [notice, setNotice] = useState('')
   const [saving, setSaving] = useState(false)
+  const [viewMode, setViewMode] = useState('settings')
   const formattedNumber = useMemo(
     () => profile.member_number ? String(profile.member_number).padStart(4, '0') : '—',
     [profile.member_number],
   )
-  const isEditable = Boolean(profile.is_owner && authSession?.profile_number === profileNumber)
+  const isEditable = Boolean(profile.is_owner && authSession?.profile_number === profile.profile_number)
+  const isSettingsView = Boolean(isEditable && viewMode === 'settings')
   const canOpenAdmin = Boolean(
     authSession?.is_admin
     && authSession?.username?.toLowerCase() === 'nyx'
-    && authSession?.profile_number === profileNumber
+    && authSession?.profile_number === profile.profile_number
   )
+  const publicSocials = SOCIAL_FIELDS.filter(({ key }) => Boolean(profile[key]))
+  const publicEmail = profile.email_is_public ? profile.email : ''
+
+  useEffect(() => {
+    setViewMode('settings')
+  }, [profileNumber, profileUsername])
 
   useEffect(() => {
     if (!supabase) return undefined
@@ -79,12 +87,20 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
       return undefined
     }
     let cancelled = false
+    setStatus('loading')
+    setNotice('')
 
     async function loadProfile() {
-      const { data, error } = await supabase.rpc('get_agora_profile', {
-        p_profile_number: profileNumber,
-        p_session_token: authSession?.session_token || null,
-      })
+      const request = profileUsername
+        ? supabase.rpc('get_agora_profile_by_username', {
+          p_username: profileUsername,
+          p_session_token: authSession.session_token,
+        })
+        : supabase.rpc('get_agora_profile', {
+          p_profile_number: profileNumber,
+          p_session_token: authSession.session_token,
+        })
+      const { data, error } = await request
 
       if (cancelled) return
       if (error) {
@@ -95,17 +111,18 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
       const row = Array.isArray(data) ? data[0] : data
       if (!row) {
         setStatus('not-found')
-        setNotice(`Profile #${String(profileNumber).padStart(4, '0')} does not exist.`)
+        setNotice(profileUsername ? `Profile @${profileUsername} does not exist.` : 'This profile does not exist.')
         return
       }
 
       setProfile(normalizeProfile(row, profileNumber))
       setStatus('ready')
+      if (!profileUsername && row.username) onCanonicalize(row.username)
     }
 
     loadProfile()
     return () => { cancelled = true }
-  }, [authSession?.session_token, profileNumber])
+  }, [authSession?.session_token, profileNumber, profileUsername])
 
   const updateField = (field, value) => {
     setProfile((current) => ({ ...current, [field]: value }))
@@ -113,7 +130,7 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
 
   const saveProfile = async (event) => {
     event.preventDefault()
-    if (!supabase || !isEditable || saving) return
+    if (!supabase || !isSettingsView || saving) return
     if (!profile.display_name.trim()) {
       setNotice('A display name is required.')
       return
@@ -167,6 +184,12 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
       <div className="academy-profile-shell">
         <div className="academy-profile-actions">
           <button className="academy-profile-return" type="button" onClick={onReturn}>← Return to Global</button>
+          {isEditable && (
+            <div className="academy-profile-view-tabs" role="tablist" aria-label="Profile view">
+              <button type="button" role="tab" aria-selected={viewMode === 'settings'} className={viewMode === 'settings' ? 'is-active' : ''} onClick={() => setViewMode('settings')}>Settings</button>
+              <button type="button" role="tab" aria-selected={viewMode === 'public'} className={viewMode === 'public' ? 'is-active' : ''} onClick={() => setViewMode('public')}>Public view</button>
+            </div>
+          )}
           {canOpenAdmin && (
             <button className="academy-profile-admin" type="button" onClick={onOpenAdmin}>
               <AgoraAdminBadge large />
@@ -184,12 +207,12 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
             <header className="academy-profile-identity">
               <div className="academy-profile-portrait">
                 <AcademyAvatar index={profile.avatar_index} alt={`${profile.display_name} profile`} />
-                <span>{isEditable ? 'Change icon' : 'Profile icon'}</span>
+                <span>{isSettingsView ? 'Change icon' : 'Profile icon'}</span>
               </div>
               <div className="academy-profile-heading">
                 <label>
                   <span className="visually-hidden">Display name</span>
-                  <input value={profile.display_name} onChange={(event) => updateField('display_name', event.target.value.slice(0, 80))} maxLength="80" readOnly={!isEditable} />
+                  <input value={profile.display_name} onChange={(event) => updateField('display_name', event.target.value.slice(0, 80))} maxLength="80" readOnly={!isSettingsView} />
                 </label>
                 <p>@{profile.username}{profile.is_admin && <AgoraAdminBadge large />}</p>
                 <div><span aria-hidden="true" /> Member No. {formattedNumber}</div>
@@ -197,7 +220,7 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
               <AcademyAvatar index={profile.avatar_index} className="academy-profile-identity__seal" alt="" />
             </header>
 
-            {isEditable && (
+            {isSettingsView && (
               <fieldset className="academy-profile-icons">
                 <legend>Select profile icon</legend>
                 <div>
@@ -212,37 +235,60 @@ function AcademyProfile({ profileNumber, authSession, onLogin, onReturn, onOpenA
 
             <div className="academy-profile-columns">
               <section className="academy-profile-panel academy-profile-panel--bio">
-                <div className="academy-profile-panel__title"><span>Bio</span><span>{profile.bio.length}/{MAX_BIO_CHARACTERS}</span></div>
-                <textarea value={profile.bio} onChange={(event) => updateField('bio', event.target.value.slice(0, MAX_BIO_CHARACTERS))} maxLength={MAX_BIO_CHARACTERS} placeholder={isEditable ? 'Write a short bio…' : 'No bio yet.'} readOnly={!isEditable} rows="7" />
+                <div className="academy-profile-panel__title"><span>Bio</span>{isSettingsView && <span>{profile.bio.length}/{MAX_BIO_CHARACTERS}</span>}</div>
+                <textarea value={profile.bio} onChange={(event) => updateField('bio', event.target.value.slice(0, MAX_BIO_CHARACTERS))} maxLength={MAX_BIO_CHARACTERS} placeholder={isSettingsView ? 'Write a short bio…' : 'No bio yet.'} readOnly={!isSettingsView} rows="7" />
               </section>
 
-              <section className="academy-profile-panel academy-profile-panel--settings">
-                <label className="academy-profile-toggle">
-                  <span><strong>Anonymous mode</strong><small>New Global posts appear as ANON and cannot open this profile.</small></span>
-                  <input type="checkbox" checked={profile.anonymous_mode} onChange={(event) => updateField('anonymous_mode', event.target.checked)} disabled={!isEditable} />
-                  <span className="academy-profile-toggle__track" aria-hidden="true" />
-                </label>
+              {isSettingsView ? (
+                <section className="academy-profile-panel academy-profile-panel--settings">
+                  <label className="academy-profile-toggle">
+                    <span><strong>Anonymous mode</strong><small>New Global posts appear as ANON and cannot open this profile.</small></span>
+                    <input type="checkbox" checked={profile.anonymous_mode} onChange={(event) => updateField('anonymous_mode', event.target.checked)} />
+                    <span className="academy-profile-toggle__track" aria-hidden="true" />
+                  </label>
 
-                <div className="academy-profile-connections">
-                  <h2>Connections</h2>
-                  {SOCIAL_FIELDS.map((field) => (
-                    <label key={field.key}>
-                      <span className="academy-profile-social-mark" aria-hidden="true">{field.mark}</span>
-                      <span>{field.label}</span>
-                      <input type="url" value={profile[field.key]} onChange={(event) => updateField(field.key, event.target.value)} placeholder={field.placeholder} readOnly={!isEditable} />
-                    </label>
-                  ))}
-                </div>
+                  <div className="academy-profile-connections">
+                    <h2>Connections</h2>
+                    {SOCIAL_FIELDS.map((field) => (
+                      <label key={field.key}>
+                        <span className="academy-profile-social-mark" aria-hidden="true">{field.mark}</span>
+                        <span>{field.label}</span>
+                        <input type="url" value={profile[field.key]} onChange={(event) => updateField(field.key, event.target.value)} placeholder={field.placeholder} />
+                      </label>
+                    ))}
+                  </div>
 
-                <div className="academy-profile-email">
-                  <label><span>Email</span><input type="email" value={profile.email} onChange={(event) => updateField('email', event.target.value)} placeholder="name@example.com" readOnly={!isEditable} /></label>
-                  <label className="academy-profile-email__public"><input type="checkbox" checked={profile.email_is_public} onChange={(event) => updateField('email_is_public', event.target.checked)} disabled={!isEditable} /> Public</label>
-                </div>
-              </section>
+                  <div className="academy-profile-email">
+                    <label><span>Email</span><input type="email" value={profile.email} onChange={(event) => updateField('email', event.target.value)} placeholder="name@example.com" /></label>
+                    <label className="academy-profile-email__public"><input type="checkbox" checked={profile.email_is_public} onChange={(event) => updateField('email_is_public', event.target.checked)} /> Public</label>
+                  </div>
+                </section>
+              ) : (
+                <section className="academy-profile-panel academy-profile-panel--public">
+                  <div className="academy-profile-connections academy-profile-connections--public">
+                    <h2>Connections</h2>
+                    {publicSocials.map((field) => (
+                      <a href={profile[field.key]} target="_blank" rel="noreferrer" key={field.key}>
+                        <span className="academy-profile-social-mark" aria-hidden="true">{field.mark}</span>
+                        <span>{field.label}</span>
+                        <span>{profile[field.key]}</span>
+                      </a>
+                    ))}
+                    {publicEmail && (
+                      <a href={`mailto:${publicEmail}`}>
+                        <span className="academy-profile-social-mark" aria-hidden="true">@</span>
+                        <span>Email</span>
+                        <span>{publicEmail}</span>
+                      </a>
+                    )}
+                    {publicSocials.length === 0 && !publicEmail && <p>No public connections.</p>}
+                  </div>
+                </section>
+              )}
             </div>
 
             {notice && <p className={`academy-profile-message${status === 'error' ? ' is-error' : ''}`} role="status">{notice}</p>}
-            {isEditable ? <button className="academy-profile-save" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save profile'}</button> : status === 'ready' && <p className="academy-profile-readonly">Public profile view</p>}
+            {isSettingsView ? <button className="academy-profile-save" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save profile'}</button> : status === 'ready' && <p className="academy-profile-readonly">Public profile view</p>}
           </form>
         )}
       </div>

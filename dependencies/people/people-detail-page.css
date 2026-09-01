@@ -1,0 +1,121 @@
+.people-detail {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 88rem);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: clamp(7rem, 13vh, 9rem) 0 6rem;
+  color: #eee8de;
+  animation: people-detail-in .75s ease-out both;
+}
+
+.people-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: .35rem;
+  border-bottom: 1px solid rgba(238, 232, 222, .42);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.people-detail__layout {
+  display: grid;
+  grid-template-columns: minmax(15rem, .62fr) minmax(0, 1.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.people-detail__header,
+.people-detail__portrait {
+  border: 1px solid rgba(238, 232, 222, .25);
+  background: rgba(17, 21, 21, .76);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .22);
+  backdrop-filter: blur(18px);
+}
+
+.people-detail__header {
+  align-self: start;
+  padding: clamp(1.2rem, 2.5vw, 2rem);
+}
+
+.people-detail__header > p:first-child,
+.people-detail__portrait > p {
+  margin: 0 0 1rem;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.people-detail__header h1 {
+  font-size: clamp(2.7rem, 4.4vw, 4.8rem);
+  line-height: .92;
+  overflow-wrap: break-word;
+}
+
+.people-detail__summary {
+  margin: 1.5rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(238, 232, 222, .2);
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: clamp(.92rem, 1.2vw, 1.12rem);
+  line-height: 1.55;
+}
+
+.people-detail__source,
+.people-detail__portrait > a:last-child {
+  display: block;
+  width: max-content;
+  margin: 1.25rem 0 0 auto;
+  padding-bottom: .25rem;
+  border-bottom: 1px solid currentColor;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.people-detail__main {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.people-detail__portrait {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.people-detail__portrait > a:first-of-type {
+  display: block;
+  width: min(100%, 38rem);
+  margin: 0 auto;
+  overflow: hidden;
+  background: #111;
+}
+
+.people-detail__portrait img {
+  display: block;
+  width: 100%;
+  max-height: 48rem;
+  object-fit: contain;
+}
+
+@keyframes people-detail-in {
+  from { opacity: 0; transform: translateY(1.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 620px) {
+  .people-detail {
+    width: calc(100% - 2rem);
+    padding-top: 7rem;
+  }
+
+  .people-detail__layout {
+    grid-template-columns: 1fr;
+  }
+}

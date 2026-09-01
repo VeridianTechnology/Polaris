@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { financeFeatures } from './financeFeatures.js'
 import StorySubmission, { useApprovedStories } from '../shared/StorySubmission.jsx'
+import CareerTabs from '../career/CareerTabs.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
 import './finance-library.css'
 
@@ -149,6 +150,7 @@ function FinanceLibrary({ navigate, authSession, onLogin }) {
         <header className="finance-library__intro">
           <p>Research library</p>
           <h1 id="finance-library-title">Finance</h1>
+          <CareerTabs active="finance" navigate={navigate} />
 
           <aside className="finance-temperature" aria-label="Finance market temperature">
             <FinanceMeter label="AI" value={90} />

@@ -61,7 +61,9 @@ function AgoraLoginDialog({ open, onClose, onLogin, onRegister }) {
   }
 
   const normalizedUsername = username.trim().replace(/^@+/, '')
-  const validUsername = /^[A-Za-z0-9_]{3,32}$/.test(normalizedUsername)
+  const validUsername = mode === 'login'
+    ? /^[A-Za-z0-9._-]{3,64}$/.test(normalizedUsername)
+    : /^[A-Za-z0-9_]{3,32}$/.test(normalizedUsername)
   const validSecret = credentialMode === 'pin'
     ? (mode === 'register' ? /^\d{6}$/.test(password) : /^\d{4}(?:\d{2})?$/.test(password))
     : mode === 'login' ? Boolean(password) : password.length >= 12

@@ -1,8 +1,14 @@
 export const ROUTES = {
   home: '/',
+  landing: '/welcome',
   academy: '/agora',
   academyAdmin: '/agora/admin',
   agoraBusiness: '/academy/business',
+  agoraCareerBlueCollar: '/academy/career/blue-collar',
+  agoraCareerMechanical: '/academy/career/mechanical',
+  agoraCareerTech: '/academy/career/tech',
+  agoraCareerSocialMedia: '/academy/career/social-media',
+  agoraCareerModeling: '/academy/career/modeling',
   agoraFinance: '/academy/finance',
   agoraFinanceStrategyRoom: '/academy/finance/strategy-room',
   agoraFinanceCrudeOil: '/academy/finance/strategy-room/crude-oil-to-motion',
@@ -13,9 +19,36 @@ export const ROUTES = {
   agoraCrimeLindsayClancy: '/academy/crime/lindsay-clancy',
   agoraFreedom: '/academy/freedom',
   agoraFreedomFlockCameras: '/academy/freedom/flock-cameras',
+  agoraConspiracy: '/academy/conspiracy',
+  agoraCulture: '/academy/culture',
+  agoraCultureMusic: '/academy/culture/music',
+  agoraCultureMemes: '/academy/culture/memes',
+  agoraCultureComedy: '/academy/culture/comedy',
+  agoraCultureNewAgeAthletes: '/academy/culture/new-age-athletes',
+  agoraCultureArt: '/academy/culture/art',
+  agoraCultureHistory: '/academy/culture/history',
+  agoraCultureFights: '/academy/culture/fights',
+  agoraCultureReligion: '/academy/culture/religion',
+  agoraHealth: '/academy/health',
+  agoraHealthPhysical: '/academy/health/physical',
+  agoraScience: '/academy/science',
+  agoraScienceHealth: '/academy/science/health',
+  agoraSciencePhysics: '/academy/science/physics',
+  agoraScienceLooksmaxxing: '/academy/science/looksmaxxing',
+  agoraScienceWorkout: '/academy/science/workout',
+  agoraScienceAstrology: '/academy/science/astrology',
+  agoraPeople: '/academy/people',
+  agoraPeopleRightWing: '/academy/people/right-wing',
+  agoraPeopleZoomerwoman: '/academy/people/right-wing/zoomerwoman',
+  agoraPeoplePaulMiller: '/academy/people/right-wing/paul-miller',
 }
 
-export function academyProfilePath(profileNumber) {
+export function academyProfilePath(username = 'nyx') {
+  const normalizedUsername = String(username).trim().replace(/^@+/, '').toLowerCase()
+  return `${ROUTES.academy}/profile/${encodeURIComponent(normalizedUsername || 'nyx')}`
+}
+
+export function legacyAcademyProfilePath(profileNumber) {
   const normalizedNumber = Number.parseInt(profileNumber, 10)
   return `${ROUTES.academy}/profile/${Number.isFinite(normalizedNumber) ? normalizedNumber : 1}`
 }
@@ -74,7 +107,11 @@ export function matchRoute(pathname) {
   const path = normalizePath(pathname)
 
   if (path === ROUTES.home) {
-    return { page: 'home', path: ROUTES.home }
+    return { page: 'academy', path: ROUTES.academy }
+  }
+
+  if (path === ROUTES.landing) {
+    return { page: 'home', path: ROUTES.landing }
   }
 
   if (path === ROUTES.academy) {
@@ -92,12 +129,60 @@ export function matchRoute(pathname) {
       page: 'academy-profile',
       area: 'agora',
       profileNumber,
-      path: academyProfilePath(profileNumber),
+      legacyProfile: true,
+      path: legacyAcademyProfilePath(profileNumber),
+    }
+  }
+
+  const academyProfileUsernameMatch = path.match(/^\/agora\/profile\/([A-Za-z0-9_]{2,32})$/)
+  if (academyProfileUsernameMatch) {
+    const profileUsername = academyProfileUsernameMatch[1].toLowerCase()
+    return {
+      page: 'academy-profile',
+      area: 'agora',
+      profileUsername,
+      path: academyProfilePath(profileUsername),
     }
   }
 
   if (path === ROUTES.agoraBusiness || path === '/academy') {
     return { page: 'agora', section: 'business', path: ROUTES.agoraBusiness }
+  }
+
+  if (path === ROUTES.agoraCareerBlueCollar || path === ROUTES.agoraCareerMechanical) {
+    return {
+      page: 'agora',
+      section: 'career',
+      careerView: 'mechanical',
+      path: ROUTES.agoraCareerMechanical,
+    }
+  }
+
+  if (path === ROUTES.agoraCareerTech) {
+    return {
+      page: 'agora',
+      section: 'career',
+      careerView: 'tech',
+      path: ROUTES.agoraCareerTech,
+    }
+  }
+
+  if (path === ROUTES.agoraCareerSocialMedia) {
+    return {
+      page: 'agora',
+      section: 'career',
+      careerView: 'social-media',
+      path: ROUTES.agoraCareerSocialMedia,
+    }
+  }
+
+  if (path === ROUTES.agoraCareerModeling) {
+    return {
+      page: 'agora',
+      section: 'career',
+      careerView: 'modeling',
+      path: ROUTES.agoraCareerModeling,
+    }
   }
 
   if (path === ROUTES.agoraFinance) {
@@ -166,6 +251,166 @@ export function matchRoute(pathname) {
     }
   }
 
+  if (path === ROUTES.agoraConspiracy) {
+    return {
+      page: 'agora',
+      section: 'conspiracy',
+      conspiracyView: 'latest',
+      path: ROUTES.agoraConspiracy,
+    }
+  }
+
+  if (path === ROUTES.agoraCulture || path === ROUTES.agoraCultureMusic) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'music',
+      path: ROUTES.agoraCultureMusic,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureMemes) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'memes',
+      path: ROUTES.agoraCultureMemes,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureComedy) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'comedy',
+      path: ROUTES.agoraCultureComedy,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureNewAgeAthletes) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'new-age-athletes',
+      path: ROUTES.agoraCultureNewAgeAthletes,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureArt) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'art',
+      path: ROUTES.agoraCultureArt,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureHistory) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'history',
+      path: ROUTES.agoraCultureHistory,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureFights) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'fights',
+      path: ROUTES.agoraCultureFights,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureReligion) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'religion',
+      path: ROUTES.agoraCultureReligion,
+    }
+  }
+
+  if (
+    path === ROUTES.agoraHealth
+    || path === ROUTES.agoraHealthPhysical
+    || path === ROUTES.agoraScience
+    || path === ROUTES.agoraScienceHealth
+  ) {
+    return {
+      page: 'agora',
+      section: 'science',
+      scienceView: 'health',
+      path: ROUTES.agoraScienceHealth,
+    }
+  }
+
+  if (path === ROUTES.agoraSciencePhysics) {
+    return {
+      page: 'agora',
+      section: 'science',
+      scienceView: 'physics',
+      path: ROUTES.agoraSciencePhysics,
+    }
+  }
+
+  if (path === ROUTES.agoraScienceLooksmaxxing) {
+    return {
+      page: 'agora',
+      section: 'science',
+      scienceView: 'looksmaxxing',
+      path: ROUTES.agoraScienceLooksmaxxing,
+    }
+  }
+
+  if (path === ROUTES.agoraScienceWorkout) {
+    return {
+      page: 'agora',
+      section: 'science',
+      scienceView: 'workout',
+      path: ROUTES.agoraScienceWorkout,
+    }
+  }
+
+  if (path === ROUTES.agoraScienceAstrology) {
+    return {
+      page: 'agora',
+      section: 'science',
+      scienceView: 'astrology',
+      path: ROUTES.agoraScienceAstrology,
+    }
+  }
+
+  if (path === ROUTES.agoraPeople || path === ROUTES.agoraPeopleRightWing) {
+    return {
+      page: 'agora',
+      section: 'people',
+      peopleView: 'right-wing',
+      path: ROUTES.agoraPeopleRightWing,
+    }
+  }
+
+  if (path === ROUTES.agoraPeopleZoomerwoman) {
+    return {
+      page: 'agora',
+      section: 'people',
+      peopleView: 'right-wing',
+      peopleCase: 'zoomerwoman',
+      path: ROUTES.agoraPeopleZoomerwoman,
+    }
+  }
+
+  if (path === ROUTES.agoraPeoplePaulMiller) {
+    return {
+      page: 'agora',
+      section: 'people',
+      peopleView: 'right-wing',
+      peopleCase: 'paul-miller',
+      path: ROUTES.agoraPeoplePaulMiller,
+    }
+  }
+
   if (path === ROUTES.agoraPolitics || path === '/academy/politics') {
     return {
       page: 'agora',
@@ -187,5 +432,5 @@ export function matchRoute(pathname) {
     }
   }
 
-  return { page: 'home', path: ROUTES.home, notFound: true }
+  return { page: 'academy', path: ROUTES.academy, notFound: true }
 }

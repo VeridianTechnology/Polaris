@@ -13,7 +13,7 @@ import {
 } from './academyLinks'
 import { isSupabaseConfigured, supabase } from './supabaseClient'
 import { AgoraAdminBadge } from './auth/AgoraLoginDialog'
-import { academyProfilePath } from '../../routing/routes'
+import { academyProfilePath, legacyAcademyProfilePath } from '../../routing/routes'
 import './academy-avatar.css'
 import './academy-board.css'
 
@@ -52,6 +52,7 @@ function normalizeComment(row) {
     id: row.id,
     postNumber: row.post_number,
     profileNumber: row.profile_number,
+    username: row.author_username || '',
     name: row.author_name || 'Agora Member',
     createdAt: row.created_at,
     message: row.body,
@@ -332,7 +333,9 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
     setReactingId(null)
   }
 
-  const openProfile = (profileNumber = 1) => navigate(academyProfilePath(profileNumber))
+  const openProfile = (username, profileNumber) => navigate(
+    username ? academyProfilePath(username) : legacyAcademyProfilePath(profileNumber),
+  )
 
   return (
     <section className="academy-board" aria-label="Agora discussion board">
@@ -354,7 +357,7 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
 
       <div className="academy-board__shell">
         <form className="academy-composer" onSubmit={publishComment}>
-          <button className="academy-composer__profile" type="button" onClick={() => authSession ? openProfile(authSession.profile_number) : onLogin()} aria-label={authSession ? 'Open your profile' : 'Log in'}>
+          <button className="academy-composer__profile" type="button" onClick={() => authSession ? openProfile(authSession.username) : onLogin()} aria-label={authSession ? 'Open your profile' : 'Log in'}>
             <AcademyAvatar index={profile.avatar_index} className="academy-composer__avatar" alt={authSession ? 'Your profile' : 'Member login'} />
           </button>
           <label className="academy-composer__field">
@@ -401,7 +404,7 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
             return (
               <article className="academy-comment" key={comment.id}>
                 {comment.isAnonymous ? <AcademyAvatar anonymous /> : (
-                  <button className="academy-comment__profile-link academy-comment__profile-link--avatar" type="button" onClick={() => openProfile(comment.profileNumber)}>
+                  <button className="academy-comment__profile-link academy-comment__profile-link--avatar" type="button" onClick={() => openProfile(comment.username, comment.profileNumber)}>
                     <AcademyAvatar index={comment.avatar} alt={`${comment.name} profile`} />
                   </button>
                 )}
@@ -409,7 +412,7 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
                   <div className="academy-comment__topline">
                     <p className="academy-comment__meta">
                       {comment.isAnonymous ? <strong>ANON</strong> : (
-                        <button className="academy-comment__profile-link" type="button" onClick={() => openProfile(comment.profileNumber)}>{comment.name}</button>
+                        <button className="academy-comment__profile-link" type="button" onClick={() => openProfile(comment.username, comment.profileNumber)}>{comment.name}</button>
                       )}
                       {!comment.isAnonymous && comment.isAdmin && <AgoraAdminBadge />}
                       <span aria-hidden="true">•</span>

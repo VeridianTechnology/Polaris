@@ -94,6 +94,40 @@
   cursor: pointer;
 }
 
+.academy-profile-view-tabs {
+  display: inline-flex;
+  padding: .22rem;
+  border: 1px solid rgba(73, 81, 86, .28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .52);
+  box-shadow: 0 .45rem 1.2rem rgba(35, 41, 46, .08);
+}
+
+.academy-profile-view-tabs button {
+  appearance: none;
+  min-width: 7rem;
+  padding: .65rem .9rem;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(48, 53, 52, .62);
+  background: transparent;
+  font: 650 .58rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.academy-profile-view-tabs button.is-active {
+  color: #f7f5ef;
+  background: #347da7;
+  box-shadow: 0 .3rem .8rem rgba(44, 99, 131, .22);
+}
+
+.academy-profile-view-tabs button:focus-visible {
+  outline: 2px solid #5b91be;
+  outline-offset: 2px;
+}
+
 .academy-profile-admin {
   appearance: none;
   display: inline-flex;
@@ -360,7 +394,8 @@
   margin-top: 2rem;
 }
 
-.academy-profile-connections label {
+.academy-profile-connections label,
+.academy-profile-connections--public a {
   display: grid;
   grid-template-columns: 1.5rem 5.6rem minmax(0, 1fr);
   align-items: center;
@@ -368,6 +403,42 @@
   min-height: 2.9rem;
   border-bottom: 1px solid rgba(55, 59, 57, .16);
   font: 500 .64rem/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.academy-profile-connections--public {
+  margin-top: 0;
+}
+
+.academy-profile-connections--public a {
+  color: inherit;
+  transition: color .2s ease, background-color .2s ease;
+}
+
+.academy-profile-connections--public a > span:last-child {
+  overflow: hidden;
+  color: rgba(49, 54, 52, .68);
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.academy-profile-connections--public a:hover,
+.academy-profile-connections--public a:focus-visible {
+  color: #2c759f;
+  background: rgba(112, 178, 218, .08);
+}
+
+.academy-profile-connections--public a:focus-visible {
+  outline: 1px solid #5b91be;
+  outline-offset: 2px;
+}
+
+.academy-profile-connections--public > p {
+  margin: 0;
+  padding: 1.1rem 0;
+  border-top: 1px solid rgba(55, 59, 57, .16);
+  color: rgba(31, 34, 32, .52);
+  font: 500 .68rem/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .academy-profile-social-mark {
@@ -480,6 +551,16 @@
   .academy-profile-actions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .academy-profile-view-tabs {
+    order: 3;
+    width: 100%;
+  }
+
+  .academy-profile-view-tabs button {
+    flex: 1;
+    min-width: 0;
   }
 
   .academy-profile-identity {

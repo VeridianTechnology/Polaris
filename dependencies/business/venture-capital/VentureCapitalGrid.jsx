@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import CareerTabs from '../../career/CareerTabs.jsx'
 import { vcFirms } from './vcFirms.js'
 import './venture-capital-grid.css'
 
@@ -100,7 +101,7 @@ function FirmCard({ firm }) {
   )
 }
 
-function VentureCapitalGrid() {
+function VentureCapitalGrid({ navigate }) {
   const [isIntroOpen, setIsIntroOpen] = useState(true)
   const introTimer = useRef(null)
 
@@ -135,6 +136,7 @@ function VentureCapitalGrid() {
         <div className="vc-directory__intro">
           <p className="vc-directory__eyebrow">Funding directory</p>
           <h1 id="vc-directory-title">Venture Capital</h1>
+          <CareerTabs active="entrepreneurship" navigate={navigate} />
           <p className="vc-directory__subtitle">
             This is a list of venture capital firms to apply for funding for,
             depending on your idea, but there is a list of contacts and twitters

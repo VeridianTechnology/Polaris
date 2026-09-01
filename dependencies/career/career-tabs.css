@@ -1,0 +1,44 @@
+.career-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  margin-top: 1.5rem;
+  padding: .24rem;
+  overflow-x: auto;
+  border: 1px solid rgba(242, 237, 226, .42);
+  border-radius: 999px;
+  background: rgba(10, 12, 12, .28);
+  box-shadow: 0 .7rem 2rem rgba(0, 0, 0, .12);
+  backdrop-filter: blur(10px);
+  text-shadow: none;
+}
+
+.career-tabs__item {
+  flex: 0 0 auto;
+  min-width: 6.7rem;
+  padding: .58rem .9rem;
+  border-radius: 999px;
+  color: #f2ede2;
+  font-size: .52rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.career-tabs__item--active {
+  color: #24211d;
+  background: #f0ebe0;
+}
+
+.career-tabs__item:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: -3px;
+}
+
+@media (max-width: 560px) {
+  .career-tabs {
+    display: flex;
+  }
+}

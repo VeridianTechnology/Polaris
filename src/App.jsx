@@ -3,12 +3,18 @@ import VisitorCoordinates from '../dependencies/homepage/geo/VisitorCoordinates.
 import SoundBars from '../dependencies/homepage/soundbars/SoundBars.jsx'
 import LaunchTimer from '../dependencies/homepage/LaunchTimer.jsx'
 import VentureCapitalGrid from '../dependencies/business/venture-capital/VentureCapitalGrid.jsx'
+import CareerLibrary from '../dependencies/career/CareerLibrary.jsx'
 import FinanceLibrary from '../dependencies/finance/FinanceLibrary.jsx'
 import { financeFollowUps } from '../dependencies/finance/financeFeatures.js'
 import PoliticalMap from '../dependencies/politics/map/PoliticalMap.jsx'
 import CrimeLibrary from '../dependencies/crime/CrimeLibrary.jsx'
 import CrimeCase from '../dependencies/crime/CrimeCase.jsx'
 import FreedomLibrary from '../dependencies/freedom/FreedomLibrary.jsx'
+import CultureLibrary from '../dependencies/culture/CultureLibrary.jsx'
+import ScienceLibrary from '../dependencies/health/HealthLibrary.jsx'
+import ConspiracyLibrary from '../dependencies/conspiracy/ConspiracyLibrary.jsx'
+import PeopleLibrary from '../dependencies/people/PeopleLibrary.jsx'
+import PeopleDetailPage from '../dependencies/people/PeopleDetailPage.jsx'
 import VideoDetailPage from '../dependencies/shared/VideoDetailPage.jsx'
 import AcademyBoard from '../dependencies/academy/AcademyBoard.jsx'
 import AcademyAdmin from '../dependencies/academy/admin/AcademyAdmin.jsx'
@@ -17,7 +23,46 @@ import AgoraLoginDialog, { AgoraAuthArtworkButton } from '../dependencies/academ
 import { useAgoraAuth } from '../dependencies/academy/auth/agoraAuth.js'
 import RouteLink from '../routing/RouteLink.jsx'
 import useAppRouter from '../routing/useAppRouter.js'
-import { parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
+import { academyProfilePath, parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
+
+function SectionDropdown({ label, active, children }) {
+  const closeSiblingMenus = (currentMenu) => {
+    Array.from(currentMenu.parentElement?.children || []).forEach((menu) => {
+      if (menu !== currentMenu && menu.matches?.('details.section-menu[open]')) {
+        menu.removeAttribute('open')
+      }
+    })
+  }
+
+  const closeOtherMenus = (event) => {
+    if (event.currentTarget.open) closeSiblingMenus(event.currentTarget)
+  }
+
+  const closeMenu = (event) => {
+    event.currentTarget.closest('details')?.removeAttribute('open')
+    document.activeElement?.blur()
+  }
+
+  return (
+    <details
+      className="section-menu"
+      onMouseEnter={(event) => closeSiblingMenus(event.currentTarget)}
+      onToggle={closeOtherMenus}
+    >
+      <summary className={`section-tab section-menu__trigger${active ? ' section-tab--active' : ''}`}>
+        <span>{label}</span>
+        <svg aria-hidden="true" viewBox="0 0 12 8" fill="none">
+          <path d="m1.5 1.5 4.5 4 4.5-4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </summary>
+      <div className="section-menu__popover">
+        <div className="section-menu__items" role="group" aria-label={`${label} sections`} onClick={closeMenu}>
+          {children}
+        </div>
+      </div>
+    </details>
+  )
+}
 
 function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout }) {
   if (route.page === 'home') return null
@@ -33,7 +78,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
         <img className="app-header__logo" src={sectionLogo} alt={`${sectionName} logo`} />
         <RouteLink
           className={`primary-tab${route.page === 'home' ? ' primary-tab--active' : ''}`}
-          to={ROUTES.home}
+          to={ROUTES.landing}
           navigate={navigate}
           active={route.page === 'home'}
         >
@@ -59,46 +104,209 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
 
       {isAcademy ? (
         <nav className="entered-tabs" aria-label="Academy sections">
-          <RouteLink
-            className={`section-tab${route.section === 'business' ? ' section-tab--active' : ''}`}
-            to={ROUTES.agoraBusiness}
-            navigate={navigate}
-            active={route.section === 'business'}
+          <SectionDropdown label="Career" active={['business', 'finance', 'career'].includes(route.section)}>
+            <RouteLink
+              className={`section-menu__item${route.section === 'business' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraBusiness}
+              navigate={navigate}
+              active={route.section === 'business'}
+            >
+              Entrepreneurship
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'finance' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraFinance}
+              navigate={navigate}
+              active={route.section === 'finance'}
+            >
+              Finance
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.careerView === 'mechanical' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCareerMechanical}
+              navigate={navigate}
+              active={route.careerView === 'mechanical'}
+            >
+              Mechanical
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.careerView === 'tech' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCareerTech}
+              navigate={navigate}
+              active={route.careerView === 'tech'}
+            >
+              Tech
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.careerView === 'social-media' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCareerSocialMedia}
+              navigate={navigate}
+              active={route.careerView === 'social-media'}
+            >
+              Social Media
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.careerView === 'modeling' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCareerModeling}
+              navigate={navigate}
+              active={route.careerView === 'modeling'}
+            >
+              Modeling
+            </RouteLink>
+          </SectionDropdown>
+          <SectionDropdown
+            label="Politics"
+            active={['politics', 'crime', 'freedom', 'conspiracy'].includes(route.section)}
           >
-            Business
-          </RouteLink>
-          <RouteLink
-            className={`section-tab${route.section === 'finance' ? ' section-tab--active' : ''}`}
-            to={ROUTES.agoraFinance}
-            navigate={navigate}
-            active={route.section === 'finance'}
-          >
-            Finance
-          </RouteLink>
-          <RouteLink
-            className={`section-tab${route.section === 'politics' ? ' section-tab--active' : ''}`}
-            to={ROUTES.agoraPolitics}
-            navigate={navigate}
-            active={route.section === 'politics'}
-          >
-            Map
-          </RouteLink>
-          <RouteLink
-            className={`section-tab${route.section === 'crime' ? ' section-tab--active' : ''}`}
-            to={ROUTES.agoraCrime}
-            navigate={navigate}
-            active={route.section === 'crime'}
-          >
-            Crime
-          </RouteLink>
-          <RouteLink
-            className={`section-tab${route.section === 'freedom' ? ' section-tab--active' : ''}`}
-            to={ROUTES.agoraFreedom}
-            navigate={navigate}
-            active={route.section === 'freedom'}
-          >
-            Freedom
-          </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'crime' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCrime}
+              navigate={navigate}
+              active={route.section === 'crime'}
+            >
+              Crime
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'freedom' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraFreedom}
+              navigate={navigate}
+              active={route.section === 'freedom'}
+            >
+              Freedom
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'politics' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraPolitics}
+              navigate={navigate}
+              active={route.section === 'politics'}
+            >
+              Map
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'conspiracy' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraConspiracy}
+              navigate={navigate}
+              active={route.section === 'conspiracy'}
+            >
+              Conspiracy
+            </RouteLink>
+          </SectionDropdown>
+          <SectionDropdown label="Culture" active={route.section === 'culture' || route.section === 'people'}>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'music' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureMusic}
+              navigate={navigate}
+              active={route.cultureView === 'music'}
+            >
+              Music
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'memes' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureMemes}
+              navigate={navigate}
+              active={route.cultureView === 'memes'}
+            >
+              Memes
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'comedy' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureComedy}
+              navigate={navigate}
+              active={route.cultureView === 'comedy'}
+            >
+              Comedy
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.peopleView === 'right-wing' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraPeopleRightWing}
+              navigate={navigate}
+              active={route.peopleView === 'right-wing'}
+            >
+              Right Wing People
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'new-age-athletes' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureNewAgeAthletes}
+              navigate={navigate}
+              active={route.cultureView === 'new-age-athletes'}
+            >
+              New Age Athletes
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'art' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureArt}
+              navigate={navigate}
+              active={route.cultureView === 'art'}
+            >
+              Art
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'history' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureHistory}
+              navigate={navigate}
+              active={route.cultureView === 'history'}
+            >
+              History
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'fights' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureFights}
+              navigate={navigate}
+              active={route.cultureView === 'fights'}
+            >
+              Fights
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'religion' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureReligion}
+              navigate={navigate}
+              active={route.cultureView === 'religion'}
+            >
+              Religion
+            </RouteLink>
+          </SectionDropdown>
+          <SectionDropdown label="Science" active={route.section === 'science'}>
+            <RouteLink
+              className={`section-menu__item${route.scienceView === 'health' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraScienceHealth}
+              navigate={navigate}
+              active={route.scienceView === 'health'}
+            >
+              Health
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.scienceView === 'physics' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraSciencePhysics}
+              navigate={navigate}
+              active={route.scienceView === 'physics'}
+            >
+              Physics
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.scienceView === 'looksmaxxing' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraScienceLooksmaxxing}
+              navigate={navigate}
+              active={route.scienceView === 'looksmaxxing'}
+            >
+              Looksmaxxing
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.scienceView === 'workout' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraScienceWorkout}
+              navigate={navigate}
+              active={route.scienceView === 'workout'}
+            >
+              Workout
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.scienceView === 'astrology' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraScienceAstrology}
+              navigate={navigate}
+              active={route.scienceView === 'astrology'}
+            >
+              Astrology
+            </RouteLink>
+          </SectionDropdown>
         </nav>
       ) : <span aria-hidden="true" />}
 
@@ -129,7 +337,7 @@ function HomePage({ navigate }) {
       <LaunchTimer />
       <footer className="hero__footer" id="gather">
         <SoundBars />
-        <RouteLink className="discover-link" to={ROUTES.agoraBusiness} navigate={navigate}>
+        <RouteLink className="discover-link" to={ROUTES.academy} navigate={navigate}>
           <span>Discover Polaris</span>
           <span className="discover-link__line" />
         </RouteLink>
@@ -169,7 +377,11 @@ function App() {
       : route.page === 'agora'
         ? '/academy-logo.png'
         : '/polaris-logo.png'
-    const detailPageTitle = route.crimeCase === 'lindsay-clancy'
+    const detailPageTitle = route.peopleCase === 'zoomerwoman'
+      ? 'New Right Wing Darling — People — Polaris'
+      : route.peopleCase === 'paul-miller'
+        ? 'Paul Miller — People — Polaris'
+        : route.crimeCase === 'lindsay-clancy'
       ? 'Lindsay Clancy — Crime — Polaris'
       : route.crimeCase === 'hindu-cult-investigation'
         ? 'Hindu Cult Investigation — Crime — Polaris'
@@ -182,14 +394,31 @@ function App() {
           : route.freedomCase === 'flock-cameras'
             ? 'Flock Cameras — Freedom — Polaris'
             : null
+    const academySectionTitle = route.section === 'business'
+      ? 'Entrepreneurship'
+      : route.section === 'career'
+        ? route.careerView === 'tech'
+          ? 'Career Tech'
+          : route.careerView === 'social-media'
+            ? 'Career Social Media'
+            : route.careerView === 'modeling'
+              ? 'Career Modeling'
+            : 'Mechanical Career'
+        : route.section === 'politics'
+          ? 'Map'
+          : route.section === 'people'
+            ? 'Right Wing'
+            : route.section
+              ? `${route.section.charAt(0).toUpperCase()}${route.section.slice(1)}`
+              : 'Academy'
     const pageTitle = isAgora
       ? route.page === 'admin'
         ? 'Story Approvals — Polaris'
         : route.page === 'academy-profile'
-          ? `Profile ${String(route.profileNumber).padStart(4, '0')} — Agora — Polaris`
+          ? `${route.profileUsername ? `@${route.profileUsername}` : `Profile ${String(route.profileNumber).padStart(4, '0')}`} — Agora — Polaris`
           : 'Agora — Polaris'
       : route.page === 'agora'
-        ? detailPageTitle || `Academy ${route.section === 'politics' ? 'Map' : `${route.section.charAt(0).toUpperCase()}${route.section.slice(1)}`} — Polaris`
+        ? detailPageTitle || `Academy ${academySectionTitle} — Polaris`
         : 'Polaris — Your New Digital Home'
     let favicon = document.querySelector('link[rel="icon"]')
 
@@ -202,10 +431,21 @@ function App() {
     favicon.type = 'image/png'
     favicon.href = iconPath
     document.title = pageTitle
-  }, [route.page, route.section, route.crimeCase, route.financeCase, route.freedomCase, route.profileNumber])
+  }, [route.page, route.section, route.careerView, route.crimeCase, route.financeCase, route.freedomCase, route.peopleCase, route.profileNumber, route.profileUsername])
 
   const changePoliticalView = (view) => navigate(politicsPath(view))
   const leavePoliticalView = () => navigate(politicsPath(parentPoliticalView(politicalView)))
+  const loginAndOpenAgora = async (...credentials) => {
+    const nextSession = await login(...credentials)
+    navigate(ROUTES.academy, { replace: true })
+    return nextSession
+  }
+  const registerAndOpenAgora = async (...credentials) => {
+    const nextSession = await register(...credentials)
+    navigate(ROUTES.academy, { replace: true })
+    return nextSession
+  }
+
   return (
     <main className={`hero${isLanding ? '' : ` hero--entered hero--${heroMode}`}`}>
       {route.page !== 'academy' && route.page !== 'academy-profile' && route.page !== 'admin' && (
@@ -245,11 +485,13 @@ function App() {
       )}
       {route.page === 'academy-profile' && (
         <AcademyProfile
+          profileUsername={route.profileUsername}
           profileNumber={route.profileNumber}
           authSession={authSession}
           onLogin={() => setLoginOpen(true)}
           onReturn={() => navigate(ROUTES.academy)}
           onOpenAdmin={() => navigate(ROUTES.academyAdmin)}
+          onCanonicalize={(username) => navigate(academyProfilePath(username), { replace: true })}
         />
       )}
       {route.page === 'admin' && (
@@ -260,7 +502,10 @@ function App() {
           onReturn={() => navigate(ROUTES.academy)}
         />
       )}
-      {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid />}
+      {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid navigate={navigate} />}
+      {route.page === 'agora' && route.section === 'career' && (
+        <CareerLibrary careerView={route.careerView} navigate={navigate} />
+      )}
       {route.page === 'agora' && route.section === 'finance' && (
         route.financeCase === 'strategy-room' ? (
           <VideoDetailPage
@@ -353,6 +598,18 @@ function App() {
           />
         ) : <FreedomLibrary navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
       )}
+      {route.page === 'agora' && route.section === 'culture' && (
+        <CultureLibrary cultureView={route.cultureView} navigate={navigate} />
+      )}
+      {route.page === 'agora' && route.section === 'science' && (
+        <ScienceLibrary scienceView={route.scienceView} navigate={navigate} />
+      )}
+      {route.page === 'agora' && route.section === 'conspiracy' && <ConspiracyLibrary />}
+      {route.page === 'agora' && route.section === 'people' && (
+        route.peopleCase
+          ? <PeopleDetailPage peopleSlug={route.peopleCase} navigate={navigate} />
+          : <PeopleLibrary peopleView={route.peopleView} navigate={navigate} />
+      )}
       {route.page === 'agora' && route.section === 'politics' && (
         <PoliticalMap
           view={politicalView}
@@ -361,7 +618,12 @@ function App() {
         />
       )}
 
-      <AgoraLoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} onLogin={login} onRegister={register} />
+      <AgoraLoginDialog
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        onLogin={loginAndOpenAgora}
+        onRegister={registerAndOpenAgora}
+      />
     </main>
   )
 }

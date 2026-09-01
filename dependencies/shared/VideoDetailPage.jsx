@@ -4,7 +4,7 @@ import { isSupabaseConfigured, supabase } from '../academy/supabaseClient.js'
 import './video-detail-page.css'
 
 const ISSUE_KEY = 'september-2026'
-const MAX_COMMENTS = 15
+const DEFAULT_MAX_COMMENTS = 15
 
 function readLocalComments(storageKey) {
   try {
@@ -32,7 +32,13 @@ function formatCommentDate(value) {
   }).format(new Date(value))
 }
 
-function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
+export function VideoComments({
+  commentsTable,
+  itemColumn,
+  itemNumber,
+  storageKey,
+  maxComments = DEFAULT_MAX_COMMENTS,
+}) {
   const [comments, setComments] = useState(() => readLocalComments(storageKey))
   const [draft, setDraft] = useState('')
   const [commentMode, setCommentMode] = useState(isSupabaseConfigured ? 'loading' : 'local')
@@ -51,7 +57,7 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
         .eq('issue_key', ISSUE_KEY)
         .eq(itemColumn, itemNumber)
         .order('created_at', { ascending: true })
-        .limit(MAX_COMMENTS)
+        .limit(maxComments)
 
       if (cancelled) return
 
@@ -70,13 +76,13 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
     return () => {
       cancelled = true
     }
-  }, [commentsTable, itemColumn, itemNumber])
+  }, [commentsTable, itemColumn, itemNumber, maxComments])
 
   const publishComment = async (event) => {
     event.preventDefault()
     const body = draft.trim()
 
-    if (!body || posting || commentMode === 'loading' || comments.length >= MAX_COMMENTS) return
+    if (!body || posting || commentMode === 'loading' || comments.length >= maxComments) return
 
     setPosting(true)
     setNotice('')
@@ -96,7 +102,7 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
       if (error) {
         setNotice(
           error.code === '23514'
-            ? 'This discussion has reached its 15-comment limit.'
+            ? `This discussion has reached its ${maxComments}-comment limit.`
             : error.message,
         )
         setPosting(false)
@@ -113,7 +119,7 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
       }
 
       setComments((current) => {
-        if (current.length >= MAX_COMMENTS) return current
+        if (current.length >= maxComments) return current
         const next = [...current, localComment]
         saveLocalComments(storageKey, next)
         return next
@@ -132,8 +138,8 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
           <p>Public record</p>
           <h2 id={`discussion-${commentsTable}-${itemNumber}`}>Comments</h2>
         </div>
-        <strong aria-label={`${comments.length} of ${MAX_COMMENTS} comments`}>
-          {comments.length}/{MAX_COMMENTS}
+        <strong aria-label={`${comments.length} of ${maxComments} comments`}>
+          {comments.length}/{maxComments}
         </strong>
       </header>
 
@@ -146,11 +152,11 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
           placeholder="Add to the discussion…"
           maxLength="1200"
           rows="3"
-          disabled={comments.length >= MAX_COMMENTS}
+          disabled={comments.length >= maxComments}
         />
         <button
           type="submit"
-          disabled={!draft.trim() || posting || commentMode === 'loading' || comments.length >= MAX_COMMENTS}
+          disabled={!draft.trim() || posting || commentMode === 'loading' || comments.length >= maxComments}
         >
           {posting ? 'Posting…' : 'Post comment'}
         </button>
@@ -158,9 +164,9 @@ function VideoComments({ commentsTable, itemColumn, itemNumber, storageKey }) {
 
       {commentMode === 'loading' && <p className="video-discussion__notice">Loading comments…</p>}
       {notice && <p className="video-discussion__notice" role="status">{notice}</p>}
-      {comments.length >= MAX_COMMENTS && (
+      {comments.length >= maxComments && (
         <p className="video-discussion__notice" role="status">
-          This discussion is full. The maximum is 15 comments.
+          This discussion is full. The maximum is {maxComments} comments.
         </p>
       )}
 
