@@ -47,6 +47,17 @@
   display: none;
 }
 
+.social-library__tabs--culture {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.social-library__tabs--culture .social-library__tab {
+  flex: 1 0 7.5rem;
+  text-align: center;
+}
+
 .social-library__tab {
   min-width: 7.5rem;
   padding: .58rem 1rem;
@@ -68,6 +79,38 @@
   gap: 1rem;
   align-items: start;
   margin: 0 auto;
+}
+
+.social-library__subtabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-library__subtabs button {
+  padding: .7rem 1.1rem;
+  border: 1px solid rgba(242, 237, 226, .4);
+  border-radius: 999px;
+  color: #f2ede2;
+  background: rgba(11, 17, 21, .72);
+  font: inherit;
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.social-library__subtabs button[aria-selected="true"] {
+  color: #302d29;
+  background: #e6e1d6;
+}
+
+.social-library__subtabs button:focus-visible {
+  outline: 2px solid #f2ede2;
+  outline-offset: 3px;
 }
 
 .social-feature-grid--one {
@@ -135,6 +178,16 @@
 
 .instagram-feature-card__embed--loaded {
   opacity: 1;
+}
+
+.instagram-feature-card__video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #050505;
 }
 
 .instagram-feature-card__loading {

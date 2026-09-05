@@ -6,7 +6,7 @@ function CareerLibrary({ careerView = 'mechanical', navigate }) {
   const selectedView = ['mechanical', 'tech', 'social-media', 'modeling'].includes(careerView) ? careerView : 'mechanical'
   const dataKey = selectedView === 'social-media' ? 'socialMedia' : selectedView
   const features = careerFeatures[dataKey]
-  const gridSize = features.length === 3 ? 'three' : features.length === 2 ? 'two' : 'one'
+  const gridSize = features.length >= 3 ? 'three' : features.length === 2 ? 'two' : 'one'
 
   return (
     <section className="social-library" aria-labelledby="career-library-title">
@@ -17,7 +17,7 @@ function CareerLibrary({ careerView = 'mechanical', navigate }) {
       </header>
 
       <div className={`social-feature-grid social-feature-grid--${gridSize}`} aria-label={`${selectedView} career selections`}>
-        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.id} />)}
+        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
       </div>
     </section>
   )

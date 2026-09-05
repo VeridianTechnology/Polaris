@@ -8,6 +8,8 @@ import FinanceLibrary from '../dependencies/finance/FinanceLibrary.jsx'
 import { financeFollowUps } from '../dependencies/finance/financeFeatures.js'
 import PoliticalMap from '../dependencies/politics/map/PoliticalMap.jsx'
 import CrimeLibrary from '../dependencies/crime/CrimeLibrary.jsx'
+import OverseasLibrary from '../dependencies/overseas/OverseasLibrary.jsx'
+import { ProblemsLibrary, ManlinessLibrary } from '../dependencies/shared/TopicLibraries.jsx'
 import CrimeCase from '../dependencies/crime/CrimeCase.jsx'
 import FreedomLibrary from '../dependencies/freedom/FreedomLibrary.jsx'
 import CultureLibrary from '../dependencies/culture/CultureLibrary.jsx'
@@ -156,7 +158,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
           </SectionDropdown>
           <SectionDropdown
             label="Politics"
-            active={['politics', 'crime', 'freedom', 'conspiracy'].includes(route.section)}
+            active={['politics', 'crime', 'freedom', 'conspiracy', 'overseas', 'manliness'].includes(route.section)}
           >
             <RouteLink
               className={`section-menu__item${route.section === 'crime' ? ' section-menu__item--active' : ''}`}
@@ -165,6 +167,17 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
               active={route.section === 'crime'}
             >
               Crime
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'overseas' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraOverseas}
+              navigate={navigate}
+              active={route.section === 'overseas'}
+            >
+              Overseas
+            </RouteLink>
+            <RouteLink className={`section-menu__item${route.section === 'manliness' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraManliness} navigate={navigate} active={route.section === 'manliness'}>
+              Manliness
             </RouteLink>
             <RouteLink
               className={`section-menu__item${route.section === 'freedom' ? ' section-menu__item--active' : ''}`}
@@ -264,6 +277,31 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
             >
               Religion
             </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'foids' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureFoids}
+              navigate={navigate}
+              active={route.cultureView === 'foids'}
+            >
+              Foids
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.cultureView === 'street' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureStreet}
+              navigate={navigate}
+              active={route.cultureView === 'street'}
+            >
+              Street
+            </RouteLink>
+            <RouteLink className={`section-menu__item${route.cultureView === 'video-games' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraCultureVideoGames} navigate={navigate} active={route.cultureView === 'video-games'}>
+              Video Games
+            </RouteLink>
+            <RouteLink className={`section-menu__item${route.cultureView === 'contemplative' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraCultureContemplative} navigate={navigate} active={route.cultureView === 'contemplative'}>
+              Contemplative
+            </RouteLink>
+            <RouteLink className={`section-menu__item${route.cultureView === 'film' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraCultureFilm} navigate={navigate} active={route.cultureView === 'film'}>
+              Film
+            </RouteLink>
           </SectionDropdown>
           <SectionDropdown label="Science" active={route.section === 'science'}>
             <RouteLink
@@ -305,6 +343,14 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
               active={route.scienceView === 'astrology'}
             >
               Astrology
+            </RouteLink>
+            <RouteLink className={`section-menu__item${route.scienceView === 'animals' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraScienceAnimals} navigate={navigate} active={route.scienceView === 'animals'}>
+              Animals
+            </RouteLink>
+          </SectionDropdown>
+          <SectionDropdown label="Problems" active={route.section === 'problems'}>
+            <RouteLink className={`section-menu__item${route.section === 'problems' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraProblemsJapan} navigate={navigate} active={route.section === 'problems'}>
+              Japan
             </RouteLink>
           </SectionDropdown>
         </nav>
@@ -605,6 +651,9 @@ function App() {
         <ScienceLibrary scienceView={route.scienceView} navigate={navigate} />
       )}
       {route.page === 'agora' && route.section === 'conspiracy' && <ConspiracyLibrary />}
+      {route.page === 'agora' && route.section === 'overseas' && <OverseasLibrary />}
+      {route.page === 'agora' && route.section === 'problems' && <ProblemsLibrary navigate={navigate} />}
+      {route.page === 'agora' && route.section === 'manliness' && <ManlinessLibrary />}
       {route.page === 'agora' && route.section === 'people' && (
         route.peopleCase
           ? <PeopleDetailPage peopleSlug={route.peopleCase} navigate={navigate} />

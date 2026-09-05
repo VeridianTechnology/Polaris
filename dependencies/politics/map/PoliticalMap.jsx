@@ -189,6 +189,7 @@ const FINANCIAL_REPORTS = {
     score: '20+',
     scoreLabel: 'Stability',
     video: 'https://www.youtube.com/watch?v=09FevuUtoOc',
+    additionalVideos: ['https://www.instagram.com/p/DazFXk2tYhV/'],
     analysis:
       'Finally, the housing slump begins. This is actually great, a full on crash would be a disaster but if year over year, the next three to five years, home prices go down 50%, it would be amazing for the middle class, youngsters and the economy. The "number must go up" is doing incredible damage to the working class, boomers basically did it to themselves by milking and robbing the younger generations so hard, there\'s no one to buy up their inflated home property values. Good. Fuck them.',
   },
@@ -211,6 +212,18 @@ const FINANCIAL_REPORTS = {
     analysis:
       "The bond situation in England is falling apart further with the dismantling of the welfare state as England or rather the UK refuses to tax it's ultra-rich. People can't afford heating and then they're told to work harder, England might be the first Western country to fall into civil war at this point.",
   },
+}
+
+const UNITED_STATES_BOND_REPORT = {
+  title: 'The bond market is creeping up',
+  score: '-100',
+  scoreLabel: 'Stability',
+  videos: [
+    'https://www.youtube.com/watch?v=vZBb2XBawkg&list=PLBbbOlWgMLaM',
+    'https://www.youtube.com/watch?v=oQW2Mk_rvTU&list=PLBbbOlWgMLaM',
+    'https://www.instagram.com/p/Dcv6oRYxi8T/',
+  ],
+  analysis: 'The bond market is creeping up as investors are demanding higher rates to continue to lend. This has created a standoff with scott bessent the secrectary of the treasury who has earmarked up to a trillion dollars to buyback US debt. The situation is putting increasing pressure on the financial situation of the United States',
 }
 
 const POLITICAL_PARTIES = {
@@ -257,26 +270,57 @@ function RelationsPanel({ relation }) {
   )
 }
 
-function FinancialPanel({ report }) {
+function FinancialPanel({ report, includeBondReport = false }) {
+  const [activeArticle, setActiveArticle] = useState(0)
+  const article = includeBondReport && activeArticle === 1 ? UNITED_STATES_BOND_REPORT : report
+  const videos = article.videos || [...(article.video ? [article.video] : []), ...(article.additionalVideos || [])]
+  const overallScore = parseFloat(report.score) + Number(UNITED_STATES_BOND_REPORT.score)
+
   return (
     <aside className={`relations-panel financial-panel${report.tweet ? ' financial-panel--tweet' : ''}`} aria-label={`${report.country} financial report`}>
       <div className="financial-panel__topline">
         <span>{report.country}</span>
+        {includeBondReport && <strong className="financial-panel__overall" aria-label={`Overall stability: ${overallScore}`}>Overall {overallScore}</strong>}
         <small>By NYX</small>
       </div>
-      {report.title && <h2>{report.title}</h2>}
-      <div className="financial-panel__score">
-        <span>{report.scoreLabel || 'Financial Stability Score'}</span>
-        <strong>{report.score}</strong>
-      </div>
-      {report.tweet && <TweetEmbed url={report.tweet} author={report.tweetAuthor} />}
-      {report.video && (
-        <a href={report.video} target="_blank" rel="noreferrer">
-          <PlayIcon />
-          <span>Watch analysis</span>
-        </a>
+      {includeBondReport && (
+        <div className="financial-panel__tabs" role="tablist" aria-label="United States finance articles">
+          {['Housing', 'Bond market'].map((label, index) => (
+            <button
+              key={label}
+              id={`finance-tab-${index}`}
+              type="button"
+              role="tab"
+              aria-selected={activeArticle === index}
+              aria-controls="finance-article"
+              tabIndex={activeArticle === index ? 0 : -1}
+              onClick={() => setActiveArticle(index)}
+              onKeyDown={(event) => {
+                if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+                event.preventDefault()
+                const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : 1 - activeArticle
+                setActiveArticle(next)
+                document.getElementById(`finance-tab-${next}`)?.focus()
+              }}
+            >{label}</button>
+          ))}
+        </div>
       )}
-      <p className="relations-panel__analysis">{report.analysis}</p>
+      <div className="financial-panel__article" id={includeBondReport ? 'finance-article' : undefined} role={includeBondReport ? 'tabpanel' : undefined} aria-labelledby={includeBondReport ? `finance-tab-${activeArticle}` : undefined} tabIndex={includeBondReport ? 0 : undefined}>
+      {article.title && <h2>{article.title}</h2>}
+      <div className="financial-panel__score">
+        <span>{article.scoreLabel || 'Financial Stability Score'}</span>
+        <strong>{article.score}</strong>
+      </div>
+      {article.tweet && <TweetEmbed url={article.tweet} author={article.tweetAuthor} />}
+      {videos.map((video, index) => (
+        <a key={video} href={video} target="_blank" rel="noreferrer">
+          <PlayIcon />
+          <span>{video === 'https://www.instagram.com/p/Dcv6oRYxi8T/' ? 'Short summary' : videos.length > 1 ? `Link ${index + 1} — Watch analysis` : 'Watch analysis'}</span>
+        </a>
+      ))}
+      <p className="relations-panel__analysis">{article.analysis}</p>
+      </div>
     </aside>
   )
 }
@@ -548,7 +592,7 @@ function PoliticalMap({ view, onViewChange, onBack }) {
         )}
 
         {activeRelation && <RelationsPanel relation={activeRelation} />}
-        {activeFinancialReport && !activeFinancialReport.tweet && <FinancialPanel report={activeFinancialReport} />}
+        {activeFinancialReport && !activeFinancialReport.tweet && <FinancialPanel key={view} report={activeFinancialReport} includeBondReport={view === 'unitedStates'} />}
         {activePoliticalParty && <PoliticalPartyPanel party={activePoliticalParty} />}
 
         <div className="political-map__caption">

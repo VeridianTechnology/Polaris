@@ -1,4 +1,121 @@
+const localVideos = new Set(['DbMBzJ1JyTN', 'Dbyznf2xiMM', 'DbLdtygoqG3'])
+
+function instagramPost(id, post, title, caption) {
+  return { id, title, caption, url: `https://www.instagram.com/p/${post}/`, embedUrl: `https://www.instagram.com/p/${post}/embed/`, videoSrc: localVideos.has(post) ? `/instagram-videos/${post}.mp4` : undefined }
+}
+
+export const cultureSubcategories = {
+  'video-games': {
+    mainLabel: 'World of Warcraft',
+    label: 'Elder Scrolls',
+    features: [instagramPost('elder-scrolls-01', 'DVbNovYAoNY', 'Elder Scrolls')],
+  },
+  comedy: {
+    mainLabel: 'Comedy',
+    label: 'Trolling',
+    features: [
+      instagramPost('trolling-01', 'DcQ8ZH5RR0l', 'Trolling 01'),
+      instagramPost('trolling-02', 'DcSXELpxRe-', 'Trolling 02'),
+      instagramPost('trolling-03', 'DbWdFhYvGGH', 'Trolling 03'),
+    ],
+    additionalTabs: [
+      { key: 'race', label: 'Race', features: [instagramPost('race-01', 'DbleqfbMqtr', 'Comedy — Race')] },
+      { key: 'drugs', label: 'Drugs', features: [instagramPost('drugs-01', 'DbltmCzviKb', 'Comedy — Drugs')] },
+    ],
+  },
+  art: {
+    mainLabel: 'Modern Art',
+    label: 'AI Art',
+    features: [instagramPost('ai-art', 'Db03EO5CJi-', 'AI Art')],
+    additionalTabs: [{ key: 'dance', label: 'Dance', features: [instagramPost('dance', 'DaGlreySLHG', 'Dance')] }],
+  },
+  street: {
+    mainLabel: 'Street',
+    label: 'Bike Culture',
+    features: [
+      instagramPost('bike-01', 'DctXtQIoDvd', 'Bike Culture 01'),
+      instagramPost('bike-02', 'DblkvF_phb-', 'Bike Culture 02'),
+      instagramPost('bike-03', 'Da_G7iyJZbW', 'Bike Culture 03'),
+      instagramPost('bike-04', 'Db6Uz8VgmFH', 'Bike Culture 04'),
+      instagramPost('bike-05', 'DWwKh0Uubi4', 'Bike Culture 05'),
+      instagramPost('bike-06', 'DbBEss_OAf5', 'Bike Culture 06'),
+      instagramPost('bike-07', 'DceoTa5SCg-', 'Bike Culture 07'),
+      instagramPost('bike-08', 'Db6Vdg0RPEr', 'Bike Culture 08'),
+      instagramPost('bike-09', 'Da6tp1nNE4L', 'Bike Culture 09'),
+      instagramPost('bike-10', 'DcWdscNO7Fp', 'Bike Culture 10'),
+      instagramPost('bike-11', 'DcaLAUXtFOx', 'Bike Culture 11'),
+    ],
+    additionalTabs: [
+      { key: 'skateboarder', label: 'Skateboarder', features: [instagramPost('skateboarder-01', 'DaUQ8Erhdff', 'Skateboarder 01')] },
+      { key: 'vagabond', label: 'Vagabond', features: [instagramPost('vagabond-01', 'DXnEqZiAZq1', 'Vagabond 01')] },
+      { key: 'self-defense', label: 'Self Defense', features: [
+        instagramPost('self-defense-01', 'DcgyffbJvCh', 'Self Defense 01'),
+        instagramPost('self-defense-02', 'DZvOStui1jb', 'Self Defense 02'),
+      ] },
+      { key: 'race', label: 'Race', features: [instagramPost('race-01', 'Dcmfo4vvNQp', 'Street — Race')] },
+      { key: 'prison', label: 'Prison', features: [instagramPost('prison-01', 'DWMoMkeAVLV', 'Street — Prison')] },
+      { key: 'racing', label: 'Racing', features: [
+        instagramPost('racing-01', 'Dbl7REKy_gS', 'Racing 01'),
+        instagramPost('racing-02', 'DaYyRtgypOe', 'Racing 02'),
+        instagramPost('racing-03', 'DcPwYjPibl-', 'Racing 03'),
+        instagramPost('racing-04', 'DasTZg2zwsJ', 'Racing 04'),
+        instagramPost('racing-05', 'Da5WdDzOSN1', 'Racing 05'),
+      ] },
+    ],
+  },
+  religion: {
+    mainLabel: 'Religion',
+    label: 'AI Interpretation',
+    features: [
+      instagramPost('ai-interpretation', 'DcPiHyXhInd', 'AI Interpretation'),
+      instagramPost('ai-interpretation-02', 'DcmTM4mTz9j', 'AI Interpretation 02'),
+    ],
+    additionalTabs: [{ key: 'occult', label: 'Occult', features: [
+      instagramPost('occult-01', 'Dclt6JHsf3m', 'Occult'),
+      instagramPost('occult-02', 'DcTv6aeu0Jk', 'Occult 02'),
+      instagramPost('occult-03', 'DYd7RJ8OYFv', 'Occult 03'),
+    ] }],
+  },
+  history: {
+    label: 'AI Recreation',
+    features: [
+      instagramPost('rome', 'Dbyznf2xiMM', 'AI recreation of Rome', 'what Rome looked like 2000 years ago'),
+      instagramPost('prehistory', 'DbMBzJ1JyTN', 'AI recreation of prehistory', 'what 50,000 years ago may have looked like.'),
+      instagramPost('ai-history-03', 'DbLdtygoqG3', 'AI Recreation 03'),
+    ],
+  },
+  fights: {
+    label: 'Tips',
+    features: [
+      instagramPost('tips', 'DZKYSqYSwnb', 'Fighting tips'),
+      instagramPost('tips-02', 'DcRAMa4Tf5_', 'Fighting tips 02'),
+      instagramPost('tips-03', 'DcnPWdLhlR4', 'Fighting tips 03'),
+      instagramPost('tips-04', 'DZybyY7tZvv', 'Fighting tips 04'),
+    ],
+  },
+  'new-age-athletes': {
+    label: 'New Techniques',
+    features: [instagramPost('techniques', 'DZ9yvVCuzQI', 'New techniques')],
+  },
+}
+
 export const cultureFeatures = {
+  contemplative: [instagramPost('01', 'DaimOeDuDfO', 'Contemplative 01')],
+  film: [instagramPost('01', 'DcMZN9jMDyD', 'Film 01')],
+  'video-games': [
+    instagramPost('wow-01', 'Db5egH6Rr0n', 'World of Warcraft'),
+    instagramPost('wow-02', 'Dcdz4p_TNSH', 'World of Warcraft 02'),
+  ],
+  foids: [
+    instagramPost('03', 'Db1Vtq0yFuR', 'Foids 03'),
+    instagramPost('04', 'DcaEg9ulmvI', 'Foids 04'),
+    instagramPost('01', 'DcTvUm4KxmA', 'Foids 01'),
+    instagramPost('02', 'DcFg_9nN8Ue', 'Foids 02'),
+  ],
+  street: [
+    instagramPost('01', 'DcsznNTSi-4', 'Street 01'),
+    instagramPost('02', 'DbeFq8Vy1rF', 'Street 02'),
+  ],
   music: [
     {
       id: '01',
@@ -69,6 +186,18 @@ export const cultureFeatures = {
     },
   ],
   comedy: [
+    instagramPost('10', 'DcZEWVAjRa-', 'Comedy 10'),
+    instagramPost('11', 'DceM1pLNZkp', 'Comedy 11'),
+    instagramPost('12', 'DcfNCvHu75L', 'Comedy 12'),
+    instagramPost('13', 'DcMpJ71RS_r', 'Comedy 13'),
+    instagramPost('14', 'DcWgfFwJOo7', 'Comedy 14'),
+    instagramPost('15', 'Dbs9pJoRCHQ', 'Comedy 15'),
+    instagramPost('16', 'DcPgrpfuWjd', 'Comedy 16'),
+    instagramPost('09', 'DcQJjYIJoQg', 'Comedy 09'),
+    instagramPost('07', 'DXKzXBwERBh', 'Comedy 07'),
+    instagramPost('08', 'DcnnswKsXf2', 'Comedy 08'),
+    instagramPost('06', 'DbRMDtFxmpo', 'Comedy 06'),
+    instagramPost('05', 'Dct181wJb30', 'Comedy 05'),
     {
       id: '01',
       title: 'Railroad crossing',
@@ -107,6 +236,10 @@ export const cultureFeatures = {
     },
   ],
   'new-age-athletes': [
+    instagramPost('05', 'Db6GcxTTN1V', 'Super grip strength athlete', 'Super grip strength athlete, the likes we have not seen in a long time.'),
+    instagramPost('06', 'DcUqAfmhYfc', 'Another super grip strength athlete', 'Another super grip strength athlete.'),
+    instagramPost('04', 'DctHzV1zRCX', 'New Age Athletes 04'),
+    instagramPost('03', 'Da8fm2SOtLG', 'New Age Athletes 03'),
     {
       id: '01',
       title: 'NYX',
@@ -132,14 +265,6 @@ export const cultureFeatures = {
       analysis: 'The first selection in the Art collection.',
       url: 'https://www.instagram.com/p/DZ1ep8egbJN/?img_index=1',
       embedUrl: 'https://www.instagram.com/p/DZ1ep8egbJN/embed/',
-    },
-    {
-      id: '02',
-      title: 'Art 02',
-      handle: '@maxvoao',
-      analysis: 'The second selection in the Art collection.',
-      url: 'https://www.instagram.com/p/Db03EO5CJi-/?img_index=4',
-      embedUrl: 'https://www.instagram.com/p/Db03EO5CJi-/embed/',
     },
   ],
   history: [
@@ -177,19 +302,15 @@ export const cultureFeatures = {
       url: 'https://www.instagram.com/p/DapPIr_OsPG/',
       embedUrl: 'https://www.instagram.com/p/DapPIr_OsPG/embed/',
     },
-    {
-      id: '02',
-      title: 'Fights 02',
-      handle: 'Instagram',
-      analysis: 'The second selection in the Fights collection.',
-      url: 'https://www.instagram.com/p/DcgC41ahMuY/',
-      embedUrl: 'https://www.instagram.com/p/DcgC41ahMuY/embed/',
-    },
+    instagramPost('02', 'Daovn_YsncU', 'Fights 02'),
   ],
   religion: [
+    instagramPost('02', 'DcWRjpYRqkh', 'Religion 02'),
+    instagramPost('03', 'DVchagfjba7', 'Religion 03'),
     {
       id: '01',
       title: 'Religion 01',
+      videoSrc: '/instagram-videos/DcXagl7y_Ce.mp4',
       handle: '@mindempirex_',
       analysis: 'The first selection in the Religion collection.',
       url: 'https://www.instagram.com/p/DcXagl7y_Ce/',

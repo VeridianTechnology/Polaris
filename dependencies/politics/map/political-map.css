@@ -426,7 +426,8 @@
   text-transform: uppercase;
 }
 
-.relations-panel > a {
+.relations-panel > a,
+.financial-panel__article > a {
   display: inline-flex;
   align-items: center;
   gap: .55rem;
@@ -438,7 +439,8 @@
   text-transform: uppercase;
 }
 
-.relations-panel > a svg {
+.relations-panel > a svg,
+.financial-panel__article > a svg {
   width: 1.1rem;
   height: 1.1rem;
 }
@@ -485,6 +487,54 @@
   justify-content: space-between;
   gap: 1rem;
   margin: 1.15rem 0;
+}
+
+.financial-panel__overall {
+  margin-right: auto;
+  color: #d06e5a;
+  font-size: .65rem;
+  white-space: nowrap;
+}
+
+.financial-panel__topline:has(.financial-panel__overall) {
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+
+.financial-panel__tabs {
+  display: flex;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+
+.financial-panel__tabs button {
+  padding: .5rem .8rem;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .6rem;
+  cursor: pointer;
+}
+
+.financial-panel__tabs button[aria-selected="true"] {
+  color: #292a28;
+  background: #e6e1d6;
+}
+
+.financial-panel__tabs button:focus-visible {
+  outline: 2px solid #edf7ff;
+  outline-offset: 3px;
+}
+
+.financial-panel__article > a {
+  display: flex;
+  width: fit-content;
+}
+
+.financial-panel__article > a + a {
+  margin-top: .8rem;
 }
 
 .financial-panel h2 {
@@ -674,6 +724,10 @@
   .political-map--unitedStates,
   .political-map--unitedKingdom {
     padding-bottom: 24rem;
+  }
+
+  .political-map--unitedStates {
+    padding-bottom: 28rem;
   }
 
   .political-map .financial-panel--tweet {

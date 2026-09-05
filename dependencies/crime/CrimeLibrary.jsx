@@ -1,4 +1,6 @@
 import { crimeFeatures } from './crimeFeatures.js'
+import CollectionTabs from '../shared/CollectionTabs.jsx'
+import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
 import StorySubmission, { useApprovedStories } from '../shared/StorySubmission.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
 import './crime-library.css'
@@ -97,11 +99,23 @@ function CrimeLibrary({ navigate, authSession, onLogin }) {
 
       <StorySubmission category="crime" authSession={authSession} onLogin={onLogin} />
 
-      <div className="crime-grid" aria-label="Crime and investigation videos">
+      <CollectionTabs id="crime" label="Crime collections" tabs={[
+        { key: 'major', label: 'Major Stories' },
+        { key: 'idiot', label: 'Idiot', posts: ['DccRyvbDUGY'] },
+        { key: 'heroes', label: 'Heroes', posts: ['DchGrVeFLhC'] },
+        { key: 'historical', label: 'Historical', posts: ['DcTsBidIZqj'] },
+        { key: 'conspiracy', label: 'Conspiracy', posts: ['DcTBMqXT1AU', 'DcMELp4zOE8'] },
+      ]}>
+      {(tab) => tab.posts ? (
+        <div className={`social-feature-grid social-feature-grid--${tab.posts.length >= 3 ? 'three' : tab.posts.length === 2 ? 'two' : 'one'}`}>
+          {tab.posts.map((post) => <InstagramFeatureCard key={post} feature={{ title: tab.label, embedUrl: `https://www.instagram.com/p/${post}/embed/` }} />)}
+        </div>
+      ) : <div className="crime-grid" aria-label="Crime and investigation videos">
         {features.map((feature) => (
           <CrimeCard feature={feature} navigate={navigate} key={feature.key || feature.id} />
         ))}
-      </div>
+      </div>}
+      </CollectionTabs>
     </section>
   )
 }

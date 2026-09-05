@@ -15,6 +15,10 @@ export const ROUTES = {
   agoraFinanceTidalPower: '/academy/finance/strategy-room/tidal-power',
   agoraPolitics: '/academy/map',
   agoraCrime: '/academy/crime',
+  agoraOverseas: '/academy/overseas',
+  agoraManliness: '/academy/manliness',
+  agoraProblems: '/academy/problems',
+  agoraProblemsJapan: '/academy/problems/japan',
   agoraCrimeHinduCult: '/academy/crime/hindu-cult-investigation',
   agoraCrimeLindsayClancy: '/academy/crime/lindsay-clancy',
   agoraFreedom: '/academy/freedom',
@@ -29,6 +33,11 @@ export const ROUTES = {
   agoraCultureHistory: '/academy/culture/history',
   agoraCultureFights: '/academy/culture/fights',
   agoraCultureReligion: '/academy/culture/religion',
+  agoraCultureFoids: '/academy/culture/foids',
+  agoraCultureStreet: '/academy/culture/street',
+  agoraCultureVideoGames: '/academy/culture/video-games',
+  agoraCultureContemplative: '/academy/culture/contemplative',
+  agoraCultureFilm: '/academy/culture/film',
   agoraHealth: '/academy/health',
   agoraHealthPhysical: '/academy/health/physical',
   agoraScience: '/academy/science',
@@ -37,6 +46,7 @@ export const ROUTES = {
   agoraScienceLooksmaxxing: '/academy/science/looksmaxxing',
   agoraScienceWorkout: '/academy/science/workout',
   agoraScienceAstrology: '/academy/science/astrology',
+  agoraScienceAnimals: '/academy/science/animals',
   agoraPeople: '/academy/people',
   agoraPeopleRightWing: '/academy/people/right-wing',
   agoraPeopleZoomerwoman: '/academy/people/right-wing/zoomerwoman',
@@ -332,6 +342,10 @@ export function matchRoute(pathname) {
     }
   }
 
+  if (path === ROUTES.agoraCultureFoids || path === ROUTES.agoraCultureStreet) {
+    return { page: 'agora', section: 'culture', cultureView: path === ROUTES.agoraCultureFoids ? 'foids' : 'street', path }
+  }
+
   if (
     path === ROUTES.agoraHealth
     || path === ROUTES.agoraHealthPhysical
@@ -409,6 +423,34 @@ export function matchRoute(pathname) {
       peopleCase: 'paul-miller',
       path: ROUTES.agoraPeoplePaulMiller,
     }
+  }
+
+  if (path === ROUTES.agoraOverseas) {
+    return { page: 'agora', section: 'overseas', path: ROUTES.agoraOverseas }
+  }
+
+  if (path === ROUTES.agoraManliness) {
+    return { page: 'agora', section: 'manliness', path }
+  }
+
+  if (path === ROUTES.agoraProblems || path === ROUTES.agoraProblemsJapan) {
+    return { page: 'agora', section: 'problems', path: ROUTES.agoraProblemsJapan }
+  }
+
+  if (path === ROUTES.agoraCultureVideoGames) {
+    return { page: 'agora', section: 'culture', cultureView: 'video-games', path }
+  }
+
+  if (path === ROUTES.agoraCultureContemplative) {
+    return { page: 'agora', section: 'culture', cultureView: 'contemplative', path }
+  }
+
+  if (path === ROUTES.agoraCultureFilm) {
+    return { page: 'agora', section: 'culture', cultureView: 'film', path }
+  }
+
+  if (path === ROUTES.agoraScienceAnimals) {
+    return { page: 'agora', section: 'science', scienceView: 'animals', path }
   }
 
   if (path === ROUTES.agoraPolitics || path === '/academy/politics') {

@@ -1,4 +1,17 @@
+export const insectFeatures = ['DcbEVC1sry_', 'DceSjjPs3dt'].map((post, index) => ({
+  id: String(index + 1),
+  title: `Insect ${index + 1}`,
+  url: `https://www.instagram.com/p/${post}/`,
+  embedUrl: `https://www.instagram.com/p/${post}/embed/`,
+}))
+
 export const scienceFeatures = {
+  animals: ['DbioI_Wum6R', 'DcjIGVXRH5l'].map((post, index) => ({
+    id: String(index + 1),
+    title: `Animals ${index + 1}`,
+    url: `https://www.instagram.com/p/${post}/`,
+    embedUrl: `https://www.instagram.com/p/${post}/embed/`,
+  })),
   health: [
     {
       id: '01',
@@ -154,6 +167,12 @@ export const scienceFeatures = {
     },
   ],
   astrology: [
+    ...['Dcp2NqmlFEt', 'DctNz-AADQF', 'Dcq0_JOpjXJ', 'Db8pYpjgJur'].map((post, index) => ({
+      id: String(index + 2).padStart(2, '0'),
+      title: `Astrology ${index + 2}`,
+      url: `https://www.instagram.com/p/${post}/`,
+      embedUrl: `https://www.instagram.com/p/${post}/embed/`,
+    })),
     {
       id: '01',
       title: 'Astrology 01',

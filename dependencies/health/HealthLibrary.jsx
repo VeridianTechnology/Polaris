@@ -1,10 +1,11 @@
 import RouteLink from '../../routing/RouteLink.jsx'
 import { ROUTES } from '../../routing/routes.js'
 import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
-import { scienceFeatures } from './healthFeatures.js'
+import { scienceFeatures, insectFeatures } from './healthFeatures.js'
+import CollectionTabs from '../shared/CollectionTabs.jsx'
 
 function ScienceLibrary({ scienceView = 'health', navigate }) {
-  const selectedView = ['health', 'physics', 'looksmaxxing', 'workout', 'astrology'].includes(scienceView)
+  const selectedView = ['health', 'physics', 'looksmaxxing', 'workout', 'astrology', 'animals'].includes(scienceView)
     ? scienceView
     : 'health'
   const features = scienceFeatures[selectedView]
@@ -56,12 +57,22 @@ function ScienceLibrary({ scienceView = 'health', navigate }) {
           >
             Astrology
           </RouteLink>
+          <RouteLink className={`social-library__tab${selectedView === 'animals' ? ' social-library__tab--active' : ''}`} to={ROUTES.agoraScienceAnimals} navigate={navigate} active={selectedView === 'animals'}>
+            Animals
+          </RouteLink>
         </nav>
       </header>
 
-      <div className={`social-feature-grid social-feature-grid--${gridSize}`} aria-label={`${selectedView} science selections`}>
-        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.id} />)}
-      </div>
+      {selectedView === 'animals' ? <CollectionTabs id="animals" label="Animal collections" tabs={[
+        { key: 'animals', label: 'Animals', features },
+        { key: 'insect', label: 'Insect', features: insectFeatures },
+      ]}>
+        {(tab) => <div className={`social-feature-grid social-feature-grid--${tab.features.length >= 3 ? 'three' : tab.features.length === 2 ? 'two' : 'one'}`}>
+          {tab.features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
+        </div>}
+      </CollectionTabs> : <div className={`social-feature-grid social-feature-grid--${gridSize}`} aria-label={`${selectedView} science selections`}>
+        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
+      </div>}
     </section>
   )
 }

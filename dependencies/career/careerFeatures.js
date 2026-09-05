@@ -53,6 +53,12 @@ export const careerFeatures = {
   ],
   modeling: [
     {
+      id: '02',
+      title: 'Modeling 02',
+      url: 'https://www.instagram.com/p/Dcjo0LHuTON/',
+      embedUrl: 'https://www.instagram.com/p/Dcjo0LHuTON/embed/',
+    },
+    {
       id: '01',
       title: 'Modeling 01',
       handle: '@alex.acamporaa',
