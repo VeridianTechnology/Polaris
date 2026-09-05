@@ -356,6 +356,11 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
       </aside>
 
       <div className="academy-board__shell">
+        <header className="polaris-page-intro academy-board__intro">
+          <p className="polaris-eyebrow">Polaris / Human community</p>
+          <h1>Agora</h1>
+          <p>Global conversations.</p>
+        </header>
         <form className="academy-composer" onSubmit={publishComment}>
           <button className="academy-composer__profile" type="button" onClick={() => authSession ? openProfile(authSession.username) : onLogin()} aria-label={authSession ? 'Open your profile' : 'Log in'}>
             <AcademyAvatar index={profile.avatar_index} className="academy-composer__avatar" alt={authSession ? 'Your profile' : 'Member login'} />

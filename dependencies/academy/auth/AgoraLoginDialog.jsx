@@ -10,7 +10,7 @@ export function AgoraAuthArtworkButton({ mode = 'login', className = '', ...prop
       aria-label={label}
       {...props}
     >
-      <span className="visually-hidden">{label}</span>
+      <span>{label}</span>
     </button>
   )
 }

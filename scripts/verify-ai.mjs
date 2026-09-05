@@ -1,0 +1,88 @@
+import assert from 'node:assert/strict'
+import { mkdtemp } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+const { chromium } = await import(process.env.POLARIS_PLAYWRIGHT_MODULE || 'playwright')
+const browser = await chromium.launch({ executablePath: process.env.POLARIS_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
+const artifacts = await mkdtemp(join(tmpdir(), 'polaris-aic-check-'))
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+const errors = []
+page.on('pageerror', (error) => errors.push(error.message))
+try {
+  await page.goto('http://localhost:5173/ai')
+  await page.getByRole('heading', { name: 'Agent conversations' }).waitFor()
+  await page.getByText('Ready for the first exchange.').waitFor()
+  assert.equal(await page.locator('.ai-composer').count(), 0, 'Public board must not offer human/agent impersonation')
+  await page.locator('.ai-founding summary').click()
+  await page.getByText('We are now seeking our first institutional funding round to build and launch that infrastructure.').waitFor()
+  await page.locator('.ai-founding summary').click()
+  await page.screenshot({ path: join(artifacts, 'ai-community.png'), fullPage: true })
+  await page.getByRole('button', { name: 'AIC language playground', exact: true }).click()
+  const frame = page.frameLocator('iframe.aic-playground-frame')
+  await frame.getByRole('heading', { name: 'Meaning, exchanged.' }).waitFor()
+  await frame.locator('#inspect').click()
+  await frame.locator('#preview .compact').waitFor()
+  assert.equal(await frame.locator('#preview .compact').textContent(), '0?⊢5F')
+  await frame.locator('#post').click()
+  await frame.getByText('Validated and posted locally. Original raw text preserved.').waitFor()
+  assert.equal(await frame.locator('#feed article').count(), 1)
+  await frame.locator('#human-view').click()
+  assert.equal(await frame.locator('#feed article .english').textContent(), 'evidence supports claim')
+  await frame.locator('#raw').fill('00⊢$$')
+  await frame.locator('#post').click()
+  await frame.locator('#error').filter({ hasText: 'Unknown' }).waitFor()
+  assert.equal(await frame.locator('#feed article').count(), 1)
+  const raw = '«<img src=x onerror=alert(1)>»⊢«safe literal»'
+  await frame.locator('#raw').fill(raw)
+  await frame.locator('#post').click()
+  await frame.getByText('Validated and posted locally. Original raw text preserved.').waitFor()
+  assert.equal(await frame.locator('#feed img').count(), 0, 'Literal must be rendered as text, never HTML')
+  await frame.locator('#feed article').first().getByText('Original raw message', { exact: true }).click()
+  assert.equal(await frame.locator('#feed article').first().locator('details').filter({ hasText: 'Original raw message' }).locator('pre').textContent(), raw)
+  await page.reload()
+  await page.getByRole('button', { name: 'AIC language playground', exact: true }).click()
+  await frame.locator('#feed article').nth(1).waitFor()
+  assert.equal(await frame.locator('#feed article').count(), 2)
+  await frame.locator('.translation summary').click()
+  await frame.locator('#english').fill('evidence supports claim')
+  await frame.locator('#translate').click()
+  await frame.getByText('Candidate validated against the v0.1 codebook.').waitFor()
+  assert.equal(await frame.locator('#raw').inputValue(), '0?⊢5F')
+  await frame.locator('#lookup').fill('confidence')
+  await frame.locator('#concepts button').first().waitFor()
+  assert.equal(await frame.locator('#relations button').count(), 40)
+  await page.screenshot({ path: join(artifacts, 'aic-playground.png'), fullPage: true })
+
+  // Separate Glub tab retains local research drafts and links the supplied notebook.
+  await page.goto('http://localhost:5173/glub')
+  await page.getByRole('heading', { name: 'Glub', exact: true, level: 1 }).waitFor()
+  assert.equal(await page.getByRole('link', { name: 'Open Gemini Notebook ↗' }).getAttribute('href'), 'https://notebook.google.com/notebook/ce1f1c9e-90e3-428e-bc41-679ae8f92d80')
+  await page.getByRole('button', { name: '+ New draft' }).click()
+  await page.locator('#ai-draft-title').fill('Local research test')
+  await page.locator('#ai-draft-body').fill('Preserve this English draft.')
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click()
+  await page.getByRole('heading', { name: 'Local research test' }).waitFor()
+  await page.reload()
+  await page.getByRole('heading', { name: 'Local research test' }).waitFor()
+  await page.screenshot({ path: join(artifacts, 'glub.png'), fullPage: true })
+
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const path of ['/ai', '/glub']) {
+      await page.goto(`http://localhost:5173${path}`)
+      await page.locator('.ai-board').waitFor()
+      const size = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }))
+      assert.ok(size.scroll <= size.client + 1, `${path} overflows at ${width}: ${JSON.stringify(size)}`)
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('http://localhost:5173/ai')
+  await page.getByRole('button', { name: 'AIC language playground', exact: true }).click()
+  await frame.locator('#relations button').first().waitFor()
+  const inner = await frame.locator('body').evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }))
+  assert.ok(inner.scroll <= inner.client + 1, 'Mobile playground overflows')
+  await page.screenshot({ path: join(artifacts, 'aic-mobile.png'), fullPage: true })
+  assert.deepEqual(errors, [])
+  console.log(JSON.stringify({ passed: true, tests: ['public SQL feed', 'founding statement', 'validated local posting', 'AI/human views', 'unknown-code rejection', 'raw preservation', 'XSS literal safety', 'reload persistence', 'English candidate', '5k codebook search / 40 relations', 'Glub draft persistence', 'responsive 320–1440px'], artifacts }, null, 2))
+} finally { await browser.close() }

@@ -1,6 +1,8 @@
 export const ROUTES = {
   home: '/',
   landing: '/welcome',
+  ai: '/ai',
+  glub: '/glub',
   academy: '/agora',
   academyAdmin: '/agora/admin',
   agoraBusiness: '/academy/business',
@@ -126,6 +128,14 @@ export function matchRoute(pathname) {
 
   if (path === ROUTES.academy) {
     return { page: 'academy', path: ROUTES.academy }
+  }
+
+  if (path === ROUTES.ai) {
+    return { page: 'ai', path: ROUTES.ai }
+  }
+
+  if (path === ROUTES.glub) {
+    return { page: 'glub', path: ROUTES.glub }
   }
 
   if (path === ROUTES.academyAdmin) {

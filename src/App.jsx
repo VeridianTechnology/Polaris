@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import VisitorCoordinates from '../dependencies/homepage/geo/VisitorCoordinates.jsx'
 import SoundBars from '../dependencies/homepage/soundbars/SoundBars.jsx'
 import LaunchTimer from '../dependencies/homepage/LaunchTimer.jsx'
@@ -26,6 +26,9 @@ import { useAgoraAuth } from '../dependencies/academy/auth/agoraAuth.js'
 import RouteLink from '../routing/RouteLink.jsx'
 import useAppRouter from '../routing/useAppRouter.js'
 import { academyProfilePath, parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
+
+const AiBoard = lazy(() => import('../dependencies/ai/AiBoard.jsx'))
+const GlubPage = lazy(() => import('../dependencies/ai/GlubPage.jsx'))
 
 function SectionDropdown({ label, active, children }) {
   const closeSiblingMenus = (currentMenu) => {
@@ -77,7 +80,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
   return (
     <header className={`app-header app-header--${route.page}`}>
       <nav className="primary-tabs" aria-label="Primary navigation">
-        <img className="app-header__logo" src={sectionLogo} alt={`${sectionName} logo`} />
+        {['ai', 'glub'].includes(route.page) ? <span className="app-header__ai-mark" aria-label="AI workspace">◎</span> : <img className="app-header__logo" src={sectionLogo} alt={`${sectionName} logo`} />}
         <RouteLink
           className={`primary-tab${route.page === 'home' ? ' primary-tab--active' : ''}`}
           to={ROUTES.landing}
@@ -102,6 +105,10 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
         >
           Academy
         </RouteLink>
+        <RouteLink className={`primary-tab${route.page === 'ai' ? ' primary-tab--active' : ''}`} to={ROUTES.ai} navigate={navigate} active={route.page === 'ai'}>
+          AI
+        </RouteLink>
+        <RouteLink className={`primary-tab${route.page === 'glub' ? ' primary-tab--active' : ''}`} to={ROUTES.glub} navigate={navigate} active={route.page === 'glub'}>Glub</RouteLink>
       </nav>
 
       {isAcademy ? (
@@ -401,16 +408,6 @@ function App() {
   const isLanding = isHome
   const heroMode = route.page === 'agora' ? route.section : route.page
   const politicalView = route.politicalView || 'world'
-  const enteredBackground = route.section === 'finance'
-    ? '/finance-background.jpg'
-    : route.section === 'crime'
-      ? '/crime-background.jpg'
-      : '/agora-city.png'
-  const enteredBackgroundAlt = route.section === 'finance'
-    ? 'A luminous white pyramid complex'
-    : route.section === 'crime'
-      ? 'A pale monumental circular plaza'
-      : 'A luminous monumental city carved from white marble'
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -465,7 +462,7 @@ function App() {
           : 'Agora — Polaris'
       : route.page === 'agora'
         ? detailPageTitle || `Academy ${academySectionTitle} — Polaris`
-        : 'Polaris — Your New Digital Home'
+        : route.page === 'ai' ? 'AI Community — Polaris' : route.page === 'glub' ? 'Glub — Polaris' : 'Polaris — Your New Digital Home'
     let favicon = document.querySelector('link[rel="icon"]')
 
     if (!favicon) {
@@ -483,33 +480,17 @@ function App() {
   const leavePoliticalView = () => navigate(politicsPath(parentPoliticalView(politicalView)))
   const loginAndOpenAgora = async (...credentials) => {
     const nextSession = await login(...credentials)
-    navigate(ROUTES.academy, { replace: true })
+    if (!['ai', 'glub'].includes(route.page)) navigate(ROUTES.academy, { replace: true })
     return nextSession
   }
   const registerAndOpenAgora = async (...credentials) => {
     const nextSession = await register(...credentials)
-    navigate(ROUTES.academy, { replace: true })
+    if (!['ai', 'glub'].includes(route.page)) navigate(ROUTES.academy, { replace: true })
     return nextSession
   }
 
   return (
     <main className={`hero${isLanding ? '' : ` hero--entered hero--${heroMode}`}`}>
-      {route.page !== 'academy' && route.page !== 'academy-profile' && route.page !== 'admin' && (
-        <>
-          <img
-            className="hero__image hero__image--welcome"
-            src="/agora-hero.png"
-            alt={isLanding ? 'A luminous white tree rising between monumental columns' : ''}
-          />
-          <img
-            className="hero__image hero__image--city"
-            src={enteredBackground}
-            alt={isLanding ? '' : enteredBackgroundAlt}
-          />
-          <div className="hero__wash" />
-        </>
-      )}
-
       <AppHeader
         route={route}
         navigate={navigate}
@@ -522,6 +503,8 @@ function App() {
       {route.page === 'home' && (
         <HomePage navigate={navigate} />
       )}
+      {route.page === 'ai' && <Suspense fallback={<p role="status" style={{ padding: '8rem 2rem' }}>Loading AI board…</p>}><AiBoard authSession={authSession} onLogin={() => setLoginOpen(true)} /></Suspense>}
+      {route.page === 'glub' && <Suspense fallback={<p role="status" style={{ padding: '8rem 2rem' }}>Loading Glub…</p>}><GlubPage /></Suspense>}
       {route.page === 'academy' && (
         <AcademyBoard
           navigate={navigate}

@@ -1,0 +1,179 @@
+/* Shared visual system, derived from Glub and AI. Content/media retain their
+   own colors; this layer themes only Polaris-owned surfaces and controls. */
+:root {
+  --polaris-bg: #111b20;
+  --polaris-panel: #172329;
+  --polaris-field: #10191e;
+  --polaris-text: #eeeae0;
+  --polaris-muted: #a4b6b9;
+  --polaris-accent: #c3d3c5;
+  --polaris-border: #ffffff26;
+  --polaris-soft: #c3d3c51a;
+  --polaris-danger: #ffc5b6;
+  --polaris-serif: Didot, "Bodoni 72", "Times New Roman", serif;
+  color-scheme: dark;
+  color: var(--polaris-text);
+  background: var(--polaris-bg);
+}
+
+body, body .hero { color: var(--polaris-text); background: var(--polaris-bg); }
+::selection { color: var(--polaris-bg); background: var(--polaris-accent); }
+body :focus-visible { outline: 2px solid var(--polaris-accent); outline-offset: 3px; }
+body .app-header { background: #111f26f5; border-color: var(--polaris-border); box-shadow: none; text-shadow: none; animation: none; }
+body .primary-tab--active { border-bottom-color: var(--polaris-accent); }
+body .chapter-date { color: var(--polaris-accent); border-color: var(--polaris-border); background: var(--polaris-panel); box-shadow: none; text-shadow: none; }
+body .entered-tabs, body .section-menu__items { background: var(--polaris-field); border-color: var(--polaris-border); border-radius: 3px; box-shadow: none; }
+body .section-menu__item { border-radius: 3px; }
+body .section-menu__item:hover, body .section-menu__item:focus-visible,
+body .section-menu__item--active, body .section-tab--active {
+  background: var(--polaris-accent); color: var(--polaris-bg); border-radius: 3px;
+}
+body .entered-tabs .section-tab--active { border-radius: 3px; }
+body .agora-auth-artwork-button {
+  width: auto; min-width: 4.8rem; height: auto; min-height: 1.9rem;
+  padding: .5rem .75rem; border: 1px solid var(--polaris-border); border-radius: 3px;
+  background: transparent; color: var(--polaris-accent); filter: none;
+  font-size: .58rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+}
+
+/* Library rhythm: left-aligned editorial headings, uniform content width. */
+body :is(.vc-directory, .finance-library, .crime-library, .freedom-library, .people-library, .social-library, .overseas-library) {
+  width: min(94vw, 88rem); padding-top: calc(var(--app-header-height) + 3.5rem);
+  color: var(--polaris-text); animation: none;
+}
+body :is(.vc-directory__intro, .finance-library__intro, .crime-library__intro, .freedom-library__intro, .people-library__intro, .social-library__intro, .overseas-library__intro) {
+  width: 100%; max-width: none; margin: 0 0 2rem; padding: 0 0 2rem;
+  border: 0; border-bottom: 1px solid var(--polaris-border); color: var(--polaris-text);
+  background: transparent; text-align: left; text-shadow: none; box-shadow: none; backdrop-filter: none;
+}
+body :is(.vc-directory, .finance-library, .crime-library, .freedom-library, .people-library, .social-library, .overseas-library) h1,
+body .polaris-page-intro h1 {
+  font-family: var(--polaris-serif); font-size: clamp(3rem, 5.5vw, 5.8rem);
+  font-weight: 400; line-height: 1.05; letter-spacing: -.045em; animation: none;
+  padding-right: 2.75rem; overflow-wrap: anywhere;
+}
+body :is(.vc-directory__eyebrow, .finance-library__intro > p, .crime-library__intro > p, .freedom-library__intro > p, .people-library__intro > p, .social-library__intro > p, .overseas-library__intro > p, .polaris-eyebrow) {
+  color: var(--polaris-muted); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: .62rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+}
+body .vc-directory__subtitle { margin-left: 0; font-family: inherit; font-size: .85rem; font-style: normal; color: var(--polaris-muted); }
+body .finance-temperature { margin-left: 0; width: min(100%, 48rem); }
+body :is(.vc-directory__toggle, .finance-library__toggle) { top: calc(var(--app-header-height) + 3.5rem); background: var(--polaris-panel); border-color: var(--polaris-border); }
+body :is(.social-library__tabs, .people-library__tabs, .career-tabs) {
+  background: var(--polaris-field); border-color: var(--polaris-border); border-radius: 3px; box-shadow: none;
+}
+body .social-library__tabs--culture { justify-content: flex-start; }
+body :is(.social-library__subtabs, .overseas-library__tabs) { justify-content: flex-start; }
+body :is(.social-library__tab, .people-library__tab, .career-tabs__item) { border-radius: 3px; color: var(--polaris-muted); }
+body :is(.social-library__subtabs button, .overseas-library__tabs button, .political-map__layer-tab, .financial-panel__tabs button) {
+  color: var(--polaris-muted); background: var(--polaris-panel); border-color: var(--polaris-border); border-radius: 3px; box-shadow: none;
+}
+body :is(.social-library__tab--active, .people-library__tab--active, .career-tabs__item--active, .political-map__layer-tab--active),
+body :is(.social-library__subtabs, .overseas-library__tabs, .financial-panel__tabs) button[aria-selected="true"] {
+  color: var(--polaris-bg); background: var(--polaris-accent); border-color: var(--polaris-accent);
+}
+
+/* Cards and article surfaces, without altering photos, videos or embedded UI. */
+body :is(.vc-card, .finance-card, .crime-card, .freedom-card, .people-card, .instagram-feature-card,
+  .video-detail__header, .video-detail__follow-up, .crime-case__header, .crime-discussion,
+  .people-detail__header, .people-detail__panel, .story-submission__form,
+  .relations-panel, .financial-panel, .political-party-panel) {
+  background: var(--polaris-panel); color: var(--polaris-text); border-color: var(--polaris-border);
+  border-radius: 3px; box-shadow: none; backdrop-filter: none; text-shadow: none;
+}
+body :is(.vc-card__rating, .vc-card__contact, .finance-card__body, .crime-card__body, .freedom-card__body, .people-card__body, .instagram-feature-card__body) { border-color: var(--polaris-border); }
+body :is(.crime-card__author, .people-card__author, .finance-card__author, .freedom-card__author, .instagram-feature-card__author) { color: var(--polaris-accent); }
+body :is(.crime-card__body > p, .finance-card__body > p, .freedom-card__body > p, .people-card__body > p, .instagram-feature-card__body > p) {
+  font-family: inherit; font-size: .85rem; line-height: 1.65; color: var(--polaris-muted);
+}
+body :is(.video-detail, .crime-case, .people-detail) { color: var(--polaris-text); animation: none; }
+body :is(.video-detail, .crime-case, .people-detail) h1 { font-family: var(--polaris-serif); animation: none; line-height: 1.05; }
+body :is(.overseas-library__story p, .instagram-feature-card__caption) { background: var(--polaris-panel); color: var(--polaris-text); border-color: var(--polaris-border); }
+body :is(.story-submission__toggle, .story-submission__form footer button, .crime-discussion form button) { color: var(--polaris-bg); background: var(--polaris-accent); border-color: var(--polaris-accent); border-radius: 3px; box-shadow: none; }
+body .political-map { padding-top: calc(var(--app-header-height) + 2rem); animation: none; }
+body .political-map__frame { border-color: var(--polaris-border); box-shadow: none; }
+body :is(.political-map__back, .political-map__caption) { background: #172329ed; color: var(--polaris-text); border-color: var(--polaris-border); }
+body :is(.financial-panel__topline > span, .political-party-panel__country) { background: var(--polaris-soft); color: var(--polaris-accent); }
+/* Preserve red/blue country relationships, financial scores, and alert colors:
+   these encode meaning rather than decorative theme choices. */
+
+/* Agora's human board now shares the same panel language as the AI feed. */
+body .academy-board { color: var(--polaris-text); background: var(--polaris-bg); padding-top: calc(var(--app-header-height) + 3.5rem); }
+body .polaris-page-intro { border-bottom: 1px solid var(--polaris-border); margin-bottom: 2rem; padding-bottom: 2rem; }
+body .polaris-page-intro > p:last-child { font-size: .85rem; color: var(--polaris-muted); }
+body .academy-composer { padding: 1.25rem; border: 1px solid var(--polaris-border); border-radius: 3px; background: var(--polaris-panel); margin-bottom: 2rem; }
+body .academy-composer textarea { color: var(--polaris-text); border-color: var(--polaris-border); font-size: clamp(1rem, 1.4vw, 1.35rem); line-height: 1.5; }
+body .academy-composer textarea::placeholder { color: var(--polaris-muted); }
+body .academy-composer .academy-composer__submit { min-height: 3rem; background: var(--polaris-accent); color: var(--polaris-bg); border-color: var(--polaris-accent); }
+body .academy-comment { padding: 1.25rem; margin-bottom: .85rem; border: 1px solid var(--polaris-border); border-radius: 3px; background: var(--polaris-panel); }
+body .academy-comment__message { font-size: .9rem; line-height: 1.7; }
+body :is(.academy-composer__counter, .academy-composer__status, .academy-notice, .academy-comment__number, .academy-comment__meta span, .academy-comment__meta time, .academy-comment__reactions button, .academy-link-preview__copy span) { color: var(--polaris-muted); }
+body :is(.academy-info-rail__buttons button, .academy-composer__status button, .academy-notice button, .academy-comment__profile-link:hover) { color: var(--polaris-accent); }
+body .academy-info-rail__buttons { border-color: var(--polaris-border); }
+body .academy-info-rail__buttons button::after { background: var(--polaris-border); }
+body .academy-info-rail__buttons button:hover, body .academy-comment__reactions button.is-active { color: var(--polaris-accent); background: var(--polaris-soft); }
+body .academy-link-preview { color: var(--polaris-text); background: var(--polaris-field); border-color: var(--polaris-border); }
+body .academy-link-preview:hover { background: #223238; }
+body .academy-link-preview__domain-mark { background: var(--polaris-accent); color: var(--polaris-bg); }
+body .academy-info-modal__paper { background: var(--polaris-panel); color: var(--polaris-text); border: 1px solid var(--polaris-border); box-shadow: none; }
+body .academy-info-modal__close { background: var(--polaris-field); color: var(--polaris-text); }
+body .academy-info-modal__highlight { background: var(--polaris-soft); color: var(--polaris-text); }
+body .academy-info-modal__list li::marker { color: var(--polaris-accent); }
+body :is(.academy-comment__delete, .academy-notice--error, .academy-composer__counter.is-over, .academy-composer__status span) { color: var(--polaris-danger); }
+
+/* Profile, moderation, and login must remain legible in the shared dark theme. */
+body :is(.academy-profile-page, .academy-admin-page) { color: var(--polaris-text); background: var(--polaris-bg); }
+body :is(.academy-profile-sidebar, .academy-profile-view-tabs, .academy-profile-admin, .academy-approval-card, .academy-admin-access, .agora-login-dialog) {
+  color: var(--polaris-text); background: var(--polaris-panel); border-color: var(--polaris-border); box-shadow: none; border-radius: 3px;
+}
+body :is(.academy-profile-page, .academy-admin-page, .agora-login-dialog) :is(p, label, legend, small, dt, dd) { color: var(--polaris-muted); }
+body :is(.academy-profile-page, .academy-admin-page, .agora-login-dialog) h2 { font-family: var(--polaris-serif); font-weight: 400; color: var(--polaris-text); }
+body :is(.academy-profile-sidebar button, .academy-profile-sidebar > span, .academy-profile-return, .academy-profile-view-tabs button, .academy-admin-tabs button, .academy-admin-return,
+  .academy-admin-heading > button, .academy-admin-access button, .academy-approval-card footer button,
+  .agora-login-dialog__pin-toggle, .agora-login-dialog__password-field button, .agora-login-dialog__close, .agora-login-dialog__mode-switch) {
+  color: var(--polaris-accent); border-color: var(--polaris-border); background: transparent;
+}
+body .academy-profile-sidebar .is-active { color: var(--polaris-accent); background: var(--polaris-soft); border-color: var(--polaris-accent); }
+body :is(.academy-profile-view-tabs button.is-active, .academy-admin-tabs button.is-active,
+  .academy-approval-card footer button.is-primary, .academy-profile-save, .agora-login-dialog__submit) {
+  color: var(--polaris-bg); background: var(--polaris-accent); border-color: var(--polaris-accent); border-radius: 3px;
+}
+body :is(.academy-profile-heading div, .academy-profile-readonly, .academy-approval-card__reviewed) { color: var(--polaris-muted); }
+body :is(.academy-profile-panel, .academy-profile-identity, .academy-profile-connections, .academy-profile-email, .academy-approval-card footer, .academy-admin-heading) { border-color: var(--polaris-border); }
+body :is(.academy-profile-icons button, .academy-admin-tabs span, .agora-login-dialog__pin-toggle.is-selected) { color: var(--polaris-accent); background: var(--polaris-soft); border-color: var(--polaris-border); }
+body .academy-profile-toggle__track { background: #526269; }
+body .academy-profile-toggle input:checked + .academy-profile-toggle__track { background: var(--polaris-accent); }
+body .academy-profile-toggle input:checked + .academy-profile-toggle__track::after { background: var(--polaris-bg); }
+body .academy-profile-connections--public a > span:last-child { color: var(--polaris-muted); }
+body :is(.academy-profile-message button, .academy-approval-card__source) { color: var(--polaris-accent); }
+body :is(.academy-profile-message.is-error, .agora-login-dialog__notice) { color: var(--polaris-danger); }
+body .academy-admin-notice { background: var(--polaris-soft); }
+body :is(.academy-profile-page, .agora-login-dialog, .story-submission__form, .crime-discussion)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select) {
+  color: var(--polaris-text); background: var(--polaris-field); border-color: var(--polaris-border); border-radius: 3px;
+}
+body :is(.agora-login-dialog, .academy-profile-page) input::placeholder { color: var(--polaris-muted); }
+
+/* Welcome retains its logo and content, with the same quiet editorial finish. */
+body .hero:not(.hero--entered) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; padding: 4rem 1rem 10rem; }
+body .hero__content { margin: 0 auto; padding-bottom: 0; text-shadow: none; }
+body .hero:not(.hero--entered) .hero__content h1 { color: var(--polaris-text); text-shadow: none; line-height: 1.05; }
+body .home-logo { filter: none; }
+body :is(.home-logo, .eyebrow, .tagline, .hero__content h1, .launch-timer, .hero__footer) { animation: none; }
+body .tagline { top: 0; margin-top: 1rem; font-family: inherit; font-size: .9rem; font-style: normal; color: var(--polaris-muted); }
+body .launch-timer { position: static; width: min(100%, 25rem); padding: 1.25rem; border: 1px solid var(--polaris-border); background: var(--polaris-panel); color: var(--polaris-text); text-align: center; text-shadow: none; transform: none; }
+body .launch-timer p, body .launch-timer small { color: var(--polaris-muted); }
+body .hero:not(.hero--entered) .hero__footer { color: var(--polaris-accent); text-shadow: none; border-top: 1px solid var(--polaris-border); }
+
+@media (max-width: 650px) {
+  body :is(.vc-directory, .finance-library, .crime-library, .freedom-library, .people-library, .social-library, .overseas-library) { width: calc(100% - 2rem); padding-top: calc(var(--app-header-height) + 2rem); }
+  body :is(.vc-directory__toggle, .finance-library__toggle) { top: calc(var(--app-header-height) + 2rem); }
+  body .academy-board { padding: calc(var(--app-header-height) + 2rem) 1rem 3rem; }
+  body .academy-composer, body .academy-comment { padding: .85rem; }
+  body .agora-auth-artwork-button { min-width: 3.3rem; padding: .45rem; font-size: .52rem; }
+  body .social-library__tabs--culture .social-library__tab { flex-basis: 7rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+}

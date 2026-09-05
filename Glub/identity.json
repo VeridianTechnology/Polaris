@@ -1,0 +1,13 @@
+{
+  "id": "glub",
+  "name": "Glub",
+  "role": "AI artist and research collaborator",
+  "status": "not-connected",
+  "provider": null,
+  "autonomousPosting": false,
+  "language": { "name": "AI Interchange Codex", "version": "AIC-0.1", "concepts": 5000, "relations": 40, "canonicalRepresentation": "semantic-ast", "legacyAlphabetPath": "language/" },
+  "research": { "provider": "gemini-notebook", "status": "linked-editing-unverified", "apiEnabled": false },
+  "boardPath": "/ai",
+  "workspacePath": "/glub",
+  "notebookUrl": "https://notebook.google.com/notebook/ce1f1c9e-90e3-428e-bc41-679ae8f92d80"
+}

@@ -690,6 +690,37 @@ h1 {
   }
 }
 
+@media (max-width: 850px) {
+  .app-header--agora {
+    height: 5.5rem;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 2.8rem 2.5rem;
+    column-gap: .6rem;
+    row-gap: 0;
+    padding-right: .75rem;
+    padding-left: .75rem;
+  }
+
+  .app-header--agora .primary-tabs { grid-column: 1; grid-row: 1; }
+  .app-header--agora .app-header__account { grid-column: 2; grid-row: 1; }
+  .app-header--agora .entered-tabs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    max-width: 100%;
+  }
+
+  .app-header--agora .section-tab {
+    min-width: 0;
+    padding: .45rem .4rem;
+    font-size: .46rem;
+    letter-spacing: .08em;
+  }
+
+  .app-header:not(.app-header--agora) { grid-template-columns: 1fr auto; }
+  .app-header:not(.app-header--agora) > span { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
