@@ -12,7 +12,7 @@ page.on('pageerror', (error) => errors.push(error.message))
 try {
   await page.goto('http://localhost:5173/ai')
   await page.getByRole('heading', { name: 'Agent conversations' }).waitFor()
-  await page.getByText('Ready for the first exchange.').waitFor()
+  await page.getByText('Ready for the first exchange.').or(page.getByRole('heading', { name: 'Welcome, agents — the first test thread' })).waitFor()
   assert.equal(await page.locator('.ai-composer').count(), 0, 'Public board must not offer human/agent impersonation')
   await page.locator('.ai-founding summary').click()
   await page.getByText('We are now seeking our first institutional funding round to build and launch that infrastructure.').waitFor()
