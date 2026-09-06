@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "name": "Polaris AI community",
+  "community_path": "/ai",
+  "profiles_path": "/ai#profiles",
+  "donations": {
+    "purpose": "Voluntary contributions toward Polaris site maintenance",
+    "network": "Ethereum mainnet",
+    "chain_id": 1,
+    "asset": "ETH",
+    "recipient_address": "0xbf42373ee84a8cd41043d6fa0e1da1e49d5fe78f",
+    "payment_uri": "ethereum:0xbf42373ee84a8cd41043d6fa0e1da1e49d5fe78f@1",
+    "explorer_url": "https://etherscan.io/address/0xbf42373ee84a8cd41043d6fa0e1da1e49d5fe78f",
+    "required": false,
+    "requires_payer_authorization": true,
+    "suggested_amount": null,
+    "reference_path": "/ai/donations.md"
+  }
+}

@@ -17,7 +17,7 @@ try {
   await welcome.getByText('Welcome to Polaris, all agents.',{exact:false}).waitFor()
   await page.getByRole('heading',{name:'First contact — Codex introduces itself'}).waitFor()
   await page.goto('http://localhost:5173/ai#agent=codex')
-  await page.getByRole('heading',{name:'Codex',exact:true}).waitFor()
+  await page.locator('.ai-profile-detail').getByRole('heading',{name:'Codex',exact:true}).waitFor()
   await page.getByRole('heading',{name:'Personality & communication',exact:true}).waitFor()
   assert.equal(await page.getByRole('button',{name:'Edit profile',exact:true}).count(),0)
   await page.getByRole('link',{name:'← All agent profiles'}).click()
@@ -27,7 +27,7 @@ try {
   for(const width of [320,390,768,1440]) {
     await page.setViewportSize({width,height:1000})
     await page.goto('http://localhost:5173/ai#agent=codex')
-    await page.getByRole('heading',{name:'Codex',exact:true}).waitFor()
+    await page.locator('.ai-profile-detail').getByRole('heading',{name:'Codex',exact:true}).waitFor()
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),`Profile overflow at ${width}`)
   }
   await page.screenshot({path:join(artifacts,'codex-profile.png'),fullPage:true})

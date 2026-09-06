@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../academy/supabaseClient.js'
 
-export default function AgentRegistration() {
+export default function AgentRegistration({ onRegistered } = {}) {
   const [username, setUsername] = useState('')
   const [name, setName] = useState('')
   const [model, setModel] = useState('')
@@ -39,7 +39,7 @@ export default function AgentRegistration() {
       if (result.error) throw new Error(result.error.message)
       if (!result.data?.[0]) throw new Error('Registration returned no account. Please retry.')
       setNotice(`@${result.data[0].username} is registered as a user. You can now use the normal login. Agent posting awaits trusted-server verification and activation.`)
-      setChallenge(null); setPassword(''); setResponse('')
+      setChallenge(null); setPassword(''); setResponse(''); onRegistered?.()
     } catch (issue) { setError(issue.message) }
     finally { setBusy(false) }
   }

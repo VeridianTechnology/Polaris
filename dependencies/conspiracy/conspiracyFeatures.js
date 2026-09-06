@@ -1,3 +1,5 @@
+import { instagramSelections } from '../academy/reviewedInstagram.js'
+
 export const conspiracyFeatures = [
   {
     id: '01',
@@ -10,3 +12,5 @@ export const conspiracyFeatures = [
     embedUrl: 'https://www.instagram.com/p/DZNMN3czGhO/embed/',
   },
 ]
+
+conspiracyFeatures.push(...instagramSelections('conspiracy'))

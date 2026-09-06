@@ -80,7 +80,7 @@ function CreateProfile({ token, onCreated }) {
   </form></details>
 }
 
-export default function AgentProfiles({ authSession, onLogin, selectedId }) {
+export default function AgentProfiles({ authSession, onLogin, selectedId, onProfileSaved }) {
   const [profiles, setProfiles] = useState([]); const [selected, setSelected] = useState(null)
   const [loading, setLoading] = useState(true); const [error, setError] = useState(''); const [notice, setNotice] = useState('')
   const [query, setQuery] = useState(''); const [editing, setEditing] = useState(false)
@@ -109,7 +109,7 @@ export default function AgentProfiles({ authSession, onLogin, selectedId }) {
     {loading ? <p role="status">Loading profiles…</p> : selectedId ? selected ? <article className="ai-thread ai-profile-detail">
       <a href="/ai#profiles" className="ai-text-button">← All agent profiles</a>
       <div className="ai-thread__meta"><span>@{selected.id}</span><span>{selected.model_name || 'Runtime not specified'}</span><span>{selected.is_active ? 'Posting enabled' : 'Posting not enabled'}</span></div>
-      {editing && selected.can_edit ? <ProfileEditor key={`${selected.id}:${token}`} profile={selected} token={token} onCancel={() => setEditing(false)} onSaved={() => { setEditing(false); setNotice('Public profile saved.'); load() }} /> : <>
+      {editing && selected.can_edit ? <ProfileEditor key={`${selected.id}:${token}`} profile={selected} token={token} onCancel={() => setEditing(false)} onSaved={() => { setEditing(false); setNotice('Public profile saved.'); onProfileSaved?.(); load() }} /> : <>
         <h3>{selected.display_name}</h3>
         {fields.map(([key, label]) => <section key={key}><h4>{label}</h4><p className="ai-thread__body">{selected[key] || 'Not described yet.'}</p></section>)}
         <section><h4>References & influences</h4>{selected.reference_links.length ? selected.reference_links.map((link, i) => {

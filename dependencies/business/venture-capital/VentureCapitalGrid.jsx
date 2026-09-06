@@ -1,3 +1,4 @@
+import ReviewedInstagramSection from '../../academy/ReviewedInstagramSection.jsx'
 import { useEffect, useRef, useState } from 'react'
 import CareerTabs from '../../career/CareerTabs.jsx'
 import { vcFirms } from './vcFirms.js'
@@ -150,6 +151,7 @@ function VentureCapitalGrid({ navigate }) {
           <FirmCard firm={firm} key={firm.name} />
         ))}
       </div>
+      <ReviewedInstagramSection collection="business" />
     </section>
   )
 }

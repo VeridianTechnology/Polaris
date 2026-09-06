@@ -1,3 +1,4 @@
+import ReviewedInstagramSection from '../academy/ReviewedInstagramSection.jsx'
 import { freedomFeatures } from './freedomFeatures.js'
 import StorySubmission, { useApprovedStories } from '../shared/StorySubmission.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
@@ -18,6 +19,7 @@ function FreedomCard({ feature, navigate }) {
       <div className="freedom-card__status">
         <span aria-hidden="true" />
         <strong>Active</strong>
+        {Number.isInteger(feature.threatScore) && <strong className="freedom-card__score" aria-label={`Freedom threat rating: ${feature.threatScore} out of 100`}>{feature.threatScore}/100</strong>}
       </div>
 
       <div className="freedom-card__image-wrap">
@@ -49,7 +51,7 @@ function FreedomCard({ feature, navigate }) {
   )
 
   return (
-    <article className="freedom-card">
+    <article className={`freedom-card${Number.isInteger(feature.threatScore) ? ' freedom-card--scored' : ''}`}>
       {feature.path ? (
         <RouteLink
           className="freedom-card__link"
@@ -65,7 +67,7 @@ function FreedomCard({ feature, navigate }) {
           href={feature.url}
           target="_blank"
           rel="noreferrer"
-          aria-label={`Watch ${feature.title} on YouTube`}
+          aria-label={feature.submitted ? `Open ${feature.title} source` : `Watch ${feature.title} on YouTube`}
         >
           {cardContents}
         </a>
@@ -118,6 +120,7 @@ function FreedomLibrary({ navigate, authSession, onLogin }) {
           <FreedomCard feature={feature} navigate={navigate} key={feature.key || feature.id} />
         ))}
       </div>
+      <ReviewedInstagramSection collection="freedom" />
     </section>
   )
 }

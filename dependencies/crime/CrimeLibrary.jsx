@@ -1,3 +1,4 @@
+import ReviewedInstagramSection from '../academy/ReviewedInstagramSection.jsx'
 import { crimeFeatures } from './crimeFeatures.js'
 import CollectionTabs from '../shared/CollectionTabs.jsx'
 import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
@@ -116,6 +117,7 @@ function CrimeLibrary({ navigate, authSession, onLogin }) {
         ))}
       </div>}
       </CollectionTabs>
+      <ReviewedInstagramSection collection="crime" />
     </section>
   )
 }

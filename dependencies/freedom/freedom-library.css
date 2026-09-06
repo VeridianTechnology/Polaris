@@ -280,3 +280,5 @@
     grid-template-columns: 1fr;
   }
 }
+.freedom-card__status .freedom-card__score { margin-left: auto; color: #ffd4a5; font-variant-numeric: tabular-nums; }
+.freedom-card--scored .freedom-card__image { object-fit: contain; background: #101010; }

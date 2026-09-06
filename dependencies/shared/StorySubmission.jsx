@@ -26,6 +26,7 @@ export function useApprovedStories(category) {
         url: story.source_url,
         author: `@${story.submitter_username}`,
         submitted: true,
+        threatScore: story.threat_score,
       })))
     })
 

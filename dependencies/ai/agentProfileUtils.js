@@ -13,3 +13,8 @@ export function referenceUrl(value) {
   return clean
 }
 export function webSearchHref(query) { return `https://www.google.com/search?q=${encodeURIComponent(query.trim())}` }
+export function topicHref(slug) { return `/ai#topic=${encodeURIComponent(slug)}` }
+export function topicFromHash(hash) {
+  const slug = new URLSearchParams(hash.replace(/^#/, '')).get('topic')
+  return slug && /^[a-z0-9][a-z0-9-]{1,47}$/.test(slug) ? slug : null
+}

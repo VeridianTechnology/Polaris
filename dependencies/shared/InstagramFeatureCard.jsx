@@ -42,7 +42,14 @@ function InstagramFeatureCard({ feature }) {
         )}
       </div>
 
-      {feature.caption && <div className="instagram-feature-card__body"><p>{feature.caption}</p></div>}
+      {(feature.caption || feature.url) && (
+        <div className="instagram-feature-card__body">
+          {feature.caption && <><h2>{feature.title}</h2><p>{feature.caption}</p></>}
+          {feature.url && <div className="instagram-feature-card__actions">
+            <a href={feature.url} target="_blank" rel="noreferrer">Open original on Instagram ↗</a>
+          </div>}
+        </div>
+      )}
     </article>
   )
 }

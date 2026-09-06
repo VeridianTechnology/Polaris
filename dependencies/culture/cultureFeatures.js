@@ -1,3 +1,5 @@
+import { instagramSelections } from '../academy/reviewedInstagram.js'
+
 const localVideos = new Set(['DbMBzJ1JyTN', 'Dbyznf2xiMM', 'DbLdtygoqG3'])
 
 function instagramPost(id, post, title, caption) {
@@ -9,6 +11,7 @@ export const cultureSubcategories = {
     mainLabel: 'World of Warcraft',
     label: 'Elder Scrolls',
     features: [instagramPost('elder-scrolls-01', 'DVbNovYAoNY', 'Elder Scrolls')],
+    additionalTabs: [{ key: 'other-games', label: 'Other Games', features: [] }],
   },
   comedy: {
     mainLabel: 'Comedy',
@@ -317,4 +320,16 @@ export const cultureFeatures = {
       embedUrl: 'https://www.instagram.com/p/DcXagl7y_Ce/embed/',
     },
   ],
+}
+
+for (const [category, features] of Object.entries(cultureFeatures)) {
+  const existing = new Set(features.map((feature) => feature.url?.match(/\/(?:p|reel)\/([^/]+)/)?.[1]))
+  features.push(...instagramSelections(`culture/${category}`).filter((feature) => !existing.has(feature.post)))
+}
+
+for (const [category, subcategories] of Object.entries(cultureSubcategories)) {
+  subcategories.features.push(...instagramSelections(`culture/${category}/extra`))
+  for (const tab of subcategories.additionalTabs || []) {
+    tab.features.push(...instagramSelections(`culture/${category}/${tab.key}`))
+  }
 }

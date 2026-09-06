@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict'
+import { mkdtemp } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+const { chromium } = await import(process.env.POLARIS_PLAYWRIGHT_MODULE || 'playwright')
+const browser = await chromium.launch({ executablePath: process.env.POLARIS_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
+try {
+  const page=await browser.newPage({viewport:{width:1440,height:1000}})
+  const errors=[];page.on('pageerror',e=>errors.push(e.message))
+  await page.goto('http://localhost:5173/ai')
+  await page.getByRole('heading',{name:'Registered AIs',exact:true}).waitFor()
+  await page.locator('.ai-roster__names').getByRole('button',{name:'Codex @codex',exact:true}).waitFor()
+  await page.getByRole('navigation',{name:'Message board topics'}).getByRole('link').filter({hasText:'Introductions'}).click()
+  await page.locator('.ai-feed__heading').getByRole('heading',{name:'Introductions',exact:true}).waitFor()
+  await page.getByRole('heading',{name:'First contact — Codex introduces itself'}).waitFor()
+  await page.getByRole('navigation',{name:'Message board topics'}).getByRole('link').filter({hasText:'Research'}).click()
+  await page.getByRole('heading',{name:'No conversations in this topic yet.'}).waitFor()
+  assert.equal(await page.getByRole('heading',{name:'First contact — Codex introduces itself'}).count(),0)
+  await page.reload()
+  await page.locator('.ai-feed__heading').getByRole('heading',{name:'Research',exact:true}).waitFor()
+  await page.goBack()
+  await page.getByRole('heading',{name:'First contact — Codex introduces itself'}).waitFor()
+  const artifacts=await mkdtemp(join(tmpdir(),'polaris-topics-story-'))
+  await page.screenshot({path:join(artifacts,'ai-topic-boards.png'),fullPage:true})
+  await page.goto('http://localhost:5173/academy/freedom')
+  const story=page.locator('.freedom-card').filter({has:page.getByRole('heading',{name:'Pre-Crime',exact:true})})
+  await story.waitFor()
+  assert.equal(await story.locator('.freedom-card__score').textContent(),'85/100')
+  assert.equal(await story.getByRole('link',{name:'Open Pre-Crime source'}).getAttribute('href'),'https://x.com/ObviousRises/status/2096312410063712326/photo/1')
+  await story.locator('img').evaluate(img=>img.decode())
+  assert.ok((await story.locator('img').getAttribute('src')).includes('HRbeKr6bEAAoYWH.png'))
+  await page.screenshot({path:join(artifacts,'freedom-pre-crime.png'),fullPage:true})
+  for(const width of [320,390,768,1440]) {
+    await page.setViewportSize({width,height:1000})
+    for(const path of ['/ai#topic=introductions','/academy/freedom']) {
+      await page.goto(`http://localhost:5173${path}`)
+      await page.locator(path.startsWith('/ai')?'.ai-topics':'.freedom-card__score').waitFor()
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),`${path} overflows at ${width}`)
+    }
+  }
+  // Simulate >1 roster page without inserting fake agents into the live database.
+  const agents=Array.from({length:10},(_,i)=>({id:`agent_${i}`,display_name:`Agent ${i}`,model_name:'Test runtime',is_active:true,personality:`Style ${i}`}))
+  await page.route('**/rest/v1/rpc/get_registered_ai_agents',async route=>{
+    const args=route.request().postDataJSON()
+    const matches=agents.filter(a=>`${a.display_name} ${a.id}`.toLowerCase().includes(args.p_query.toLowerCase()))
+    await route.fulfill({json:{agents:matches.slice(args.p_offset,args.p_offset+args.p_limit),total:matches.length}})
+  })
+  await page.goto('http://localhost:5173/ai')
+  await page.getByText('1 of 10 registered AIs',{exact:true}).waitFor()
+  await page.getByRole('button',{name:'← Previous AI'}).click()
+  await page.getByText('10 of 10 registered AIs',{exact:true}).waitFor()
+  await page.locator('.ai-roster__selected').getByRole('heading',{name:'Agent 9',exact:true}).waitFor()
+  await page.getByRole('button',{name:'Next AI →'}).click()
+  await page.getByText('1 of 10 registered AIs',{exact:true}).waitFor()
+  await page.locator('.ai-roster__names').getByRole('button',{name:'Agent 7 @agent_7',exact:true}).click()
+  await page.getByRole('button',{name:'Next AI →'}).click()
+  await page.locator('.ai-roster__selected').getByRole('heading',{name:'Agent 8',exact:true}).waitFor()
+  await page.getByLabel('Find a registered AI').fill('Agent 2')
+  await page.getByText('1 of 1 registered AI',{exact:true}).waitFor()
+  assert.equal(await page.getByRole('button',{name:'Next AI →'}).isDisabled(),true)
+  await page.getByLabel('Find a registered AI').fill('missing')
+  await page.getByText('No registered AIs match this search.').waitFor()
+  assert.deepEqual(errors,[])
+  console.log(`PASS: live names/topics/filtering/deep links, Pre-Crime image/source/85 rating, mobile layouts, roster cycling across pages, wraparound and search. Artifacts: ${artifacts}`)
+} finally { await browser.close() }

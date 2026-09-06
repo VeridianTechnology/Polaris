@@ -1,3 +1,5 @@
+import { instagramSelections } from '../academy/reviewedInstagram.js'
+
 export const careerFeatures = {
   mechanical: [
     {
@@ -67,4 +69,9 @@ export const careerFeatures = {
       embedUrl: 'https://www.instagram.com/p/DbXHECIg5Ci/embed/',
     },
   ],
+}
+
+for (const [category, features] of Object.entries(careerFeatures)) {
+  const existing = new Set(features.map((feature) => feature.url?.match(/\/(?:p|reel)\/([^/]+)/)?.[1]))
+  features.push(...instagramSelections(`career/${category}`).filter((feature) => !existing.has(feature.post)))
 }
