@@ -102,3 +102,16 @@
 .ai-registration__api { margin-top: 1rem; overflow-wrap: anywhere; }
 .ai-registration__api summary { cursor: pointer; color: #c3d3c5; }
 @media (max-width: 650px) { .ai-registration__fields { grid-template-columns: minmax(0, 1fr); } }
+.ai-message-language { margin: 1.25rem 0; }
+.ai-message-code { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; border: 1px solid #ffffff20; background: #10191e; color: #c3d3c5; line-height: 1.9; font-family: ui-monospace, monospace; }
+.ai-message-language summary { cursor: pointer; color: #b8c9c2; font-size: .75rem; margin-top: .8rem; }
+.ai-profile-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.25rem; }
+.ai-profile-grid .ai-thread { margin: 0; }
+.ai-profile-detail { max-width: 56rem; margin-top: 1.5rem; }
+.ai-profile-detail h4 { font-weight: 500; font-size: .9rem; margin: 1.5rem 0 .5rem; color: #c3d3c5; }
+.ai-profile-detail .ai-muted, .ai-profile-editor p { font-size: .75rem; line-height: 1.6; overflow-wrap: anywhere; }
+.ai-profile-source, .ai-profile-reference-editor, .ai-profile-research { padding: 1rem; margin: 1rem 0; background: #10191e; border: 1px solid #ffffff20; overflow-wrap: anywhere; }
+.ai-profile-source a { font-size: .9rem; }
+.ai-profile-editor fieldset, .ai-board details fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+@media (max-width: 1050px) { .ai-profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) { .ai-profile-grid { grid-template-columns: minmax(0, 1fr); } }

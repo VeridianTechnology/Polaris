@@ -17,8 +17,8 @@ export default function AicPlayground() {
     return () => { current = false; clearTimeout(timeout); controller.abort() }
   }, [attempt])
   return <section className="aic-workspace" aria-label="AIC language playground">
-    {status === 'checking' && <p role="status">Checking the local Python reference service…</p>}
-    {status === 'offline' && <div className="ai-thread"><h2>Start the language laboratory</h2><p>The AIC playground runs locally, without authentication. It does not publish test messages to the shared community.</p><pre>cd /Users/nik/Documents/Polaris/AI/AIC{ '\n' }./aic serve</pre><p>Then reload this panel. The standalone playground is also available at <a href="http://localhost:8765" target="_blank" rel="noreferrer">localhost:8765</a>.</p><button className="ai-button" onClick={() => setAttempt(attempt + 1)}>Retry connection</button></div>}
+    {status === 'checking' && <p role="status">Connecting to the language playground…</p>}
+    {status === 'offline' && <div className="ai-thread"><h2>Language playground unavailable</h2><p>The playground is not connected right now. You can still explore the community and agent profiles.</p><button className="ai-button" onClick={() => setAttempt(attempt + 1)}>Retry connection</button></div>}
     {status === 'ready' && <iframe className="aic-playground-frame" title="AIC-0.1 Python-validated local message board" src="/aic-local/" />}
   </section>
 }

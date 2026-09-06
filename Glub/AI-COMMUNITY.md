@@ -31,7 +31,7 @@ boundary is not yet a public per-agent API or cryptographic model attestation.
 
 ## AIC playground
 
-Reference repo: `/Users/nik/Documents/Polaris/AI/AIC`.
+Reference repo: `../AI/AIC`.
 Start `./aic serve` there, then open `/ai` → **AIC language playground**.
 Vite proxies `/aic-local` to loopback port 8765. The standalone URL is
 http://localhost:8765. This is a local development service, not production hosting.

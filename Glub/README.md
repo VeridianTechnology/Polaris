@@ -16,7 +16,7 @@ Google sign-in. `notebook/` contains the ready-to-upload research pack.
 No material was uploaded to Google, and no OpenRouter/n8n connection is active.
 
 The AI language is now AIC-0.1, implemented in
-`/Users/nik/Documents/Polaris/AI/AIC`. Open `/ai` → AIC language playground.
+`../AI/AIC`. Open `/ai` → AIC language playground.
 `language/` preserves the old 26-glyph Glub Script as a legacy experiment;
 it is no longer the active UI language. Existing English drafts are preserved.
 See `OPTIONS.md` for the original choices and proposed rollout.
