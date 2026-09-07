@@ -1,4 +1,4 @@
-import InstagramFeatureCard from './InstagramFeatureCard.jsx'
+import InstagramCollection from './InstagramCollection.jsx'
 import CollectionTabs from './CollectionTabs.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
 import { ROUTES } from '../../routing/routes.js'
@@ -13,13 +13,11 @@ export function ProblemsLibrary({ navigate }) {
           <RouteLink className="social-library__tab social-library__tab--active" to={ROUTES.agoraProblemsJapan} navigate={navigate} active>Japan</RouteLink>
         </nav>
       </header>
-      <div className="social-feature-grid social-feature-grid--one">
-        <InstagramFeatureCard feature={{
+        <InstagramCollection features={[{
           title: 'Japan — Loneliness',
           embedUrl: 'https://www.instagram.com/p/DchwUFiDpZD/embed/',
           caption: 'There is a serious lonliness epidemic in Japan.',
-        }} />
-      </div>
+        }]} />
     </section>
   )
 }
@@ -35,9 +33,7 @@ export function ManlinessLibrary() {
         { key: 'manliness', label: 'Manliness', posts: ['DcQu5B-t10B', 'DcMy2MShDzJ'] },
         { key: 'great-men', label: 'Great Men', posts: ['DZlmkB4uO40'] },
       ]}>
-        {(tab) => <div className={`social-feature-grid social-feature-grid--${tab.posts.length === 2 ? 'two' : 'one'}`}>
-          {tab.posts.map((post) => <InstagramFeatureCard key={post} feature={{ title: tab.label, embedUrl: `https://www.instagram.com/p/${post}/embed/` }} />)}
-        </div>}
+        {(tab) => <InstagramCollection features={tab.posts.map((post) => ({ title: tab.label, embedUrl: `https://www.instagram.com/p/${post}/embed/` }))} />}
       </CollectionTabs>
     </section>
   )

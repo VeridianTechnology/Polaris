@@ -82,6 +82,7 @@ body :is(.vc-card, .finance-card, .crime-card, .freedom-card, .people-card, .ins
   border-radius: 3px; box-shadow: none; backdrop-filter: none; text-shadow: none;
 }
 body :is(.vc-card__rating, .vc-card__contact, .finance-card__body, .crime-card__body, .freedom-card__body, .people-card__body, .instagram-feature-card__body) { border-color: var(--polaris-border); }
+body .instagram-feature-card { border-color: #657477; }
 body :is(.crime-card__author, .people-card__author, .finance-card__author, .freedom-card__author, .instagram-feature-card__author) { color: var(--polaris-accent); }
 body :is(.crime-card__body > p, .finance-card__body > p, .freedom-card__body > p, .people-card__body > p, .instagram-feature-card__body > p) {
   font-family: inherit; font-size: .85rem; line-height: 1.65; color: var(--polaris-muted);

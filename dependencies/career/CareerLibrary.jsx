@@ -1,4 +1,4 @@
-import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
+import InstagramCollection from '../shared/InstagramCollection.jsx'
 import CareerTabs from './CareerTabs.jsx'
 import { careerFeatures } from './careerFeatures.js'
 
@@ -6,7 +6,6 @@ function CareerLibrary({ careerView = 'mechanical', navigate }) {
   const selectedView = ['mechanical', 'tech', 'social-media', 'modeling'].includes(careerView) ? careerView : 'mechanical'
   const dataKey = selectedView === 'social-media' ? 'socialMedia' : selectedView
   const features = careerFeatures[dataKey]
-  const gridSize = features.length >= 3 ? 'three' : features.length === 2 ? 'two' : 'one'
 
   return (
     <section className="social-library" aria-labelledby="career-library-title">
@@ -16,9 +15,7 @@ function CareerLibrary({ careerView = 'mechanical', navigate }) {
         <CareerTabs active={selectedView} navigate={navigate} />
       </header>
 
-      <div className={`social-feature-grid social-feature-grid--${gridSize}`} aria-label={`${selectedView} career selections`}>
-        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
-      </div>
+      <InstagramCollection features={features} label={`${selectedView} career selections`} />
     </section>
   )
 }

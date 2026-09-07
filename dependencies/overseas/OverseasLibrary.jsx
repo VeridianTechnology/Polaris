@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import InstagramCollection from '../shared/InstagramCollection.jsx'
 import './overseas-library.css'
 
 const categories = [
@@ -8,7 +9,6 @@ const categories = [
     key: 'legal',
     label: 'Legal',
     post: 'DcGQabut-rD',
-    text: 'If you choose to live in Vietnam, the police can come and do a little search of your home whenever they want, be aware.',
   },
 ]
 
@@ -57,17 +57,10 @@ function OverseasLibrary() {
           tabIndex={0}
         >
           {activeTab === category.key && (
-            [category.post, ...(category.additionalPosts || [])].map((post) => <article className="overseas-library__story" key={post}>
-              <iframe
-                src={`https://www.instagram.com/p/${post}/embed/`}
-                title={`Overseas ${category.label.toLowerCase()} story on Instagram`}
-                loading="lazy"
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
-              {category.text && <p>{category.text}</p>}
-            </article>)
+            <InstagramCollection features={[category.post, ...(category.additionalPosts || [])].map((post) => ({
+              title: `Overseas ${category.label.toLowerCase()} story`,
+              embedUrl: `https://www.instagram.com/p/${post}/embed/`,
+            }))} />
           )}
         </div>
       ))}

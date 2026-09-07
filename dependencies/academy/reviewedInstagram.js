@@ -109,7 +109,7 @@ const selections = [
   ["DaY5hGZDU9x", "culture/religion/occult", "The alchemist’s journey", "A quotation about an esoteric conception of existence."],
   ["DZps61HsUx7", "career/socialMedia", "Scaling creator content", "An agency presents a short-form content strategy."],
   ["DOwJHc5AIIh", "culture/contemplative", "Breaking the daily cycle", "A motivational reflection on routine."],
-  ["DaBUQq_sZf3", "career/modeling", "V at Vogue World", "A fashion-event appearance."],
+  ["DaBUQq_sZf3", "culture/comedy", "V at Vogue World", "A fashion-event appearance."],
   ["DZaDY44pVy8", "culture/contemplative", "Persistence, according to Daffy Duck", "A creator reflects on perseverance through an animated character."],
   ["DX5MP5kqcPJ", "culture/contemplative", "Introducing Seneca", "A short overview of the Stoic philosopher."],
   ["DUyguugD2V4", "culture/memes", "Internet nostalgia: 2016", "A retrospective meme about online culture."],

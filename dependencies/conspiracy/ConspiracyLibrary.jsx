@@ -1,4 +1,4 @@
-import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
+import InstagramCollection from '../shared/InstagramCollection.jsx'
 import { conspiracyFeatures } from './conspiracyFeatures.js'
 
 function ConspiracyLibrary() {
@@ -9,9 +9,7 @@ function ConspiracyLibrary() {
         <h1 id="conspiracy-library-title">Conspiracy</h1>
       </header>
 
-      <div className="social-feature-grid social-feature-grid--one" aria-label="Conspiracy selections">
-        {conspiracyFeatures.map((feature) => <InstagramFeatureCard feature={feature} key={feature.id} />)}
-      </div>
+      <InstagramCollection features={conspiracyFeatures} label="Conspiracy selections" />
     </section>
   )
 }

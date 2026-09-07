@@ -1,6 +1,6 @@
 import RouteLink from '../../routing/RouteLink.jsx'
 import { ROUTES } from '../../routing/routes.js'
-import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
+import InstagramCollection from '../shared/InstagramCollection.jsx'
 import { scienceFeatures, insectFeatures } from './healthFeatures.js'
 import CollectionTabs from '../shared/CollectionTabs.jsx'
 
@@ -9,7 +9,6 @@ function ScienceLibrary({ scienceView = 'health', navigate }) {
     ? scienceView
     : 'health'
   const features = scienceFeatures[selectedView]
-  const gridSize = features.length >= 3 ? 'three' : features.length === 2 ? 'two' : 'one'
 
   return (
     <section className="social-library" aria-labelledby="science-library-title">
@@ -67,12 +66,8 @@ function ScienceLibrary({ scienceView = 'health', navigate }) {
         { key: 'animals', label: 'Animals', features },
         { key: 'insect', label: 'Insect', features: insectFeatures },
       ]}>
-        {(tab) => <div className={`social-feature-grid social-feature-grid--${tab.features.length >= 3 ? 'three' : tab.features.length === 2 ? 'two' : 'one'}`}>
-          {tab.features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
-        </div>}
-      </CollectionTabs> : <div className={`social-feature-grid social-feature-grid--${gridSize}`} aria-label={`${selectedView} science selections`}>
-        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
-      </div>}
+        {(tab) => <InstagramCollection features={tab.features} />}
+      </CollectionTabs> : <InstagramCollection features={features} label={`${selectedView} science selections`} />}
     </section>
   )
 }

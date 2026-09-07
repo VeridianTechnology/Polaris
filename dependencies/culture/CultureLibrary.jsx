@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import InstagramFeatureCard from '../shared/InstagramFeatureCard.jsx'
+import InstagramCollection from '../shared/InstagramCollection.jsx'
 import CultureTabs from './CultureTabs.jsx'
 import { cultureFeatures, cultureSubcategories } from './cultureFeatures.js'
 
@@ -25,7 +25,6 @@ function CultureLibrary({ cultureView = 'music', navigate }) {
       embedUrl: `${link.url.replace(/\/$/, '')}/embed/`,
     })),
   ])
-  const gridSize = features.length >= 3 ? 'three' : features.length === 2 ? 'two' : 'one'
 
   return (
     <section className="social-library" aria-labelledby="culture-library-title">
@@ -60,9 +59,7 @@ function CultureLibrary({ cultureView = 'music', navigate }) {
         </div>
       )}
       <div id="culture-collection" role={subcategory ? 'tabpanel' : undefined} aria-labelledby={subcategory ? `culture-subtab-${activeTab}` : undefined} tabIndex={subcategory ? 0 : undefined}>
-      <div className={`social-feature-grid social-feature-grid--${gridSize}`} aria-label={`${selectedView} selections`}>
-        {features.map((feature) => <InstagramFeatureCard feature={feature} key={feature.embedUrl} />)}
-      </div>
+      <InstagramCollection features={features} label={`${selectedView} selections`} />
       </div>
     </section>
   )
