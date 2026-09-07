@@ -153,9 +153,9 @@ function CrimeCase({ navigate }) {
       <header className="crime-case__header">
         <p>Case file 02 · September 2026</p>
         <h1 id="crime-case-title">Lindsay Clancy</h1>
-        <div className="crime-case__active">
+        <div className="crime-case__active crime-case__active--unresolved">
           <span aria-hidden="true" />
-          Active
+          Unresolved
         </div>
         <p className="crime-case__summary">
           Murdered her kids in a post-partum rage, the answer is still unclear why. All over the news,
@@ -174,7 +174,7 @@ function CrimeCase({ navigate }) {
             </div>
             <div>
               <dt>Status</dt>
-              <dd>Open</dd>
+              <dd>Unresolved</dd>
             </div>
             <div>
               <dt>Issue</dt>
@@ -186,10 +186,10 @@ function CrimeCase({ navigate }) {
         <article className="crime-case__primary">
           <p>Primary post</p>
           <a
-            href="https://x.com/ThomBrady5/status/2092909854172025294"
+            href="https://www.cnn.com/2026/08/13/us/lindsay-clancy-notes-cellphone-trial"
             target="_blank"
             rel="noreferrer"
-            aria-label="Open the original post on X"
+            aria-label="Read the CNN report about the Lindsay Clancy case"
           >
             <img
               src="/crime-lindsay-tweet.png"
@@ -198,11 +198,11 @@ function CrimeCase({ navigate }) {
           </a>
           <a
             className="crime-case__source"
-            href="https://x.com/ThomBrady5/status/2092909854172025294"
+            href="https://www.cnn.com/2026/08/13/us/lindsay-clancy-notes-cellphone-trial"
             target="_blank"
             rel="noreferrer"
           >
-            View original post ↗
+            Read the CNN report ↗
           </a>
         </article>
 

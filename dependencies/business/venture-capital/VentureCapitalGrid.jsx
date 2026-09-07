@@ -1,6 +1,5 @@
 import ReviewedInstagramSection from '../../academy/ReviewedInstagramSection.jsx'
 import { useEffect, useRef, useState } from 'react'
-import CareerTabs from '../../career/CareerTabs.jsx'
 import { vcFirms } from './vcFirms.js'
 import './venture-capital-grid.css'
 
@@ -102,8 +101,9 @@ function FirmCard({ firm }) {
   )
 }
 
-function VentureCapitalGrid({ navigate }) {
+function VentureCapitalGrid() {
   const [isIntroOpen, setIsIntroOpen] = useState(true)
+  const [activeView, setActiveView] = useState('firms')
   const introTimer = useRef(null)
 
   useEffect(() => {
@@ -137,21 +137,43 @@ function VentureCapitalGrid({ navigate }) {
         <div className="vc-directory__intro">
           <p className="vc-directory__eyebrow">Funding directory</p>
           <h1 id="vc-directory-title">Venture Capital</h1>
-          <CareerTabs active="entrepreneurship" navigate={navigate} />
+          <nav className="vc-view-tabs" aria-label="Venture Capital sections">
+            <button
+              className={`vc-view-tabs__item${activeView === 'firms' ? ' vc-view-tabs__item--active' : ''}`}
+              type="button"
+              aria-current={activeView === 'firms' ? 'page' : undefined}
+              onClick={() => setActiveView('firms')}
+            >
+              Venture Firms
+            </button>
+            <button
+              className={`vc-view-tabs__item${activeView === 'advice' ? ' vc-view-tabs__item--active' : ''}`}
+              type="button"
+              aria-current={activeView === 'advice' ? 'page' : undefined}
+              onClick={() => setActiveView('advice')}
+            >
+              Advice
+            </button>
+          </nav>
           <p className="vc-directory__subtitle">
-            This is a list of venture capital firms to apply for funding for,
-            depending on your idea, but there is a list of contacts and twitters
-            as well as a supposed rating.
+            {activeView === 'firms'
+              ? 'A directory of venture capital firms, with contact details and ratings to help you find funding for your idea.'
+              : 'Selected perspectives and practical advice for founders building and funding a company.'}
           </p>
         </div>
       </div>
 
-      <div className="vc-grid" aria-label="Venture capital firms">
-        {vcFirms.map((firm) => (
-          <FirmCard firm={firm} key={firm.name} />
-        ))}
-      </div>
-      <ReviewedInstagramSection collection="business" />
+      {activeView === 'firms' ? (
+        <div className="vc-grid" aria-label="Venture capital firms">
+          {vcFirms.map((firm) => (
+            <FirmCard firm={firm} key={firm.name} />
+          ))}
+        </div>
+      ) : (
+        <div className="vc-advice">
+          <ReviewedInstagramSection collection="business" />
+        </div>
+      )}
     </section>
   )
 }

@@ -454,10 +454,6 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
               <img className="academy-info-modal__title-art" src={ACADEMY_INFO[activeInfo].artwork} alt="" />
               {activeInfo === 'rules' ? (
                 <ol className="academy-info-modal__list">
-                  <li>No rage baiting.</li>
-                  <li>Nothing illegal - no specific calls to violence, fed posting, cp and no gore either, chinese live leak videos allowed but not globally.</li>
-                  <li>Avoid using slurs, not because it's a "bad word" but because journalists will be crawling through here.</li>
-                  <li>Keep content relevant and focused, you can post that garbage on your Facebook or Twitter, quality over quantity here.</li>
                   <li>Global posting is limited to one post per user every 24 hours. Deleting your latest post resets the timer and lets you post again. Administrators are exempt from this cooldown.</li>
                   <li>Each Global post may contain at most three links, each link is limited to 200 characters, and only valid HTTP or HTTPS links become clickable.</li>
                   <li>Password accounts receive five attempts and PIN accounts receive three. The first lockout lasts 24 hours, the next failed attempt after that causes a seven-day lockout, and another failed attempt permanently locks the account.</li>

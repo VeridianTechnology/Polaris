@@ -74,6 +74,17 @@
   font: inherit;
 }
 
+.crime-card__status--unresolved {
+  color: #f0efec;
+  background: #626767;
+  box-shadow: inset 0 -1rem 2.5rem rgba(20, 23, 23, .18);
+}
+
+.crime-card__status--unresolved > span {
+  background: #aeb4b3;
+  box-shadow: 0 0 1rem rgba(205, 211, 210, .42);
+}
+
 .crime-card__link {
   display: block;
   height: 100%;

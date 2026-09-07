@@ -80,6 +80,46 @@
   line-height: .9;
 }
 
+.vc-view-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  margin-top: 1.5rem;
+  padding: .24rem;
+  border: 1px solid rgba(242, 237, 226, .42);
+  border-radius: 999px;
+  background: rgba(10, 12, 12, .28);
+  box-shadow: 0 .7rem 2rem rgba(0, 0, 0, .12);
+  backdrop-filter: blur(10px);
+  text-shadow: none;
+}
+
+.vc-view-tabs__item {
+  appearance: none;
+  min-width: 9rem;
+  padding: .58rem .9rem;
+  border: 0;
+  border-radius: 999px;
+  color: #f2ede2;
+  background: transparent;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.vc-view-tabs__item--active {
+  color: #24211d;
+  background: #f0ebe0;
+}
+
+.vc-view-tabs__item:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: -3px;
+}
+
 .vc-directory__subtitle {
   max-width: 48rem;
   margin: clamp(1.6rem, 3vw, 2.25rem) auto 0;
@@ -94,6 +134,10 @@
   grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
   justify-content: center;
   gap: .85rem;
+}
+
+.vc-advice > section {
+  margin-top: 0 !important;
 }
 
 .vc-card {
@@ -239,6 +283,15 @@
 
   .vc-directory__intro {
     text-align: left;
+  }
+
+  .vc-view-tabs {
+    display: flex;
+  }
+
+  .vc-view-tabs__item {
+    flex: 1 1 50%;
+    min-width: 0;
   }
 
   .vc-directory__toggle {

@@ -19,7 +19,7 @@ function CrimeCard({ feature, navigate }) {
   const cardContents = (
     <>
       {feature.status && (
-        <div className="crime-card__status">
+        <div className={`crime-card__status${feature.status === 'UNRESOLVED' ? ' crime-card__status--unresolved' : ''}`}>
           <span aria-hidden="true" />
           <strong>{feature.status}</strong>
         </div>

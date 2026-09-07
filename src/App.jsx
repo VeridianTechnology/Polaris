@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import VisitorCoordinates from '../dependencies/homepage/geo/VisitorCoordinates.jsx'
 import SoundBars from '../dependencies/homepage/soundbars/SoundBars.jsx'
 import LaunchTimer from '../dependencies/homepage/LaunchTimer.jsx'
 import VentureCapitalGrid from '../dependencies/business/venture-capital/VentureCapitalGrid.jsx'
@@ -394,7 +393,6 @@ function HomePage({ navigate }) {
           <span>Discover Polaris</span>
           <span className="discover-link__line" />
         </RouteLink>
-        <VisitorCoordinates />
       </footer>
     </>
   )
@@ -531,7 +529,7 @@ function App() {
           onReturn={() => navigate(ROUTES.academy)}
         />
       )}
-      {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid navigate={navigate} />}
+      {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid />}
       {route.page === 'agora' && route.section === 'career' && (
         <CareerLibrary careerView={route.careerView} navigate={navigate} />
       )}

@@ -15,7 +15,7 @@ export const crimeFeatures = [
     title: 'Lindsay Clancy',
     image: '/crime-lindsay-clancy.webp',
     path: '/academy/crime/lindsay-clancy',
-    status: 'ACTIVE',
+    status: 'UNRESOLVED',
     analysis:
       "Murdered her kids in a post-partum rage, the answer is still unclear why. All over the news, you'd be under a rock not to hear about it.",
   },

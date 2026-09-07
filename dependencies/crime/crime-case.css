@@ -68,6 +68,16 @@
   box-shadow: 0 0 1.2rem rgba(255, 128, 102, .9);
 }
 
+.crime-case__active--unresolved {
+  color: #f0efec;
+  background: #626767;
+}
+
+.crime-case__active--unresolved span {
+  background: #aeb4b3;
+  box-shadow: 0 0 1.2rem rgba(205, 211, 210, .42);
+}
+
 .crime-case__summary {
   grid-column: 1 / -1;
   max-width: 59rem;

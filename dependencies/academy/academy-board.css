@@ -672,9 +672,17 @@
     grid-column: 2;
   }
 
+  .academy-composer__field {
+    padding-bottom: 1.15rem;
+  }
+
   .academy-composer textarea {
     min-height: 3rem;
     font-size: clamp(1.2rem, 5vw, 1.65rem);
+  }
+
+  .academy-composer__counter {
+    bottom: 0;
   }
 
   .academy-notice {
