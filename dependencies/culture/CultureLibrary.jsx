@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import InstagramCollection from '../shared/InstagramCollection.jsx'
-import CultureTabs from './CultureTabs.jsx'
 import { cultureFeatures, cultureSubcategories } from './cultureFeatures.js'
+import { ROUTES } from '../../routing/routes.js'
 
-function CultureLibrary({ cultureView = 'music', navigate }) {
+function CultureLibrary({ cultureView = 'music', cultureSubView, navigate }) {
   const [selectedTabs, setSelectedTabs] = useState({})
   const selectedView = Object.hasOwn(cultureFeatures, cultureView)
     ? cultureView
@@ -14,7 +14,18 @@ function CultureLibrary({ cultureView = 'music', navigate }) {
     ...(subcategory.label ? [{ key: 'extra', label: subcategory.label, features: subcategory.features }] : []),
     ...(subcategory.additionalTabs || []),
   ] : []
-  const activeTab = selectedTabs[selectedView] || 'main'
+  const activeTab = tabs.some((tab) => tab.key === cultureSubView) ? cultureSubView : selectedTabs[selectedView] || 'main'
+  const selectTab = (tabKey) => {
+    setSelectedTabs((current) => ({ ...current, [selectedView]: tabKey }))
+    if (selectedView === 'comedy') {
+      if (tabKey === 'race') navigate(ROUTES.agoraCultureComedyRace)
+      else if (cultureSubView === 'race') navigate(ROUTES.agoraCultureComedy)
+    }
+    if (selectedView === 'history') {
+      if (tabKey === 'extra') navigate(ROUTES.agoraCultureHistoryAiRecreation)
+      else if (cultureSubView === 'extra') navigate(ROUTES.agoraCultureHistory)
+    }
+  }
   const selectedFeatures = tabs.find((tab) => tab.key === activeTab)?.features || cultureFeatures[selectedView]
   const features = selectedFeatures.flatMap((feature) => [
     feature,
@@ -31,7 +42,6 @@ function CultureLibrary({ cultureView = 'music', navigate }) {
       <header className="social-library__intro">
         <p>Sound, humor &amp; culture</p>
         <h1 id="culture-library-title">Culture</h1>
-        {selectedView !== 'religion' && <CultureTabs active={selectedView} navigate={navigate} />}
       </header>
 
       {subcategory && (
@@ -45,13 +55,13 @@ function CultureLibrary({ cultureView = 'music', navigate }) {
               aria-selected={activeTab === tab.key}
               aria-controls="culture-collection"
               tabIndex={activeTab === tab.key ? 0 : -1}
-              onClick={() => setSelectedTabs((tabs) => ({ ...tabs, [selectedView]: tab.key }))}
+              onClick={() => selectTab(tab.key)}
               onKeyDown={(event) => {
                 if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
                 event.preventDefault()
                 const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length
                 const next = tabs[nextIndex].key
-                setSelectedTabs((tabs) => ({ ...tabs, [selectedView]: next }))
+                selectTab(next)
                 document.getElementById(`culture-subtab-${next}`)?.focus()
               }}
             >{tab.label}</button>

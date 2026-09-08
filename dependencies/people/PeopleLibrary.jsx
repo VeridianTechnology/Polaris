@@ -1,6 +1,7 @@
 import RouteLink from '../../routing/RouteLink.jsx'
-import CultureTabs from '../culture/CultureTabs.jsx'
 import { peopleFeatures } from './peopleFeatures.js'
+import InstagramCollection from '../shared/InstagramCollection.jsx'
+import { instagramSelections } from '../academy/reviewedInstagram.js'
 import './people-library.css'
 
 function PersonCard({ person, navigate }) {
@@ -40,18 +41,22 @@ function PersonCard({ person, navigate }) {
 
 function PeopleLibrary({ peopleView = 'right-wing', navigate }) {
   const people = peopleFeatures.rightWing
+  const instagramCollection = peopleView === 'psl' ? 'people/psl' : peopleView === 'vibe' ? 'people/vibe' : null
 
   return (
     <section className="people-library" aria-labelledby="people-library-title">
       <header className="people-library__intro">
         <p>People to watch</p>
         <h1 id="people-library-title">People</h1>
-        <CultureTabs active={peopleView} navigate={navigate} />
       </header>
 
-      <div className="people-grid" aria-label="Right Wing people">
-        {people.map((person) => <PersonCard person={person} navigate={navigate} key={person.id} />)}
-      </div>
+      {instagramCollection ? (
+        <InstagramCollection features={instagramSelections(instagramCollection)} label={`${peopleView.toUpperCase()} selections`} />
+      ) : (
+        <div className="people-grid" aria-label="Right Wing people">
+          {people.map((person) => <PersonCard person={person} navigate={navigate} key={person.id} />)}
+        </div>
+      )}
     </section>
   )
 }

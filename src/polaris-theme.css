@@ -1,28 +1,47 @@
 /* Shared visual system, derived from Glub and AI. Content/media retain their
    own colors; this layer themes only Polaris-owned surfaces and controls. */
 :root {
-  --polaris-bg: #111b20;
-  --polaris-panel: #172329;
-  --polaris-field: #10191e;
-  --polaris-text: #eeeae0;
-  --polaris-muted: #a4b6b9;
-  --polaris-accent: #c3d3c5;
-  --polaris-border: #ffffff26;
-  --polaris-soft: #c3d3c51a;
-  --polaris-danger: #ffc5b6;
+  --polaris-bg: #f4f1e9;
+  --polaris-panel: #fbfaf6;
+  --polaris-field: #ebe8df;
+  --polaris-text: #252b2a;
+  --polaris-muted: #687675;
+  --polaris-accent: #b8cbbd;
+  --polaris-accent-strong: #6f9480;
+  --polaris-border: #34423d2e;
+  --polaris-soft: #a8bcae2b;
+  --polaris-danger: #923c43;
+  --polaris-header: #273a3bf5;
+  --polaris-menu: #1b2628;
+  --polaris-menu-text: #eeeae0;
   --polaris-serif: Didot, "Bodoni 72", "Times New Roman", serif;
-  color-scheme: dark;
+  color-scheme: light;
   color: var(--polaris-text);
   background: var(--polaris-bg);
+}
+
+:root[data-polaris-theme='pale-blue'] {
+  --polaris-bg: #dcebf1;
+  --polaris-panel: #eaf3f6;
+  --polaris-field: #d2e3ea;
+  --polaris-text: #203037;
+  --polaris-muted: #5c727c;
+  --polaris-accent: #b7d5df;
+  --polaris-accent-strong: #5d8fa3;
+  --polaris-border: #29465130;
+  --polaris-soft: #8eb9c82e;
+  --polaris-header: #29434df5;
+  --polaris-menu: #20343b;
+  --polaris-menu-text: #eef4f5;
 }
 
 body, body .hero { color: var(--polaris-text); background: var(--polaris-bg); }
 ::selection { color: var(--polaris-bg); background: var(--polaris-accent); }
 body :focus-visible { outline: 2px solid var(--polaris-accent); outline-offset: 3px; }
-body .app-header { background: #111f26f5; border-color: var(--polaris-border); box-shadow: none; text-shadow: none; animation: none; }
+body .app-header { background: var(--polaris-header); border-color: var(--polaris-border); box-shadow: none; text-shadow: none; animation: none; }
 body .primary-tab--active { border-bottom-color: var(--polaris-accent); }
 body .chapter-date { color: var(--polaris-accent); border-color: var(--polaris-border); background: var(--polaris-panel); box-shadow: none; text-shadow: none; }
-body .entered-tabs, body .section-menu__items { background: var(--polaris-field); border-color: var(--polaris-border); border-radius: 3px; box-shadow: none; }
+body .entered-tabs, body .section-menu__items { color: var(--polaris-menu-text); background: var(--polaris-menu); border-color: var(--polaris-border); border-radius: 3px; box-shadow: none; }
 body .section-menu__item { border-radius: 3px; }
 body .section-menu__item:hover, body .section-menu__item:focus-visible,
 body .section-menu__item--active, body .section-tab--active {
@@ -46,6 +65,7 @@ body :is(.vc-directory__intro, .finance-library__intro, .crime-library__intro, .
   border: 0; border-bottom: 1px solid var(--polaris-border); color: var(--polaris-text);
   background: transparent; text-align: left; text-shadow: none; box-shadow: none; backdrop-filter: none;
 }
+body .freedom-library__intro { display: grid; grid-template-columns: minmax(0, 35rem) minmax(18rem, 1fr); align-items: end; gap: clamp(2rem, 6vw, 6rem); }
 body :is(.vc-directory, .finance-library, .crime-library, .freedom-library, .people-library, .social-library, .overseas-library) h1,
 body .polaris-page-intro h1 {
   font-family: var(--polaris-serif); font-size: clamp(3rem, 5.5vw, 5.8rem);
@@ -57,7 +77,9 @@ body :is(.vc-directory__eyebrow, .finance-library__intro > p, .crime-library__in
   font-size: .62rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
 }
 body .vc-directory__subtitle { margin-left: 0; font-family: inherit; font-size: .85rem; font-style: normal; color: var(--polaris-muted); }
-body .finance-temperature { margin-left: 0; width: min(100%, 48rem); }
+body .finance-temperature { margin-left: 0; width: min(100%, 48rem); color: var(--polaris-text); border-color: var(--polaris-border); }
+body .finance-temperature__analysis { color: var(--polaris-text); border-color: var(--polaris-border); }
+body .finance-meter__track { background: var(--polaris-soft); box-shadow: inset 0 0 0 1px var(--polaris-border); }
 body :is(.vc-directory__toggle, .finance-library__toggle) { top: calc(var(--app-header-height) + 3.5rem); background: var(--polaris-panel); border-color: var(--polaris-border); }
 body :is(.social-library__tabs, .people-library__tabs, .career-tabs) {
   background: var(--polaris-field); border-color: var(--polaris-border); border-radius: 3px; box-shadow: none;
@@ -114,7 +136,7 @@ body .academy-info-rail__buttons { border-color: var(--polaris-border); }
 body .academy-info-rail__buttons button::after { background: var(--polaris-border); }
 body .academy-info-rail__buttons button:hover, body .academy-comment__reactions button.is-active { color: var(--polaris-accent); background: var(--polaris-soft); }
 body .academy-link-preview { color: var(--polaris-text); background: var(--polaris-field); border-color: var(--polaris-border); }
-body .academy-link-preview:hover { background: #223238; }
+body .academy-link-preview:hover { background: var(--polaris-soft); }
 body .academy-link-preview__domain-mark { background: var(--polaris-accent); color: var(--polaris-bg); }
 body .academy-info-modal__paper { background: var(--polaris-panel); color: var(--polaris-text); border: 1px solid var(--polaris-border); box-shadow: none; }
 body .academy-info-modal__close { background: var(--polaris-field); color: var(--polaris-text); }
@@ -173,6 +195,7 @@ body .hero:not(.hero--entered) .hero__footer { color: var(--polaris-accent); tex
   body .academy-composer, body .academy-comment { padding: .85rem; }
   body .agora-auth-artwork-button { min-width: 3.3rem; padding: .45rem; font-size: .52rem; }
   body .social-library__tabs--culture .social-library__tab { flex-basis: 7rem; }
+  body .freedom-library__intro { grid-template-columns: 1fr; align-items: start; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

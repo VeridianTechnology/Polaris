@@ -238,6 +238,7 @@ export const cultureFeatures = {
       embedUrl: 'https://www.instagram.com/p/DchtgijtJrB/embed/',
     },
   ],
+  horror: [],
   'new-age-athletes': [
     instagramPost('05', 'Db6GcxTTN1V', 'Super grip strength athlete', 'Super grip strength athlete, the likes we have not seen in a long time.'),
     instagramPost('06', 'DcUqAfmhYfc', 'Another super grip strength athlete', 'Another super grip strength athlete.'),

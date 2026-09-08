@@ -1,6 +1,8 @@
 import ReviewedInstagramSection from '../../academy/ReviewedInstagramSection.jsx'
 import { useEffect, useRef, useState } from 'react'
 import { vcFirms } from './vcFirms.js'
+import RouteLink from '../../../routing/RouteLink.jsx'
+import { ROUTES } from '../../../routing/routes.js'
 import './venture-capital-grid.css'
 
 function CopyIcon({ copied }) {
@@ -62,17 +64,6 @@ function CopyEmail({ email }) {
   )
 }
 
-function IntroToggleIcon({ isOpen }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-      <path d="M5 10h10" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-      {!isOpen && (
-        <path d="M10 5v10" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-      )}
-    </svg>
-  )
-}
-
 function FirmCard({ firm }) {
   return (
     <article className="vc-card">
@@ -101,59 +92,32 @@ function FirmCard({ firm }) {
   )
 }
 
-function VentureCapitalGrid() {
-  const [isIntroOpen, setIsIntroOpen] = useState(true)
-  const [activeView, setActiveView] = useState('firms')
-  const introTimer = useRef(null)
-
-  useEffect(() => {
-    introTimer.current = setTimeout(() => setIsIntroOpen(false), 15_000)
-
-    return () => clearTimeout(introTimer.current)
-  }, [])
-
-  const toggleIntro = () => {
-    clearTimeout(introTimer.current)
-    setIsIntroOpen((isOpen) => !isOpen)
-  }
+function VentureCapitalGrid({ businessView = 'firms', navigate }) {
+  const activeView = businessView === 'advice' ? 'advice' : 'firms'
 
   return (
-    <section
-      className={`vc-directory${isIntroOpen ? '' : ' vc-directory--intro-closed'}`}
-      aria-labelledby="vc-directory-title"
-    >
-      <button
-        className="vc-directory__toggle"
-        type="button"
-        onClick={toggleIntro}
-        aria-expanded={isIntroOpen}
-        aria-controls="vc-directory-intro"
-        aria-label={isIntroOpen ? 'Close directory introduction' : 'Open directory introduction'}
-      >
-        <IntroToggleIcon isOpen={isIntroOpen} />
-      </button>
-
-      <div className="vc-directory__intro-shell" id="vc-directory-intro">
+    <section className="vc-directory" aria-labelledby="vc-directory-title">
+      <div className="vc-directory__intro-shell">
         <div className="vc-directory__intro">
           <p className="vc-directory__eyebrow">Funding directory</p>
           <h1 id="vc-directory-title">Venture Capital</h1>
           <nav className="vc-view-tabs" aria-label="Venture Capital sections">
-            <button
+            <RouteLink
               className={`vc-view-tabs__item${activeView === 'firms' ? ' vc-view-tabs__item--active' : ''}`}
-              type="button"
-              aria-current={activeView === 'firms' ? 'page' : undefined}
-              onClick={() => setActiveView('firms')}
+              to={ROUTES.agoraBusiness}
+              navigate={navigate}
+              active={activeView === 'firms'}
             >
               Venture Firms
-            </button>
-            <button
+            </RouteLink>
+            <RouteLink
               className={`vc-view-tabs__item${activeView === 'advice' ? ' vc-view-tabs__item--active' : ''}`}
-              type="button"
-              aria-current={activeView === 'advice' ? 'page' : undefined}
-              onClick={() => setActiveView('advice')}
+              to={ROUTES.agoraBusinessAdvice}
+              navigate={navigate}
+              active={activeView === 'advice'}
             >
               Advice
-            </button>
+            </RouteLink>
           </nav>
           <p className="vc-directory__subtitle">
             {activeView === 'firms'

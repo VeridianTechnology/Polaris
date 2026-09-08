@@ -10,6 +10,13 @@ const categories = [
     label: 'Legal',
     post: 'DcGQabut-rD',
   },
+  {
+    key: 'ex-pat',
+    label: 'Ex-Pat',
+    post: 'DbSbTS2o7bT',
+    title: 'Retiring in Cebu',
+    caption: 'A retired American truck driver describes his monthly budget, condominium, and new life in Cebu, Philippines.',
+  },
 ]
 
 function OverseasLibrary() {
@@ -58,7 +65,9 @@ function OverseasLibrary() {
         >
           {activeTab === category.key && (
             <InstagramCollection features={[category.post, ...(category.additionalPosts || [])].map((post) => ({
-              title: `Overseas ${category.label.toLowerCase()} story`,
+              title: post === category.post && category.title ? category.title : `Overseas ${category.label.toLowerCase()} story`,
+              caption: post === category.post ? category.caption : undefined,
+              url: `https://www.instagram.com/p/${post}/`,
               embedUrl: `https://www.instagram.com/p/${post}/embed/`,
             }))} />
           )}

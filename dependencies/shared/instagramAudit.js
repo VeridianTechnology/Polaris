@@ -1,6 +1,91 @@
 // Public embed availability and dimensions, checked 2026-09-07.
 // Refresh with node scripts/audit-instagram.mjs.
 export const instagramAudit = {
+  "Da5YYi2BPBL": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "bradtroemel"
+  },
+  "DWmUd7okzD7": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "coletellsjokes"
+  },
+  "DaD6t-lSFAJ": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "benbankasdaily"
+  },
+  "DaJbYpqx8YZ": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "andrethecomedian"
+  },
+  "DbrMRcUP78w": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "jackfergjack"
+  },
+  "Dc1FQ2UMVqY": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "willsextonig"
+  },
+  "Dc5CzsNzrcH": {
+    "status": "preview",
+    "mediaRatio": 1.25,
+    "username": "_cbr_tard"
+  },
+  "DcTjVYFxz-U": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "philcomedy"
+  },
+  "DcsO7zWIOEt": {
+    "status": "post",
+    "mediaRatio": 1.3333333333333,
+    "username": "conceptsjpeg"
+  },
+  "DcuJObwBaqx": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "fynnpreet"
+  },
+  "DbSbTS2o7bT": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "americanslivingabroad"
+  },
+  "Dc3fyDZt4ee": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "theflintmind"
+  },
+  "Dc9jrBuj4P5": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "macroglide.economy"
+  },
+  "Danvdy9o7JF": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "mario_leccese"
+  },
+  "Dc4elTyRRyY": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "officiallucaricotti"
+  },
+  "Dc_gbBIgFXv": {
+    "status": "video",
+    "mediaRatio": 0.57142857142857,
+    "username": "gormtheold25"
+  },
+  "DcoZbb3RiDp": {
+    "status": "video",
+    "mediaRatio": 1.25,
+    "username": "stussytai"
+  },
   "DOwJHc5AIIh": {
     "status": "video",
     "mediaRatio": 1.25,
@@ -1257,4 +1342,3 @@ export const instagramAudit = {
     "username": "maoistcommunistunion"
   }
 }
-

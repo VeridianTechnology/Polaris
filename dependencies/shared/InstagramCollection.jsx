@@ -26,8 +26,9 @@ export default function InstagramCollection({ features, label = 'Instagram selec
   const [failed, setFailed] = useState(() => new Set())
   const prepared = features.map(prepareInstagramFeature)
   const unavailable = prepared.filter((feature) => feature.status === 'unavailable' || failed.has(feature.post))
+  const statusOrder = { video: 0, preview: 1, post: 2, unknown: 2 }
   const visible = prepared.filter((feature) => !unavailable.includes(feature))
-    .sort((a, b) => Number(b.status === 'video') - Number(a.status === 'video'))
+    .sort((a, b) => (statusOrder[a.status] ?? 2) - (statusOrder[b.status] ?? 2))
   const size = visible.length >= 3 ? 'three' : visible.length === 2 ? 'two' : 'one'
   return (
     <div className="instagram-collection" aria-label={label}>

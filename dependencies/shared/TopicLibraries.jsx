@@ -2,18 +2,21 @@ import InstagramCollection from './InstagramCollection.jsx'
 import CollectionTabs from './CollectionTabs.jsx'
 import RouteLink from '../../routing/RouteLink.jsx'
 import { ROUTES } from '../../routing/routes.js'
+import { instagramSelections } from '../academy/reviewedInstagram.js'
 
-export function ProblemsLibrary({ navigate }) {
+export function ProblemsLibrary({ problemsView = 'japan', navigate }) {
+  const isUnitedStates = problemsView === 'united-states'
   return (
     <section className="social-library" aria-labelledby="problems-title">
       <header className="social-library__intro">
         <p>Social issues</p>
         <h1 id="problems-title">Problems</h1>
         <nav className="social-library__tabs" aria-label="Problems by country">
-          <RouteLink className="social-library__tab social-library__tab--active" to={ROUTES.agoraProblemsJapan} navigate={navigate} active>Japan</RouteLink>
+          <RouteLink className={`social-library__tab${!isUnitedStates ? ' social-library__tab--active' : ''}`} to={ROUTES.agoraProblemsJapan} navigate={navigate} active={!isUnitedStates}>Japan</RouteLink>
+          <RouteLink className={`social-library__tab${isUnitedStates ? ' social-library__tab--active' : ''}`} to={ROUTES.agoraProblemsUnitedStates} navigate={navigate} active={isUnitedStates}>United States</RouteLink>
         </nav>
       </header>
-        <InstagramCollection features={[{
+        <InstagramCollection features={isUnitedStates ? instagramSelections('problems/united-states') : [{
           title: 'Japan — Loneliness',
           embedUrl: 'https://www.instagram.com/p/DchwUFiDpZD/embed/',
           caption: 'There is a serious lonliness epidemic in Japan.',

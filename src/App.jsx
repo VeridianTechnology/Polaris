@@ -6,9 +6,11 @@ import CareerLibrary from '../dependencies/career/CareerLibrary.jsx'
 import FinanceLibrary from '../dependencies/finance/FinanceLibrary.jsx'
 import { financeFollowUps } from '../dependencies/finance/financeFeatures.js'
 import PoliticalMap from '../dependencies/politics/map/PoliticalMap.jsx'
+import ImmigrationLibrary from '../dependencies/politics/ImmigrationLibrary.jsx'
 import CrimeLibrary from '../dependencies/crime/CrimeLibrary.jsx'
 import OverseasLibrary from '../dependencies/overseas/OverseasLibrary.jsx'
 import { ProblemsLibrary, ManlinessLibrary } from '../dependencies/shared/TopicLibraries.jsx'
+import NyxLibrary from '../dependencies/shared/NyxLibrary.jsx'
 import CrimeCase from '../dependencies/crime/CrimeCase.jsx'
 import FreedomLibrary from '../dependencies/freedom/FreedomLibrary.jsx'
 import CultureLibrary from '../dependencies/culture/CultureLibrary.jsx'
@@ -22,6 +24,8 @@ import AcademyAdmin from '../dependencies/academy/admin/AcademyAdmin.jsx'
 import AcademyProfile from '../dependencies/academy/profile/AcademyProfile.jsx'
 import AgoraLoginDialog, { AgoraAuthArtworkButton } from '../dependencies/academy/auth/AgoraLoginDialog.jsx'
 import { useAgoraAuth } from '../dependencies/academy/auth/agoraAuth.js'
+import { supabase } from '../dependencies/academy/supabaseClient.js'
+import { readStoredSiteTheme, storeSiteTheme } from '../dependencies/academy/profile/siteTheme.js'
 import RouteLink from '../routing/RouteLink.jsx'
 import useAppRouter from '../routing/useAppRouter.js'
 import { academyProfilePath, parentPoliticalView, politicsPath, ROUTES } from '../routing/routes.js'
@@ -82,7 +86,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
         {['ai', 'glub'].includes(route.page) ? <span className="app-header__ai-mark" aria-label="AI workspace">◎</span> : <img className="app-header__logo" src={sectionLogo} alt={`${sectionName} logo`} />}
         <RouteLink
           className={`primary-tab${route.page === 'home' ? ' primary-tab--active' : ''}`}
-          to={ROUTES.landing}
+          to={ROUTES.home}
           navigate={navigate}
           active={route.page === 'home'}
         >
@@ -112,6 +116,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
 
       {isAcademy ? (
         <nav className="entered-tabs" aria-label="Academy sections">
+          <RouteLink className={`section-tab${route.section === 'nyx' ? ' section-tab--active' : ''}`} to={ROUTES.agoraNyx} navigate={navigate} active={route.section === 'nyx'}>NYX</RouteLink>
           <SectionDropdown label="Career" active={['business', 'finance', 'career'].includes(route.section)}>
             <RouteLink
               className={`section-menu__item${route.section === 'business' ? ' section-menu__item--active' : ''}`}
@@ -164,7 +169,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
           </SectionDropdown>
           <SectionDropdown
             label="Politics"
-            active={['politics', 'crime', 'freedom', 'conspiracy', 'overseas', 'manliness'].includes(route.section)}
+            active={['politics', 'crime', 'freedom', 'conspiracy', 'overseas', 'manliness', 'immigration'].includes(route.section)}
           >
             <RouteLink
               className={`section-menu__item${route.section === 'crime' ? ' section-menu__item--active' : ''}`}
@@ -209,8 +214,16 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
             >
               Conspiracy
             </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.section === 'immigration' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraImmigration}
+              navigate={navigate}
+              active={route.section === 'immigration'}
+            >
+              Immigration
+            </RouteLink>
           </SectionDropdown>
-          <SectionDropdown label="Culture" active={route.section === 'culture' || route.section === 'people'}>
+          <SectionDropdown label="Culture" active={route.section === 'culture'}>
             <RouteLink
               className={`section-menu__item${route.cultureView === 'music' ? ' section-menu__item--active' : ''}`}
               to={ROUTES.agoraCultureMusic}
@@ -236,12 +249,12 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
               Comedy
             </RouteLink>
             <RouteLink
-              className={`section-menu__item${route.peopleView === 'right-wing' ? ' section-menu__item--active' : ''}`}
-              to={ROUTES.agoraPeopleRightWing}
+              className={`section-menu__item${route.cultureView === 'horror' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraCultureHorror}
               navigate={navigate}
-              active={route.peopleView === 'right-wing'}
+              active={route.cultureView === 'horror'}
             >
-              Right Wing People
+              Horror
             </RouteLink>
             <RouteLink
               className={`section-menu__item${route.cultureView === 'new-age-athletes' ? ' section-menu__item--active' : ''}`}
@@ -309,6 +322,32 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
               Film
             </RouteLink>
           </SectionDropdown>
+          <SectionDropdown label="People" active={route.section === 'people'}>
+            <RouteLink
+              className={`section-menu__item${route.peopleView === 'right-wing' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraPeopleRightWing}
+              navigate={navigate}
+              active={route.peopleView === 'right-wing'}
+            >
+              Right Wing People
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.peopleView === 'psl' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraPeoplePsl}
+              navigate={navigate}
+              active={route.peopleView === 'psl'}
+            >
+              PSL
+            </RouteLink>
+            <RouteLink
+              className={`section-menu__item${route.peopleView === 'vibe' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraPeopleVibe}
+              navigate={navigate}
+              active={route.peopleView === 'vibe'}
+            >
+              Vibe
+            </RouteLink>
+          </SectionDropdown>
           <SectionDropdown label="Science" active={route.section === 'science'}>
             <RouteLink
               className={`section-menu__item${route.scienceView === 'health' ? ' section-menu__item--active' : ''}`}
@@ -355,8 +394,11 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
             </RouteLink>
           </SectionDropdown>
           <SectionDropdown label="Problems" active={route.section === 'problems'}>
-            <RouteLink className={`section-menu__item${route.section === 'problems' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraProblemsJapan} navigate={navigate} active={route.section === 'problems'}>
+            <RouteLink className={`section-menu__item${route.section === 'problems' && route.problemsView !== 'united-states' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraProblemsJapan} navigate={navigate} active={route.section === 'problems' && route.problemsView !== 'united-states'}>
               Japan
+            </RouteLink>
+            <RouteLink className={`section-menu__item${route.problemsView === 'united-states' ? ' section-menu__item--active' : ''}`} to={ROUTES.agoraProblemsUnitedStates} navigate={navigate} active={route.problemsView === 'united-states'}>
+              United States
             </RouteLink>
           </SectionDropdown>
         </nav>
@@ -402,6 +444,7 @@ function App() {
   const { route, navigate } = useAppRouter()
   const { session: authSession, status: authStatus, login, register, logout } = useAgoraAuth()
   const [loginOpen, setLoginOpen] = useState(false)
+  const [siteTheme, setSiteTheme] = useState(readStoredSiteTheme)
   const isHome = route.page === 'home'
   const isLanding = isHome
   const heroMode = route.page === 'agora' ? route.section : route.page
@@ -410,6 +453,26 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [route.path])
+
+  useEffect(() => {
+    storeSiteTheme(siteTheme)
+  }, [siteTheme])
+
+  useEffect(() => {
+    if (!supabase || !authSession?.session_token || !authSession?.username) return undefined
+    let cancelled = false
+
+    supabase.rpc('get_agora_profile_by_username', {
+      p_username: authSession.username,
+      p_session_token: authSession.session_token,
+    }).then(({ data, error }) => {
+      if (cancelled || error) return
+      const row = Array.isArray(data) ? data[0] : data
+      if (row?.site_theme) setSiteTheme(row.site_theme)
+    })
+
+    return () => { cancelled = true }
+  }, [authSession?.session_token, authSession?.username])
 
   useEffect(() => {
     const isAgora = route.page === 'academy' || route.page === 'academy-profile' || route.page === 'admin'
@@ -445,10 +508,14 @@ function App() {
             : route.careerView === 'modeling'
               ? 'Career Modeling'
             : 'Mechanical Career'
+        : route.section === 'finance' && route.financeView === 'history'
+          ? 'Finance History'
+          : route.section === 'finance' && route.financeView === 'lessons'
+            ? 'Finance Lessons'
         : route.section === 'politics'
           ? 'Map'
           : route.section === 'people'
-            ? 'Right Wing'
+            ? route.peopleView === 'psl' ? 'PSL' : route.peopleView === 'vibe' ? 'Vibe' : 'Right Wing'
             : route.section
               ? `${route.section.charAt(0).toUpperCase()}${route.section.slice(1)}`
               : 'Academy'
@@ -472,7 +539,7 @@ function App() {
     favicon.type = 'image/png'
     favicon.href = iconPath
     document.title = pageTitle
-  }, [route.page, route.section, route.careerView, route.crimeCase, route.financeCase, route.freedomCase, route.peopleCase, route.profileNumber, route.profileUsername])
+  }, [route.page, route.section, route.careerView, route.crimeCase, route.financeCase, route.financeView, route.freedomCase, route.peopleCase, route.peopleView, route.profileNumber, route.profileUsername])
 
   const changePoliticalView = (view) => navigate(politicsPath(view))
   const leavePoliticalView = () => navigate(politicsPath(parentPoliticalView(politicalView)))
@@ -519,6 +586,7 @@ function App() {
           onReturn={() => navigate(ROUTES.academy)}
           onOpenAdmin={() => navigate(ROUTES.academyAdmin)}
           onCanonicalize={(username) => navigate(academyProfilePath(username), { replace: true })}
+          onThemeChange={setSiteTheme}
         />
       )}
       {route.page === 'admin' && (
@@ -529,7 +597,7 @@ function App() {
           onReturn={() => navigate(ROUTES.academy)}
         />
       )}
-      {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid />}
+      {route.page === 'agora' && route.section === 'business' && <VentureCapitalGrid businessView={route.businessView} navigate={navigate} />}
       {route.page === 'agora' && route.section === 'career' && (
         <CareerLibrary careerView={route.careerView} navigate={navigate} />
       )}
@@ -581,7 +649,7 @@ function App() {
             commentItemColumn="finance_item_number"
             commentStorageKey="polaris-finance-tidal-power-comments"
           />
-        ) : <FinanceLibrary navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
+        ) : <FinanceLibrary financeView={route.financeView} navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
       )}
       {route.page === 'agora' && route.section === 'crime' && (
         route.crimeCase === 'lindsay-clancy'
@@ -626,14 +694,16 @@ function App() {
         ) : <FreedomLibrary navigate={navigate} authSession={authSession} onLogin={() => setLoginOpen(true)} />
       )}
       {route.page === 'agora' && route.section === 'culture' && (
-        <CultureLibrary cultureView={route.cultureView} navigate={navigate} />
+        <CultureLibrary cultureView={route.cultureView} cultureSubView={route.cultureSubView} navigate={navigate} />
       )}
       {route.page === 'agora' && route.section === 'science' && (
         <ScienceLibrary scienceView={route.scienceView} navigate={navigate} />
       )}
       {route.page === 'agora' && route.section === 'conspiracy' && <ConspiracyLibrary />}
+      {route.page === 'agora' && route.section === 'nyx' && <NyxLibrary />}
       {route.page === 'agora' && route.section === 'overseas' && <OverseasLibrary />}
-      {route.page === 'agora' && route.section === 'problems' && <ProblemsLibrary navigate={navigate} />}
+      {route.page === 'agora' && route.section === 'immigration' && <ImmigrationLibrary />}
+      {route.page === 'agora' && route.section === 'problems' && <ProblemsLibrary problemsView={route.problemsView} navigate={navigate} />}
       {route.page === 'agora' && route.section === 'manliness' && <ManlinessLibrary />}
       {route.page === 'agora' && route.section === 'people' && (
         route.peopleCase

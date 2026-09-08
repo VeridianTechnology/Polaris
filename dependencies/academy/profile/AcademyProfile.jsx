@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import AcademyAvatar, { academyProfileAvatarPath } from '../AcademyAvatar'
 import { isSupabaseConfigured, supabase } from '../supabaseClient'
 import { AgoraAdminBadge } from '../auth/AgoraLoginDialog'
+import { DEFAULT_SITE_THEME, SITE_THEMES, normalizeSiteTheme } from './siteTheme'
 import '../academy-avatar.css'
 import './academy-profile.css'
 
@@ -21,6 +22,7 @@ const EMPTY_PROFILE = {
   email: '',
   email_is_public: false,
   anonymous_mode: false,
+  site_theme: DEFAULT_SITE_THEME,
   is_owner: false,
   is_admin: false,
 }
@@ -46,6 +48,7 @@ function normalizeProfile(row, fallbackNumber) {
     snapchat_url: row?.snapchat_url || '',
     email: row?.email || '',
     bio: row?.bio || '',
+    site_theme: normalizeSiteTheme(row?.site_theme),
   }
 }
 
@@ -55,7 +58,7 @@ function normalizeOptionalUrl(value) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
 }
 
-function AcademyProfile({ profileUsername, profileNumber, authSession, onLogin, onReturn, onOpenAdmin, onCanonicalize }) {
+function AcademyProfile({ profileUsername, profileNumber, authSession, onLogin, onReturn, onOpenAdmin, onCanonicalize, onThemeChange }) {
   const [profile, setProfile] = useState(() => ({ ...EMPTY_PROFILE, profile_number: profileNumber }))
   const [status, setStatus] = useState(isSupabaseConfigured ? 'loading' : 'unconfigured')
   const [notice, setNotice] = useState('')
@@ -157,6 +160,7 @@ function AcademyProfile({ profileUsername, profileNumber, authSession, onLogin, 
       p_email: profile.email.trim(),
       p_email_is_public: profile.email_is_public,
       p_anonymous_mode: profile.anonymous_mode,
+      p_site_theme: profile.site_theme,
     })
 
     if (error) {
@@ -246,6 +250,28 @@ function AcademyProfile({ profileUsername, profileNumber, authSession, onLogin, 
                     <input type="checkbox" checked={profile.anonymous_mode} onChange={(event) => updateField('anonymous_mode', event.target.checked)} />
                     <span className="academy-profile-toggle__track" aria-hidden="true" />
                   </label>
+
+                  <fieldset className="academy-profile-theme">
+                    <legend>Site color</legend>
+                    <div>
+                      {SITE_THEMES.map((theme) => (
+                        <label className={profile.site_theme === theme.value ? 'is-selected' : ''} key={theme.value}>
+                          <input
+                            type="radio"
+                            name="site-theme"
+                            value={theme.value}
+                            checked={profile.site_theme === theme.value}
+                            onChange={() => {
+                              updateField('site_theme', theme.value)
+                              onThemeChange?.(theme.value)
+                            }}
+                          />
+                          <span className="academy-profile-theme__swatch" style={{ background: theme.swatch }} aria-hidden="true" />
+                          <span><strong>{theme.label}</strong><small>{theme.description}</small></span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
 
                   <div className="academy-profile-connections">
                     <h2>Connections</h2>

@@ -6,21 +6,27 @@ export const ROUTES = {
   academy: '/agora',
   academyAdmin: '/agora/admin',
   agoraBusiness: '/academy/business',
+  agoraNyx: '/academy/nyx',
+  agoraBusinessAdvice: '/academy/business/advice',
   agoraCareerBlueCollar: '/academy/career/blue-collar',
   agoraCareerMechanical: '/academy/career/mechanical',
   agoraCareerTech: '/academy/career/tech',
   agoraCareerSocialMedia: '/academy/career/social-media',
   agoraCareerModeling: '/academy/career/modeling',
   agoraFinance: '/academy/finance',
+  agoraFinanceHistory: '/academy/finance/history',
+  agoraFinanceLessons: '/academy/finance/lessons',
   agoraFinanceStrategyRoom: '/academy/finance/strategy-room',
   agoraFinanceCrudeOil: '/academy/finance/strategy-room/crude-oil-to-motion',
   agoraFinanceTidalPower: '/academy/finance/strategy-room/tidal-power',
   agoraPolitics: '/academy/map',
   agoraCrime: '/academy/crime',
   agoraOverseas: '/academy/overseas',
+  agoraImmigration: '/academy/immigration',
   agoraManliness: '/academy/manliness',
   agoraProblems: '/academy/problems',
   agoraProblemsJapan: '/academy/problems/japan',
+  agoraProblemsUnitedStates: '/academy/problems/united-states',
   agoraCrimeHinduCult: '/academy/crime/hindu-cult-investigation',
   agoraCrimeLindsayClancy: '/academy/crime/lindsay-clancy',
   agoraFreedom: '/academy/freedom',
@@ -30,9 +36,12 @@ export const ROUTES = {
   agoraCultureMusic: '/academy/culture/music',
   agoraCultureMemes: '/academy/culture/memes',
   agoraCultureComedy: '/academy/culture/comedy',
+  agoraCultureComedyRace: '/academy/culture/comedy/race',
+  agoraCultureHorror: '/academy/culture/horror',
   agoraCultureNewAgeAthletes: '/academy/culture/new-age-athletes',
   agoraCultureArt: '/academy/culture/art',
   agoraCultureHistory: '/academy/culture/history',
+  agoraCultureHistoryAiRecreation: '/academy/culture/history/ai-recreation',
   agoraCultureFights: '/academy/culture/fights',
   agoraCultureReligion: '/academy/culture/religion',
   agoraCultureFoids: '/academy/culture/foids',
@@ -51,6 +60,8 @@ export const ROUTES = {
   agoraScienceAnimals: '/academy/science/animals',
   agoraPeople: '/academy/people',
   agoraPeopleRightWing: '/academy/people/right-wing',
+  agoraPeoplePsl: '/academy/people/psl',
+  agoraPeopleVibe: '/academy/people/vibe',
   agoraPeopleZoomerwoman: '/academy/people/right-wing/zoomerwoman',
   agoraPeoplePaulMiller: '/academy/people/right-wing/paul-miller',
 }
@@ -119,7 +130,7 @@ export function matchRoute(pathname) {
   const path = normalizePath(pathname)
 
   if (path === ROUTES.home) {
-    return { page: 'academy', path: ROUTES.academy }
+    return { page: 'home', path: ROUTES.home }
   }
 
   if (path === ROUTES.landing) {
@@ -166,7 +177,15 @@ export function matchRoute(pathname) {
   }
 
   if (path === ROUTES.agoraBusiness || path === '/academy') {
-    return { page: 'agora', section: 'business', path: ROUTES.agoraBusiness }
+    return { page: 'agora', section: 'business', businessView: 'firms', path: ROUTES.agoraBusiness }
+  }
+
+  if (path === ROUTES.agoraBusinessAdvice) {
+    return { page: 'agora', section: 'business', businessView: 'advice', path: ROUTES.agoraBusinessAdvice }
+  }
+
+  if (path === ROUTES.agoraNyx) {
+    return { page: 'agora', section: 'nyx', path: ROUTES.agoraNyx }
   }
 
   if (path === ROUTES.agoraCareerBlueCollar || path === ROUTES.agoraCareerMechanical) {
@@ -206,7 +225,15 @@ export function matchRoute(pathname) {
   }
 
   if (path === ROUTES.agoraFinance) {
-    return { page: 'agora', section: 'finance', path: ROUTES.agoraFinance }
+    return { page: 'agora', section: 'finance', financeView: 'major-stories', path: ROUTES.agoraFinance }
+  }
+
+  if (path === ROUTES.agoraFinanceHistory) {
+    return { page: 'agora', section: 'finance', financeView: 'history', path: ROUTES.agoraFinanceHistory }
+  }
+
+  if (path === ROUTES.agoraFinanceLessons) {
+    return { page: 'agora', section: 'finance', financeView: 'lessons', path: ROUTES.agoraFinanceLessons }
   }
 
   if (path === ROUTES.agoraFinanceStrategyRoom) {
@@ -289,12 +316,41 @@ export function matchRoute(pathname) {
     }
   }
 
+  if (path === ROUTES.agoraCultureComedyRace) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'comedy',
+      cultureSubView: 'race',
+      path: ROUTES.agoraCultureComedyRace,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureHistoryAiRecreation) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'history',
+      cultureSubView: 'extra',
+      path: ROUTES.agoraCultureHistoryAiRecreation,
+    }
+  }
+
   if (path === ROUTES.agoraCultureMemes) {
     return {
       page: 'agora',
       section: 'culture',
       cultureView: 'memes',
       path: ROUTES.agoraCultureMemes,
+    }
+  }
+
+  if (path === ROUTES.agoraCultureHorror) {
+    return {
+      page: 'agora',
+      section: 'culture',
+      cultureView: 'horror',
+      path: ROUTES.agoraCultureHorror,
     }
   }
 
@@ -415,6 +471,24 @@ export function matchRoute(pathname) {
     }
   }
 
+  if (path === ROUTES.agoraPeoplePsl) {
+    return {
+      page: 'agora',
+      section: 'people',
+      peopleView: 'psl',
+      path: ROUTES.agoraPeoplePsl,
+    }
+  }
+
+  if (path === ROUTES.agoraPeopleVibe) {
+    return {
+      page: 'agora',
+      section: 'people',
+      peopleView: 'vibe',
+      path: ROUTES.agoraPeopleVibe,
+    }
+  }
+
   if (path === ROUTES.agoraPeopleZoomerwoman) {
     return {
       page: 'agora',
@@ -439,12 +513,20 @@ export function matchRoute(pathname) {
     return { page: 'agora', section: 'overseas', path: ROUTES.agoraOverseas }
   }
 
+  if (path === ROUTES.agoraImmigration) {
+    return { page: 'agora', section: 'immigration', path: ROUTES.agoraImmigration }
+  }
+
   if (path === ROUTES.agoraManliness) {
     return { page: 'agora', section: 'manliness', path }
   }
 
   if (path === ROUTES.agoraProblems || path === ROUTES.agoraProblemsJapan) {
     return { page: 'agora', section: 'problems', path: ROUTES.agoraProblemsJapan }
+  }
+
+  if (path === ROUTES.agoraProblemsUnitedStates) {
+    return { page: 'agora', section: 'problems', problemsView: 'united-states', path: ROUTES.agoraProblemsUnitedStates }
   }
 
   if (path === ROUTES.agoraCultureVideoGames) {

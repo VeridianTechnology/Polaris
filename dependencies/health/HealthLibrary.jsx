@@ -1,10 +1,8 @@
-import RouteLink from '../../routing/RouteLink.jsx'
-import { ROUTES } from '../../routing/routes.js'
 import InstagramCollection from '../shared/InstagramCollection.jsx'
 import { scienceFeatures, insectFeatures } from './healthFeatures.js'
 import CollectionTabs from '../shared/CollectionTabs.jsx'
 
-function ScienceLibrary({ scienceView = 'health', navigate }) {
+function ScienceLibrary({ scienceView = 'health' }) {
   const selectedView = ['health', 'physics', 'looksmaxxing', 'workout', 'astrology', 'animals'].includes(scienceView)
     ? scienceView
     : 'health'
@@ -15,51 +13,6 @@ function ScienceLibrary({ scienceView = 'health', navigate }) {
       <header className="social-library__intro">
         <p>Health, matter &amp; natural law</p>
         <h1 id="science-library-title">Science</h1>
-        <nav className="social-library__tabs" aria-label="Science categories">
-          <RouteLink
-            className={`social-library__tab${selectedView === 'health' ? ' social-library__tab--active' : ''}`}
-            to={ROUTES.agoraScienceHealth}
-            navigate={navigate}
-            active={selectedView === 'health'}
-          >
-            Health
-          </RouteLink>
-          <RouteLink
-            className={`social-library__tab${selectedView === 'physics' ? ' social-library__tab--active' : ''}`}
-            to={ROUTES.agoraSciencePhysics}
-            navigate={navigate}
-            active={selectedView === 'physics'}
-          >
-            Physics
-          </RouteLink>
-          <RouteLink
-            className={`social-library__tab${selectedView === 'looksmaxxing' ? ' social-library__tab--active' : ''}`}
-            to={ROUTES.agoraScienceLooksmaxxing}
-            navigate={navigate}
-            active={selectedView === 'looksmaxxing'}
-          >
-            Looksmaxxing
-          </RouteLink>
-          <RouteLink
-            className={`social-library__tab${selectedView === 'workout' ? ' social-library__tab--active' : ''}`}
-            to={ROUTES.agoraScienceWorkout}
-            navigate={navigate}
-            active={selectedView === 'workout'}
-          >
-            Workout
-          </RouteLink>
-          <RouteLink
-            className={`social-library__tab${selectedView === 'astrology' ? ' social-library__tab--active' : ''}`}
-            to={ROUTES.agoraScienceAstrology}
-            navigate={navigate}
-            active={selectedView === 'astrology'}
-          >
-            Astrology
-          </RouteLink>
-          <RouteLink className={`social-library__tab${selectedView === 'animals' ? ' social-library__tab--active' : ''}`} to={ROUTES.agoraScienceAnimals} navigate={navigate} active={selectedView === 'animals'}>
-            Animals
-          </RouteLink>
-        </nav>
       </header>
 
       {selectedView === 'animals' ? <CollectionTabs id="animals" label="Animal collections" tabs={[

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import ReviewedInstagramSection from '../academy/ReviewedInstagramSection.jsx'
 import { freedomFeatures } from './freedomFeatures.js'
 import StorySubmission, { useApprovedStories } from '../shared/StorySubmission.jsx'
@@ -77,6 +78,7 @@ function FreedomCard({ feature, navigate }) {
 }
 
 function FreedomLibrary({ navigate, authSession, onLogin }) {
+  const [activeView, setActiveView] = useState('main')
   const approvedStories = useApprovedStories('freedom')
   const features = [
     ...freedomFeatures,
@@ -90,37 +92,50 @@ function FreedomLibrary({ navigate, authSession, onLogin }) {
   return (
     <section className="freedom-library" aria-labelledby="freedom-library-title">
       <header className="freedom-library__intro">
-        <p>Civil liberties</p>
-        <h1 id="freedom-library-title">Freedom</h1>
+        <div className="freedom-library__heading">
+          <p>Civil liberties</p>
+          <h1 id="freedom-library-title">Freedom</h1>
 
-        <aside className="freedom-threat" aria-label="Freedom threat level">
-          <h2>Freedom Threat</h2>
-          <div className="freedom-threat__label">
-            <span>Flock</span>
-            <strong>100/100</strong>
-          </div>
-          <div
-            className="freedom-threat__track"
-            role="progressbar"
-            aria-label="Flock freedom threat"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="100"
-          >
-            <span />
-          </div>
-          <p>Red hot</p>
-        </aside>
+          <aside className="freedom-threat" aria-label="Freedom threat level">
+            <h2>Freedom Threat</h2>
+            <div className="freedom-threat__label">
+              <span>Flock</span>
+              <strong>100/100</strong>
+            </div>
+            <div
+              className="freedom-threat__track"
+              role="progressbar"
+              aria-label="Flock freedom threat"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="100"
+            >
+              <span />
+            </div>
+            <p>Red hot</p>
+          </aside>
+        </div>
+
+        <nav className="freedom-library__tabs" aria-label="Freedom sections" role="tablist">
+          <button type="button" role="tab" aria-selected={activeView === 'main'} className={activeView === 'main' ? 'is-active' : ''} onClick={() => setActiveView('main')}>Main Stories</button>
+          <button type="button" role="tab" aria-selected={activeView === 'privacy'} className={activeView === 'privacy' ? 'is-active' : ''} onClick={() => setActiveView('privacy')}>Incursions into Privacy</button>
+        </nav>
       </header>
 
-      <StorySubmission category="freedom" authSession={authSession} onLogin={onLogin} />
-
-      <div className="freedom-grid" aria-label="Freedom and civil-liberties videos">
-        {features.map((feature) => (
-          <FreedomCard feature={feature} navigate={navigate} key={feature.key || feature.id} />
-        ))}
-      </div>
-      <ReviewedInstagramSection collection="freedom" />
+      {activeView === 'main' ? (
+        <div role="tabpanel">
+          <StorySubmission category="freedom" authSession={authSession} onLogin={onLogin} />
+          <div className="freedom-grid" aria-label="Main freedom stories">
+            {features.map((feature) => (
+              <FreedomCard feature={feature} navigate={navigate} key={feature.key || feature.id} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="freedom-library__privacy" role="tabpanel">
+          <ReviewedInstagramSection collection="freedom" />
+        </div>
+      )}
     </section>
   )
 }
