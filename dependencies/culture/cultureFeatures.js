@@ -7,6 +7,23 @@ function instagramPost(id, post, title, caption) {
 }
 
 export const cultureSubcategories = {
+  foids: {
+    mainLabel: 'Memes',
+    features: [],
+    additionalTabs: [
+      { key: 'advice', label: 'Advice', features: [] },
+      { key: 'astrology', label: 'Astrology', features: [] },
+      {
+        key: 'accounts-to-follow',
+        label: 'Accounts to Follow',
+        features: [],
+        accounts: [
+          { username: 'disc0_mbobulated', url: 'https://www.instagram.com/disc0_mbobulated/?g=5' },
+          { username: 'sydthefantasy', url: 'https://www.instagram.com/sydthefantasy/?g=5' },
+        ],
+      },
+    ],
+  },
   'video-games': {
     mainLabel: 'World of Warcraft',
     label: 'Elder Scrolls',

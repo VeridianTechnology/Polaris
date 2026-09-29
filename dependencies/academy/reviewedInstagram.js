@@ -15,7 +15,7 @@ const selections = [
   ['DaJbYpqx8YZ', 'culture/comedy', 'Pride month comedy', 'A short comedy performance marking Pride Month.'],
   ['DaD6t-lSFAJ', 'culture/comedy', 'Someone had to tell her', 'A brief observational comedy clip.'],
   ['DcsO7zWIOEt', 'people/psl', 'Robert Pattinson before Twilight', 'A photo carousel looks back at Robert Pattinson’s early role as Cedric Diggory before Twilight made him globally famous.'],
-  ['Dc1FQ2UMVqY', 'politics/immigration', 'H-1B and the American worker', 'A commentary reel discusses Indian immigration, H-1B visas, and expectations placed on American workers.'],
+  ['Dc1FQ2UMVqY', 'politics/race', 'H-1B and the American worker', 'A commentary reel discusses Indian immigration, H-1B visas, and expectations placed on American workers.'],
   ['DbrMRcUP78w', 'finance/lessons', 'Confidence on the dance floor', 'A short lesson in committing to the moment with confidence.'],
   ['Dc3fyDZt4ee', 'business', 'Protecting momentum', 'A founder-focused reflection on protecting the mental environment that serious work requires.'],
   ['Dc9jrBuj4P5', 'finance/history', 'The dot-com market mania', 'A look back at the late-1990s technology boom, the Y2K spending surge, and the Nasdaq peak that preceded the crash.'],
@@ -87,8 +87,8 @@ const selections = [
   ['DanrbjZyqpu', 'culture/music', 'Higher by boy2000', 'Music paired with a rainy city scene.'],
   ['DayOpsAvDjs', 'culture/art', 'Kunichika’s kabuki print', 'A post about Onoe Kikugorō in the supernatural role of Tenjiku Tokubē.'],
   ['Da5Ko1vMiPH', 'culture/history', 'Berlin around 1900', 'A historical overview of the growing German capital.'],
-  ['DayD7_3PwOb', 'culture/art/extra', 'Geeked cartoons', 'A stylized AI cartoon parody.'],
-  ['DatRUAXzdxF', 'culture/video-games/extra', 'Geeked inside Skyrim', 'A Skyrim-themed gaming meme.'],
+  ['DayD7_3PwOb', 'culture/memes', 'Geeked cartoons', 'A stylized AI cartoon parody.'],
+  ['DatRUAXzdxF', 'culture/comedy', 'Geeked inside Skyrim', 'A Skyrim-themed gaming meme.'],
   ['DWKnjrME-Aq', 'culture/religion', 'Responsibility across generations', 'A sermon excerpt about giving and supporting younger people.'],
   ['DZ-lj1vjQT4', 'culture/comedy', 'A generational rant', 'A comedy clip about entitlement.'],
   ['DaW6EH9M6gD', 'conspiracy', 'Dolores Cannon and future timelines', 'A post discussing speculative accounts from hypnosis sessions.'],
@@ -135,6 +135,13 @@ const selections = [
   ["DZaDY44pVy8", "culture/contemplative", "Persistence, according to Daffy Duck", "A creator reflects on perseverance through an animated character."],
   ["DX5MP5kqcPJ", "culture/contemplative", "Introducing Seneca", "A short overview of the Stoic philosopher."],
   ["DUyguugD2V4", "culture/memes", "Internet nostalgia: 2016", "A retrospective meme about online culture."],
+  ['DZvWA8bTOqu', 'culture/history', 'History from Instagram', 'This history selection requires Instagram to view.'],
+  ['DXSvTewkT0l', 'culture/comedy', 'A complicated stance', 'A comedy monologue about trying to explain a complicated political stance.'],
+  ['DavWI-Rx00q', 'culture/foids/advice', 'Why you should not lie to her', 'SlickBack offers blunt relationship advice about honesty and self-respect.'],
+  ['Dau1SO9PTEU', 'culture/foids/astrology', 'Observation and cosmic history', 'A reel connects the delayed-choice experiment with a speculative view of observation and the universe.'],
+  ['DaLh_M_pOcf', 'culture/foids', 'Foids meme from Instagram', 'This meme requires Instagram to view.'],
+  ['DatJt3ppcqm', 'culture/foids', 'Another Foids meme', 'This meme requires Instagram to view.'],
+  ['DaeIPjYlYOb', 'politics/race', 'Power and representation in Hollywood', 'A commentary reel presents the creator’s claims about identity and influence in Hollywood.'],
 ]
 
 export const reviewedInstagram = selections.map(([post, collection, title, caption]) => ({

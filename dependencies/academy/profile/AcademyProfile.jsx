@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AcademyAvatar, { academyProfileAvatarPath } from '../AcademyAvatar'
-import { isSupabaseConfigured, supabase } from '../supabaseClient'
+import { agoraReadErrorMessage, isSupabaseConfigured, supabase } from '../supabaseClient'
 import { AgoraAdminBadge } from '../auth/AgoraLoginDialog'
 import { DEFAULT_SITE_THEME, SITE_THEMES, normalizeSiteTheme } from './siteTheme'
 import '../academy-avatar.css'
@@ -108,7 +108,7 @@ function AcademyProfile({ profileUsername, profileNumber, authSession, onLogin, 
       if (cancelled) return
       if (error) {
         setStatus('error')
-        setNotice(`${error.message} Run the August 29 Agora private-read security migration if it has not been applied yet.`)
+        setNotice(agoraReadErrorMessage(error))
         return
       }
       const row = Array.isArray(data) ? data[0] : data

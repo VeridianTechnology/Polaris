@@ -1340,5 +1340,40 @@ export const instagramAudit = {
     "status": "video",
     "mediaRatio": 1.25,
     "username": "maoistcommunistunion"
+  },
+  "DZvWA8bTOqu": {
+    "status": "unavailable",
+    "mediaRatio": 1,
+    "username": ""
+  },
+  "DXSvTewkT0l": {
+    "status": "video",
+    "mediaRatio": 0.55625,
+    "username": "thekingofbeartaria"
+  },
+  "DavWI-Rx00q": {
+    "status": "video",
+    "mediaRatio": 1.7777777777777777,
+    "username": "slickbackexplains"
+  },
+  "Dau1SO9PTEU": {
+    "status": "video",
+    "mediaRatio": 1.775,
+    "username": "exosci"
+  },
+  "DaLh_M_pOcf": {
+    "status": "unavailable",
+    "mediaRatio": 1,
+    "username": ""
+  },
+  "DatJt3ppcqm": {
+    "status": "unavailable",
+    "mediaRatio": 1,
+    "username": ""
+  },
+  "DaeIPjYlYOb": {
+    "status": "video",
+    "mediaRatio": 1.775,
+    "username": "thomas_alexander_sharp"
   }
 }

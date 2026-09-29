@@ -136,14 +136,40 @@
   gap: .85rem;
 }
 
+.vc-directory__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .7rem;
+  margin: 0 0 1rem;
+  color: #f1ece1;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.vc-directory__controls select {
+  max-width: 100%;
+  padding: .65rem .8rem;
+  border: 1px solid rgba(242, 237, 226, .5);
+  border-radius: .25rem;
+  color: #f1ece1;
+  background: #24211d;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
 .vc-advice > section {
   margin-top: 0 !important;
 }
 
 .vc-card {
   position: relative;
-  display: grid;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-height: 25rem;
   padding: clamp(1.75rem, 3vw, 2.5rem);
   border: 1px solid rgba(48, 45, 41, .32);
@@ -159,11 +185,39 @@
   place-items: center;
   width: 2.25rem;
   height: 2.25rem;
-  border: 1px solid rgba(48, 45, 41, .48);
+  border: 1px solid rgba(48, 45, 41, .25);
   border-radius: 50%;
+  color: #514c45;
+  background: #e5e0d6;
+  box-shadow: 0 2px 8px rgba(48, 45, 41, .12);
   font-family: Didot, "Bodoni 72", "Times New Roman", serif;
-  font-size: .82rem;
+  font-size: .95rem;
   font-style: italic;
+  font-weight: 700;
+}
+
+.vc-card__rating--a {
+  color: #fff;
+  background: #26734d;
+  border-color: #1f5d3e;
+}
+
+.vc-card__rating--b {
+  color: #fff;
+  background: #27649a;
+  border-color: #1d4d78;
+}
+
+.vc-card__rating--c {
+  color: #352207;
+  background: #f2bc59;
+  border-color: #bd842c;
+}
+
+.vc-card__rating--d {
+  color: #fff;
+  background: #a84448;
+  border-color: #823236;
 }
 
 .vc-card__image-link {
@@ -182,21 +236,72 @@
   object-fit: cover;
 }
 
-.vc-card__contact {
-  align-self: end;
+.vc-card__monogram {
   display: grid;
-  justify-items: center;
+  place-items: center;
   width: 100%;
-  margin-top: 2.25rem;
+  height: 100%;
+  border-radius: inherit;
+  color: #f0ebe0;
+  background: #302d29;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 4rem;
+}
+
+.vc-card__name {
+  margin: 1rem 0 0;
+  font-family: Didot, "Bodoni 72", "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 400;
   text-align: center;
 }
 
-.vc-card__contact h2 {
+.vc-card__category {
+  display: inline-block;
+  margin-top: .65rem;
+  padding: .3rem .65rem;
+  border: 1px solid rgba(48, 45, 41, .28);
+  border-radius: 999px;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.vc-card__category--crypto {
+  color: #5b2991;
+  background: #eee1fc;
+  border-color: #b897d8;
+}
+
+.vc-card__focus {
+  margin: .55rem 0 0;
+  font-size: .78rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.vc-card__contact {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 2.25rem;
+  text-align: center;
+}
+
+.vc-card__contact h3 {
   margin: 0 0 1.15rem;
   font-size: .58rem;
   font-weight: 600;
   letter-spacing: .22em;
   text-transform: uppercase;
+}
+
+.vc-card__contact-note {
+  margin: .6rem 0 0;
+  font-size: .75rem;
 }
 
 .vc-card__contact > a,
@@ -300,6 +405,11 @@
 
   .vc-grid {
     grid-template-columns: 1fr;
+  }
+
+  .vc-directory__controls {
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .vc-card {

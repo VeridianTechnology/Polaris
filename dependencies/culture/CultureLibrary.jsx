@@ -3,6 +3,23 @@ import InstagramCollection from '../shared/InstagramCollection.jsx'
 import { cultureFeatures, cultureSubcategories } from './cultureFeatures.js'
 import { ROUTES } from '../../routing/routes.js'
 
+const foidsRoutes = {
+  main: ROUTES.agoraCultureFoids,
+  advice: ROUTES.agoraCultureFoidsAdvice,
+  astrology: ROUTES.agoraCultureFoidsAstrology,
+  'accounts-to-follow': ROUTES.agoraCultureFoidsAccounts,
+}
+
+function InstagramAccounts({ accounts }) {
+  return <div className="instagram-account-grid" aria-label="Instagram accounts to follow">
+    {accounts.map((account) => <a key={account.username} className="instagram-account-card" href={account.url} target="_blank" rel="noreferrer">
+      <span className="instagram-account-card__mark" aria-hidden="true">@</span>
+      <span><strong>@{account.username}</strong><small>Open Instagram profile</small></span>
+      <span className="instagram-account-card__arrow" aria-hidden="true">↗</span>
+    </a>)}
+  </div>
+}
+
 function CultureLibrary({ cultureView = 'music', cultureSubView, navigate }) {
   const [selectedTabs, setSelectedTabs] = useState({})
   const selectedView = Object.hasOwn(cultureFeatures, cultureView)
@@ -25,8 +42,10 @@ function CultureLibrary({ cultureView = 'music', cultureSubView, navigate }) {
       if (tabKey === 'extra') navigate(ROUTES.agoraCultureHistoryAiRecreation)
       else if (cultureSubView === 'extra') navigate(ROUTES.agoraCultureHistory)
     }
+    if (selectedView === 'foids') navigate(foidsRoutes[tabKey] || ROUTES.agoraCultureFoids)
   }
-  const selectedFeatures = tabs.find((tab) => tab.key === activeTab)?.features || cultureFeatures[selectedView]
+  const selectedTab = tabs.find((tab) => tab.key === activeTab)
+  const selectedFeatures = selectedTab?.features || cultureFeatures[selectedView]
   const features = selectedFeatures.flatMap((feature) => [
     feature,
     ...(feature.additionalLinks || []).map((link) => ({
@@ -40,8 +59,8 @@ function CultureLibrary({ cultureView = 'music', cultureSubView, navigate }) {
   return (
     <section className="social-library" aria-labelledby="culture-library-title">
       <header className="social-library__intro">
-        <p>Sound, humor &amp; culture</p>
-        <h1 id="culture-library-title">Culture</h1>
+        <p>{selectedView === 'foids' ? 'Memes, advice &amp; accounts' : 'Sound, humor &amp; culture'}</p>
+        <h1 id="culture-library-title">{selectedView === 'foids' ? 'Foids' : 'Culture'}</h1>
       </header>
 
       {subcategory && (
@@ -69,7 +88,9 @@ function CultureLibrary({ cultureView = 'music', cultureSubView, navigate }) {
         </div>
       )}
       <div id="culture-collection" role={subcategory ? 'tabpanel' : undefined} aria-labelledby={subcategory ? `culture-subtab-${activeTab}` : undefined} tabIndex={subcategory ? 0 : undefined}>
-      <InstagramCollection features={features} label={`${selectedView} selections`} />
+      {selectedTab?.accounts
+        ? <InstagramAccounts accounts={selectedTab.accounts} />
+        : <InstagramCollection features={features} label={`${selectedView} selections`} />}
       </div>
     </section>
   )

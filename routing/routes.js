@@ -22,6 +22,7 @@ export const ROUTES = {
   agoraPolitics: '/academy/map',
   agoraCrime: '/academy/crime',
   agoraOverseas: '/academy/overseas',
+  agoraRace: '/academy/race',
   agoraImmigration: '/academy/immigration',
   agoraManliness: '/academy/manliness',
   agoraProblems: '/academy/problems',
@@ -45,6 +46,9 @@ export const ROUTES = {
   agoraCultureFights: '/academy/culture/fights',
   agoraCultureReligion: '/academy/culture/religion',
   agoraCultureFoids: '/academy/culture/foids',
+  agoraCultureFoidsAdvice: '/academy/culture/foids/advice',
+  agoraCultureFoidsAstrology: '/academy/culture/foids/astrology',
+  agoraCultureFoidsAccounts: '/academy/culture/foids/accounts-to-follow',
   agoraCultureStreet: '/academy/culture/street',
   agoraCultureVideoGames: '/academy/culture/video-games',
   agoraCultureContemplative: '/academy/culture/contemplative',
@@ -408,6 +412,11 @@ export function matchRoute(pathname) {
     }
   }
 
+  if ([ROUTES.agoraCultureFoidsAdvice, ROUTES.agoraCultureFoidsAstrology, ROUTES.agoraCultureFoidsAccounts].includes(path)) {
+    const cultureSubView = path === ROUTES.agoraCultureFoidsAdvice ? 'advice' : path === ROUTES.agoraCultureFoidsAstrology ? 'astrology' : 'accounts-to-follow'
+    return { page: 'agora', section: 'culture', cultureView: 'foids', cultureSubView, path }
+  }
+
   if (path === ROUTES.agoraCultureFoids || path === ROUTES.agoraCultureStreet) {
     return { page: 'agora', section: 'culture', cultureView: path === ROUTES.agoraCultureFoids ? 'foids' : 'street', path }
   }
@@ -513,8 +522,8 @@ export function matchRoute(pathname) {
     return { page: 'agora', section: 'overseas', path: ROUTES.agoraOverseas }
   }
 
-  if (path === ROUTES.agoraImmigration) {
-    return { page: 'agora', section: 'immigration', path: ROUTES.agoraImmigration }
+  if (path === ROUTES.agoraRace || path === ROUTES.agoraImmigration) {
+    return { page: 'agora', section: 'race', path: ROUTES.agoraRace }
   }
 
   if (path === ROUTES.agoraManliness) {

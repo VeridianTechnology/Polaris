@@ -11,7 +11,7 @@ import {
   MAX_POST_LINKS,
   textWithoutLinks,
 } from './academyLinks'
-import { isSupabaseConfigured, supabase } from './supabaseClient'
+import { agoraReadErrorMessage, isSupabaseConfigured, supabase } from './supabaseClient'
 import { AgoraAdminBadge } from './auth/AgoraLoginDialog'
 import { academyProfilePath, legacyAcademyProfilePath } from '../../routing/routes'
 import './academy-avatar.css'
@@ -211,7 +211,7 @@ function AcademyBoard({ navigate, authSession, onLogin }) {
       const firstError = feedResult.error || statusResult?.error || profileResult?.error
       if (firstError) {
         setFeedStatus('error')
-        setNotice(`${firstError.message} Run the August 29 Agora private-read security migration if it has not been applied yet.`)
+        setNotice(agoraReadErrorMessage(firstError))
         return
       }
 

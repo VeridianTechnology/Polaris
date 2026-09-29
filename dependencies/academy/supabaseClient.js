@@ -8,6 +8,16 @@ const supabasePublishableKey = (
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey)
 
+export function agoraReadErrorMessage(error) {
+  if (/failed to fetch/i.test(error?.message || '')) {
+    return 'Agora could not reach its database. Check that the Supabase project is running and its URL is correct.'
+  }
+  if (error?.code === 'PGRST202' || error?.code === '42883') {
+    return `${error.message} Check that the Agora database migrations have been applied.`
+  }
+  return error?.message || 'Agora could not load this data.'
+}
+
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabasePublishableKey, {
       auth: {

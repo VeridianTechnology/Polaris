@@ -6,7 +6,7 @@ import CareerLibrary from '../dependencies/career/CareerLibrary.jsx'
 import FinanceLibrary from '../dependencies/finance/FinanceLibrary.jsx'
 import { financeFollowUps } from '../dependencies/finance/financeFeatures.js'
 import PoliticalMap from '../dependencies/politics/map/PoliticalMap.jsx'
-import ImmigrationLibrary from '../dependencies/politics/ImmigrationLibrary.jsx'
+import RaceLibrary from '../dependencies/politics/ImmigrationLibrary.jsx'
 import CrimeLibrary from '../dependencies/crime/CrimeLibrary.jsx'
 import OverseasLibrary from '../dependencies/overseas/OverseasLibrary.jsx'
 import { ProblemsLibrary, ManlinessLibrary } from '../dependencies/shared/TopicLibraries.jsx'
@@ -169,7 +169,7 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
           </SectionDropdown>
           <SectionDropdown
             label="Politics"
-            active={['politics', 'crime', 'freedom', 'conspiracy', 'overseas', 'manliness', 'immigration'].includes(route.section)}
+            active={['politics', 'crime', 'freedom', 'conspiracy', 'overseas', 'manliness', 'race'].includes(route.section)}
           >
             <RouteLink
               className={`section-menu__item${route.section === 'crime' ? ' section-menu__item--active' : ''}`}
@@ -215,12 +215,12 @@ function AppHeader({ route, navigate, authSession, authStatus, onLogin, onLogout
               Conspiracy
             </RouteLink>
             <RouteLink
-              className={`section-menu__item${route.section === 'immigration' ? ' section-menu__item--active' : ''}`}
-              to={ROUTES.agoraImmigration}
+              className={`section-menu__item${route.section === 'race' ? ' section-menu__item--active' : ''}`}
+              to={ROUTES.agoraRace}
               navigate={navigate}
-              active={route.section === 'immigration'}
+              active={route.section === 'race'}
             >
-              Immigration
+              Race
             </RouteLink>
           </SectionDropdown>
           <SectionDropdown label="Culture" active={route.section === 'culture'}>
@@ -702,7 +702,7 @@ function App() {
       {route.page === 'agora' && route.section === 'conspiracy' && <ConspiracyLibrary />}
       {route.page === 'agora' && route.section === 'nyx' && <NyxLibrary />}
       {route.page === 'agora' && route.section === 'overseas' && <OverseasLibrary />}
-      {route.page === 'agora' && route.section === 'immigration' && <ImmigrationLibrary />}
+      {route.page === 'agora' && route.section === 'race' && <RaceLibrary />}
       {route.page === 'agora' && route.section === 'problems' && <ProblemsLibrary problemsView={route.problemsView} navigate={navigate} />}
       {route.page === 'agora' && route.section === 'manliness' && <ManlinessLibrary />}
       {route.page === 'agora' && route.section === 'people' && (

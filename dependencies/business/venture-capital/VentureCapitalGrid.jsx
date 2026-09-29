@@ -1,5 +1,5 @@
 import ReviewedInstagramSection from '../../academy/ReviewedInstagramSection.jsx'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { vcFirms } from './vcFirms.js'
 import RouteLink from '../../../routing/RouteLink.jsx'
 import { ROUTES } from '../../../routing/routes.js'
@@ -67,8 +67,8 @@ function CopyEmail({ email }) {
 function FirmCard({ firm }) {
   return (
     <article className="vc-card">
-      <span className="vc-card__rating" aria-label={`Rating ${firm.rating}`}>
-        {firm.rating}
+      <span className={`vc-card__rating${firm.rating ? ` vc-card__rating--${firm.rating.charAt(0).toLowerCase()}` : ''}`} aria-label={firm.rating ? `Rating ${firm.rating}` : 'Not rated'}>
+        {firm.rating || '—'}
       </span>
 
       <a
@@ -78,15 +78,27 @@ function FirmCard({ firm }) {
         rel="noreferrer"
         aria-label={`Visit the ${firm.name} website`}
       >
-        <img className="vc-card__image" src={firm.image} alt={firm.name} />
+        {firm.image
+          ? <img className="vc-card__image" src={firm.image} alt="" />
+          : <span className="vc-card__monogram" aria-hidden="true">{firm.name.charAt(0)}</span>}
       </a>
 
+      <h2 className="vc-card__name">{firm.name}</h2>
+      {firm.category && (
+        <span className={`vc-card__category${firm.category === 'Crypto' ? ' vc-card__category--crypto' : ''}`}>
+          {firm.category}
+        </span>
+      )}
+      {firm.focus && <p className="vc-card__focus">{firm.focus}</p>}
+      {firm.note && <p className="vc-card__focus"><strong>Note:</strong> {firm.note}</p>}
+
       <div className="vc-card__contact">
-        <h2>Contact</h2>
-        <a href={firm.twitter.url} target="_blank" rel="noreferrer">
-          {firm.twitter.label}
-        </a>
-        <CopyEmail email={firm.email} />
+        <h3>Contact &amp; links</h3>
+        {firm.twitter && <a href={firm.twitter.url} target="_blank" rel="noreferrer">{firm.twitter.label}</a>}
+        {firm.email && <CopyEmail email={firm.email} />}
+        {firm.links?.map((link) => <a key={link.url} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}
+        {!firm.twitter && !firm.email && !firm.links?.length && <a href={firm.website} target="_blank" rel="noreferrer">Visit website</a>}
+        {firm.contactNote && <p className="vc-card__contact-note">{firm.contactNote}</p>}
       </div>
     </article>
   )
@@ -94,6 +106,24 @@ function FirmCard({ firm }) {
 
 function VentureCapitalGrid({ businessView = 'firms', navigate }) {
   const activeView = businessView === 'advice' ? 'advice' : 'firms'
+  const [sortBy, setSortBy] = useState('featured')
+  const sortedFirms = useMemo(() => {
+    if (sortBy === 'featured') return vcFirms
+    const ratingValue = (rating) => {
+      if (!rating) return null
+      const match = rating.match(/^([A-D])([+-]?)$/)
+      if (!match) return null
+      return (4 - 'ABCD'.indexOf(match[1])) * 3 + ({ '+': 1, '': 0, '-': -1 })[match[2]]
+    }
+    return [...vcFirms].sort((a, b) => {
+      if (sortBy === 'name') return a.name.localeCompare(b.name)
+      const aRating = ratingValue(a.rating)
+      const bRating = ratingValue(b.rating)
+      if (aRating === null) return bRating === null ? a.name.localeCompare(b.name) : 1
+      if (bRating === null) return -1
+      return (sortBy === 'highest' ? bRating - aRating : aRating - bRating) || a.name.localeCompare(b.name)
+    })
+  }, [sortBy])
 
   return (
     <section className="vc-directory" aria-labelledby="vc-directory-title">
@@ -128,11 +158,20 @@ function VentureCapitalGrid({ businessView = 'firms', navigate }) {
       </div>
 
       {activeView === 'firms' ? (
-        <div className="vc-grid" aria-label="Venture capital firms">
-          {vcFirms.map((firm) => (
-            <FirmCard firm={firm} key={firm.name} />
-          ))}
-        </div>
+        <>
+          <div className="vc-directory__controls">
+            <label htmlFor="vc-sort">Sort firms</label>
+            <select id="vc-sort" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+              <option value="featured">Featured order</option>
+              <option value="highest">Rating: highest first</option>
+              <option value="lowest">Rating: lowest first</option>
+              <option value="name">Name: A to Z</option>
+            </select>
+          </div>
+          <div className="vc-grid" aria-label="Venture capital firms">
+            {sortedFirms.map((firm) => <FirmCard firm={firm} key={firm.name} />)}
+          </div>
+        </>
       ) : (
         <div className="vc-advice">
           <ReviewedInstagramSection collection="business" />
