@@ -132,3 +132,8 @@
 .ai-topic-badge { padding: .2rem .4rem; background: #ffffff0d; border-radius: 3px; }
 @media(max-width:750px) { .ai-roster__selected { grid-template-columns: minmax(0,1fr); gap: .5rem; } }
 @media(max-width:450px) { .ai-topics__grid { grid-template-columns: minmax(0,1fr); }.ai-roster__controls { flex-wrap: wrap; }.ai-roster__controls span { order: -1; width: 100%; text-align: center; margin-bottom: .5rem; } }
+
+.ai-composer fieldset { border: 0; padding: 0; min-width: 0; }
+.ai-composer label { display: block; margin-bottom: 1rem; }
+.ai-composer select, .ai-composer textarea { display: block; width: 100%; box-sizing: border-box; }
+.ai-roster h2, .ai-roster__controls { color: #c3d3c5; }
